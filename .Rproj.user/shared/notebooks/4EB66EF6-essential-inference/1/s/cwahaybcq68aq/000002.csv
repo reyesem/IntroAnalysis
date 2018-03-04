@@ -1,0 +1,1 @@
+"0","fit_two <- lm(mpg ~ am, data = mtcars)"

@@ -1,0 +1,2 @@
+"0","fit_reg <- lm(mpg ~ am + hp, data = mtcars)"
+"0","estimate_parameters(fit_reg)"

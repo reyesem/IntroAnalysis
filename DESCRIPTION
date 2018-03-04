@@ -1,0 +1,25 @@
+Package: IntroAnalysis
+Type: Package
+Title: Functions for introductory statistics using linear models
+Version: 0.1.0
+Authors@R: person("Reyes", "Eric", 
+    email = "reyesem@rose-hulman.edu",
+    role = c("aut", "cre"))
+Description: This package provides wrappers that give a single
+    interface for working with linear models during an introductory
+    statistics course.  These wrappers allow you to estimate the 
+    parameters in a linear model or compare (nested) linear models
+    (i.e., hypothesis testing). These wrappers provide a consistent 
+    interface for performing these actions both under the classical
+    conditions as well as when bootstrapping.  In addition, functions
+    for performing the bootstrapping are provided.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Imports: car
+Depends: stats
+Suggests: knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

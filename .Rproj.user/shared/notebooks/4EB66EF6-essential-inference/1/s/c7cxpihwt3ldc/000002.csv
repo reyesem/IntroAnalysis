@@ -1,0 +1,1 @@
+"0","fit_single0 <- lm(mpg ~ -1, offset = rep(23, length(mpg)), data = mtcars)"
