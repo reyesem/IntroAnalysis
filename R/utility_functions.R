@@ -39,3 +39,21 @@ adjconfint <- function(ests, Sigma, level, dfresid){
   ci[] <- ests + ses %o% fac
   ci
 }
+
+
+# Produces a classical-looking ANOVA table from the anova() function.
+my_anova <- function(object, ...){
+  .table <- as.matrix(anova(object, ...))
+
+  .table <- data.frame(
+    source = c("Additional Terms", "Error"),
+    df = .table[2, c(3, 1)],
+    ss = .table[2, c(4, 2)],
+    ms = .table[2, c(4, 2)]/.table[2, c(3,1)],
+    statistic = .table[c(2, 1), 5],
+    p.value = .table[c(2, 1), 6],
+    row.names = NULL
+  )
+
+  .table
+}

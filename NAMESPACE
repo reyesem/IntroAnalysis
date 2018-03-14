@@ -2,5 +2,7 @@
 
 export(compare_models)
 export(estimate_parameters)
+export(plot_null_distribution)
+export(plot_sampling_distribution)
 export(rmammen)
 import(stats)

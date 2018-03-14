@@ -16,7 +16,8 @@
 #' \code{wild = FALSE}, this is ignored.
 #'
 #' @return vector of length \code{reps} containing the test statistic from each
-#' bootstrap replication.
+#' bootstrap replication. It also has an attribute containing an ANOVA table
+#' comparing the two models.
 #'
 #' @examples
 #' \dontrun{
@@ -71,9 +72,8 @@ boot_residual_p <- function(fit1,
   .tstat <- (.num/(fit0$df.residual - fit1$df.residual))/(.den/fit1$df.residual)
 
 
-  # cleaned up ANOVA tables for each model
-  .anova <- as.data.frame(anova(fit0, fit1))
-  .anova <- cbind("Model" = c("Full Model", "Reduced Model"), .anova[c(2, 1), ])
+  # cleaned up ANOVA table comparing the models
+  .anova <- my_anova(fit0, fit1)
 
   attr(.tstat, "ANOVA Table") <- .anova
 

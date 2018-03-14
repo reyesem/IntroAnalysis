@@ -288,27 +288,29 @@ compare_models(fit_anova1,
                assume.normality = TRUE)
 ```
 
-The `compare_models()` function produces the following output:
+The `compare_models()` function produces the form of a classical ANOVA table with the following elements:
 
-- `model`: an indicator of which model is being summarized
-- `error.df`: the degrees of freedom associated with the error sum of squares
-- `error.sumsq`: the error (or residual) sum of squares for the model
-- `df`: the degrees of freedom associated with the hypothesis
-- `sumsq`: the sum of squares treatment (regression) for the factor
+- `source`: an indicator of which component of variability is being summarized
+- `df`: the degrees of freedom associated with each component (may not add to the total if not all terms are tested)
+- `ss`: the sum of squares for each component of variability (may not add to the total if not all terms are tested)
+- `ms`: the mean square associated with each component (used to determine the test statistic)
 - `statistic`: the F-statistic comparing the two models
 - `p.value`: the p-value associated with the test
 
-We notice the output is similar to that provided by the common `summary()` after running `aov()` or the `anova()` function in the `stats` package:
+We use the "Additional Terms" phrase to indicate the terms placed in the full model that are excluded in the model under the null hypothesis.  We notice the output is similar to that provided by the common `summary()` after running `aov()` from the `stats` package:
 
 ```{r}
 summary(aov(mpg ~ cyl, data = mtcars))
 ```
 
+
+The `anova()` function in the `stats` package provides similar functionality but is more suitable to a course on linear models.  When working with introductory students, we find the classical ANOVA table more appealing for discussing the various sources of variability.
+
 ```{r}
 anova(fit_anova0, fit_anova1)
 ```
 
-The difference is that the `aov()` approach is specific to ANOVA while `compare_models()` is not.  Both the `aov()` approach and the `anova()` approach are also limited to classical inference; `compare_models()` allows for inference via bootstrapping.
+A key difference is that the `aov()` approach is specific to ANOVA while `compare_models()` is not.  Both the `aov()` approach and the `anova()` approach are also limited to classical inference; `compare_models()` allows for inference via bootstrapping.
 
 __Inference via Bootstrapping:__ Many traditional curriclum do not allow for relaxing the conditions of the classical ANOVA framework.  However, if students are familiar with bootstrapping, this can be extended to comparing multiple means.  
 
@@ -441,7 +443,7 @@ compare_models(fit_reg1,
 Hypothesis testing is typically introduced in the case of a single mean.  In the case of a single mean, we prefer inference be conducted via confidence intervals.  In the case of ANOVA, inference via a p-value is more easily motivated in our opinion.  However, for completeness, we present the code below for testing a hypothesis of the form
 $$H_0: \mu = 23 \qquad \text{vs.} \qquad H_1: \mu \neq 23$$
 
-where $\mu$ represents the mean fuel efficiency (mpg) for all 1974 vehicles.  From a classical perspective, this is typically done using a one-sample t-test.  This can be implemented via `compare_models()`, but it does require some thought which is, we admit, not intuitive.
+where $\mu$ represents the mean fuel efficiency (mpg) for all 1974 vehicles.  From a classical perspective, this is typically done using a one-sample t-test.  This can be implemented via `compare_models()`, but its implementation is we admit, not intuitive.
 
 The model for the data generating process under the alternative is quite simple:
 $$(\text{MPG})_i = \mu + \epsilon_i$$
@@ -480,6 +482,38 @@ compare_models(fit_single1,
 ```
 
 Placing a scalar in place of the null model always results in the null model having the form of that constant plus error.  In more general problems (such as specifying a particular value of a coefficient in a regression model, the `offset = ` approach can be invaluable).
+
+
+
+## Plotting the Sampling and Null Distributions
+Making the connection between the construction of confidence intervals and the underlying model for the sampling distribution is a critical learning objective for introductory students.  The same can be said regarding the connection between the computation of a p-value and the underlying model for the null distribution.  While the functions `estimate_parameters()` and `compare_models()` discussed above try to emphasize this connection through the specification of their parameters (`assume.normality` and `assume.constant.variance`), it can be helpful to plot the sampling distribution.  
+
+Consider the problem of estimating the mean fuel efficiency.  As we have seen, the confidence interval (under the classical assumptions) is constructed as follows:
+
+```{r}
+fit_single1 <- lm(mpg ~ 1, data = mtcars)
+
+samp_distn <- estimate_parameters(fit_single1)
+samp_distn
+```
+
+In order to visualize the corresponding model for the sampling distribution, we can use the `plot_sampling_distribution()` function in conjunction with the information stored within the output from `estimate_parameters()`.
+
+```{r}
+plot_sampling_distribution(samp_distn)
+```
+
+Built on top of `ggplot2`, this function returns a density _estimate_ of the underlying sampling distribution.  In the cases in which a specific probability model is known (such as this case), a random sample was taken from the known distribution and the summary of that is what is shown.  In the cases in which the confidence interval was constructed via bootstrapping, the density plot of the bootstrap statistics is given.  Additional parameters to the function allow you to display the confidence interval or restrict which sampling distributions are displayed (when the linear model has more than one parameter).
+
+Similarly, we can plot the null distribution for a specific test with the function `plot_null_distribution()`.
+
+```{r}
+null_distn <- compare_models(fit_single1, 23)
+
+plot_null_distribution(null_distn)
+```
+
+We note that since we always use a test statistic of the form $\frac{MSR}{MSE}$, the null distribution will not be symmetric but follows (at least approximately) and F-distribution.
 
 
 ## Future Work

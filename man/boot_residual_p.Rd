@@ -22,7 +22,8 @@ from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
 }
 \value{
 vector of length \code{reps} containing the test statistic from each
-bootstrap replication.
+bootstrap replication. It also has an attribute containing an ANOVA table
+comparing the two models.
 }
 \description{
 This is the workhorse for the \code{compare_models()} function.

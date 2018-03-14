@@ -25,13 +25,10 @@
 #' @import stats
 boot_compute_p <- function(bootobj){
   .anova <- attr(bootobj, "ANOVA Table")
-  .tstat <- .anova$F[1]
+  .tstat <- .anova$statistic[1]
   .pvalue <- mean(c(bootobj, .tstat) >= .tstat)
 
-  .anova[1, "Pr(>F)"] <- .pvalue
-  colnames(.anova) <- c("model", "error.df", "error.sumsq", "df",
-                        "sumsq", "statistic", "p.value")
-  rownames(.anova) <- NULL
+  .anova$p.value[1] <- .pvalue
 
   .anova
 }

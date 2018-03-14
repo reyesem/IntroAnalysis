@@ -1,0 +1,1 @@
+"0","fit.anova.h0 = lm(mpg ~ 1, data = mtcars)"
