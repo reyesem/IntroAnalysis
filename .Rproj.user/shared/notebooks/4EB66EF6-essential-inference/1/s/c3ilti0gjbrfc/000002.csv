@@ -1,0 +1,3 @@
+"0","fit_single <- specify_mean_model(mpg ~ 1, data = mtcars)"
+"0","fit_single <- specify_mean_model(mpg ~ 1, data = mtcars)"
+"0","fit_single <- specify_mean_model(mpg ~ 1, data = mtcars)"

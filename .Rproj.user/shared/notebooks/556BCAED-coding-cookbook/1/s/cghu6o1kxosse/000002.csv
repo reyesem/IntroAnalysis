@@ -1,0 +1,8 @@
+"0","qplot(data = mtcars,"
+"0","      y = mpg,"
+"0","      x = am,"
+"0","      fill = vs,"
+"0","      geom = ""boxplot"") +"
+"0","  labs(x = """","
+"0","       y = ""Miles per Gallon"","
+"0","       fill = """")"

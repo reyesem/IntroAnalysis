@@ -1,0 +1,7 @@
+"0","qplot(data = mtcars,"
+"0","      y = mpg,"
+"0","      x = am,"
+"0","      geom = ""jitter"","
+"0","      height = 0) +"
+"0","  labs(x = """","
+"0","       y = ""Miles per Gallon"")"

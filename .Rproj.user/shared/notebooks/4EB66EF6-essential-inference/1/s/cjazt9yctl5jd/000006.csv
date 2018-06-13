@@ -1,0 +1,1 @@
+"0","summarize_variable(mpg ~ am, data = mtcars, quantile(., probs = c(0.25)))"

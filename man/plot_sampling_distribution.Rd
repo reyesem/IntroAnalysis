@@ -4,19 +4,21 @@
 \alias{plot_sampling_distribution}
 \title{Plot the sampling distribution of a statistic.}
 \usage{
-plot_sampling_distribution(estimates, parameters, conf.int = FALSE)
+plot_sampling_distribution(estimates, parameter,
+  show.confidence.interval = FALSE)
 }
 \arguments{
 \item{estimates}{result of a call to \code{\link{estimate_parameters}}.}
 
-\item{parameters}{character string indicating for which parameter estimates
-the sampling distribution should be plotted. Each will appear in a different
-facet of the same graphic. If missing (default), all sampling distributions
-are constructed.}
+\item{parameter}{character string indicating for which parameter the modeled
+sampling distribution should be plotted. This should match the output of the
+"term" column in \code{\link{estimate_parameters()}} output. If missing
+(default), the model for the sampling distribution of the first term is
+plotted.}
 
-\item{conf.int}{boolean indicating whether the confidence region should be
-constructed on the graphic.  If \code{TRUE}, the region is drawn; if
-\code{FALSE} (default), the region is not drawn.}
+\item{show.confidence.interval}{boolean indicating whether the confidence
+region should be constructed on the graphic.  If \code{TRUE}, the region is
+drawn; if \code{FALSE} (default), the region is not drawn.}
 }
 \value{
 \code{ggplot2} object.
@@ -32,12 +34,15 @@ estimate.  This is extracted and used to construct a graphic summarizing
 this distribution.
 }
 \examples{
-test.df <- data.frame(x = seq(10), y = seq(10) + rnorm(10))
-fit <- lm(y ~ x, data = test.df)
+fit <- lm(mpg ~ hp, data = mtcars)
+
 samp_distn <- estimate_parameters(fit,
-assume.constant.variance = TRUE,
-assume.normality = FALSE)
-plot_sampling_distribution(samp_distn)
+  confidence.level = 0.95,
+  assume.identically.distributed = TRUE,
+  assume.normality = FALSE)
+
+plot_sampling_distribution(samp_distn,
+  show.confidence.interval = TRUE)
 
 }
 \seealso{

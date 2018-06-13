@@ -1,0 +1,1 @@
+"0","summarize_variable(wt ~ 1, data = mtcars, mean)"

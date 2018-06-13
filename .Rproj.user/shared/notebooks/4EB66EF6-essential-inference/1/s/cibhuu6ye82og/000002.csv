@@ -1,0 +1,5 @@
+"0","estimate_parameters(fit_p,"
+"0","                    confidence.level = 0.95)"
+"2","Error in `[.data.frame`(.ests, , ""Std. Error"") : 
+  undefined columns selected
+"

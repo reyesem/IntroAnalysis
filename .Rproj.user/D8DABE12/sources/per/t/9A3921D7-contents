@@ -1,0 +1,137 @@
+#' @describeIn compare_models Computes p-value comparing nested linear models.
+#'
+#' @inheritParams compare_models
+#' @param assume.constant.variance boolean; if \code{TRUE}, homoskedasticity is
+#' assumed for the error term. If \code{FALSE} (default), this is not assumed.
+#' @param assume.normality boolean; if \code{TRUE}, the errors are assumed to
+#' follow a Normal distribution. If \code{FALSE} (default), this is not
+#' assumed.
+#' @param bootstrap.replications scalar indicating the number of bootstrap
+#' replications to use (default = 4999).  This is ignored if both
+#' \code{assume.constant.variance = TRUE} and
+#' \code{assume.normality = TRUE}.
+#' @param construct string defining the type of construct to use when generating
+#' from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+#' \code{assume.constant.variance = TRUE}, this is ignored
+#' (default = \code{"normal-2"}).
+#'
+#' @import stats
+#' @export
+compare_models.lm <- function(full.mean.model,
+                              reduced.mean.model,
+                              assume.constant.variance = FALSE,
+                              assume.normality = FALSE,
+                              bootstrap.replications = 4999,
+                              construct = c("normal-2",
+                                            "normal-1",
+                                            "two-point mass")){
+
+  if (any(class(full.mean.model) != class(reduced.mean.model))){
+    stop("Both the full and reduced models must be linear models.")
+  }
+
+  if (!is.null(reduced.mean.model$offset) && assume.normality &&
+      !assume.constant.variance){
+    warning(paste("White-Huber estimator cannot be used with offset term.",
+                  "Recommend using linearHypothesis() within the car",
+                  "package. Continuing while imposing constant variance."))
+
+    assume.constant.variance <- TRUE
+  }
+
+  if (assume.normality && assume.constant.variance){
+    .anova <- my_anova(reduced.mean.model, full.mean.model)
+
+    .boot <- rf(bootstrap.replications, df1 = .anova$df[1], df2 = .anova$df[2])
+  } else if (assume.normality && !assume.constant.variance){
+    .anova <- my_anova(reduced.mean.model, full.mean.model)
+
+    .namesh0 <- names(reduced.mean.model$coefficients)
+    .namesh1 <- names(full.mean.model$coefficients)
+
+    if (!all(is.element(.namesh0, .namesh1))){
+      stop("Models are not nested.")
+    }
+
+    .K <- diag(length(.namesh1))[!(.namesh1 %in% .namesh0),, drop = FALSE]
+    .test <- car::linearHypothesis(full.mean.model, .K, white.adjust = "hc0")
+
+    .anova$statistic[1] <- .test$F[2]
+    .anova$p.value[1] <- .test$`Pr(>F)`[2]
+
+    .boot <- rf(bootstrap.replicationss, df1 = .anova$df[1], df2 = .anova$df[2])
+
+  } else {
+    .boot <- bootstrap_residual_null(full.mean.model,
+                                     reduced.mean.model,
+                                     reps = bootstrap.replications,
+                                     wild = !assume.constant.variance,
+                                     construct = construct)
+
+    .anova <- bootstrap_compute_p(.boot)
+  }
+
+  attr(.anova, "Null Distribution") <- as.numeric(.boot)
+  .anova
+}
+
+
+
+#' @describeIn compare_models Computes p-value comparing nested generalized
+#' linear models.
+#'
+#' @inheritParams compare_models
+#' @param method string defining the methodology to employ. If
+#' \code{"classical"} (default), the model is assumed correct and classical
+#' large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
+#' is performed. If \code{"case-resampling"}, a case-resampling bootstrap is
+#' performed.
+#' @param bootstrap.replications scalar indicating the number of bootstrap
+#' replications to use (default = 4999).  This is ignored if
+#' \code{method = "classical"}.
+#'
+#' @import stats
+#' @export
+compare_models.glm <- function(full.mean.model,
+                               reduced.mean.model,
+                               method = c("classical",
+                                          "parametric",
+                                          "case-resampling"),
+                               bootstrap.replications = 4999){
+
+  if (any(class(full.mean.model) != class(reduced.mean.model))){
+    stop("Both the full and reduced models must be linear models.")
+  }
+
+  if (method == "classical"){
+    .knownvar <- is.element(full.mean.model$family$family,
+                            c("binomial", "poisson"))
+
+    .anova <- my_anova(reduced.mean.model, full.mean.model,
+                       test = ifelse(.knownvar, "Chisq", "F"))
+
+    if (.knownvar){
+      .boot <- rchisq(bootstrap.replications, df = .anova$df[1])
+    } else {
+      .boot <- rf(bootstrap.replications,
+                  df1 = .anova$df[1],
+                  df2 = .anova$df[2])
+    }
+  } else if (method == "parametric"){
+    .boot <- bootstrap_parametric_null(full.mean.model,
+                                       reduced.mean.model,
+                                       reps = bootstrap.replications)
+
+    .anova <- bootstrap_compute_p(.boot)
+  } else {
+    .boot <- bootstrap_case_null(full.mean.model,
+                                 reduced.mean.model,
+                                 reps = bootstrap.replications)
+
+    .anova <- bootstrap_compute_p(.boot)
+  }
+
+  attr(.anova, "Null Distribution") <- as.numeric(.boot)
+  .anova
+}
+

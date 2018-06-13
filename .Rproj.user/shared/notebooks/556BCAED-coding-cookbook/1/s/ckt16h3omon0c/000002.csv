@@ -1,0 +1,6 @@
+"0","qplot(data = mtcars,"
+"0","      x = mpg,"
+"0","      geom = ""histogram"","
+"0","      binwidth = 1) +"
+"0","  labs(x = ""Miles per Gallon"","
+"0","       y = ""Frequency"")"

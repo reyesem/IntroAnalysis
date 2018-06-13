@@ -1,0 +1,6 @@
+"0","qplot(data = mtcars.augment,"
+"0","      y = .resid,"
+"0","      x = .fitted,"
+"0","      geom = c(""point"", ""smooth"")) +"
+"0","  labs(y = ""Residuals"","
+"0","       x = ""Fitted Values"")"

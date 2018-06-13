@@ -1,0 +1,1 @@
+"0","fit_anova1 <- specify_mean_model(mpg ~ 1 + cyl, data = mtcars)"

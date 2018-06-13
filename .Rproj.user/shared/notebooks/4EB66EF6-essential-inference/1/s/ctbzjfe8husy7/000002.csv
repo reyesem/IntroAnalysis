@@ -1,0 +1,6 @@
+"0","mtcars$am <- factor(mtcars$am,"
+"0","                    levels = c(0, 1),"
+"0","                    labels = c(""automatic"", ""manual""))"
+"0","mtcars$am <- factor(mtcars$am,"
+"0","                    levels = c(0, 1),"
+"0","                    labels = c(""automatic"", ""manual""))"

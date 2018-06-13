@@ -1,0 +1,108 @@
+"0","boot_residual <- 
+  function(orig.model, null.model = NULL, n.boot.reps = 1000, 
+           constant.var = TRUE){
+    require(tidyverse, quietly = TRUE)
+    require(modelr, quietly = TRUE)
+    require(broom, quietly = TRUE)
+    
+    # Function for Generating Mammen's Distribution
+    rmammen <- function(n){
+      sample(c(-(sqrt(5)-1)/2, (sqrt(5)+1)/2), size = n, replace = TRUE,
+             prob = c((sqrt(5)+1)/(2*sqrt(5)), (sqrt(5)-1)/(2*sqrt(5))))
+    }
+    
+    # Bootstrap for Confidence Intervals
+    if(is.null(null.model)){
+      if(constant.var){
+        # obtain the original residuals
+        .orig.df <- suppressWarnings(augment(orig.model))
+        .n <- nrow(.orig.df)
+        
+        # bootstrap residuals
+        .boot.list <- map(seq_len(n.boot.reps),
+                          function(u){
+                            sample(.orig.df$.resid, size = .n, replace = TRUE)
+                          })
+        
+        # fit models
+        #  create new response and then update original model
+        out.df <- .boot.list %>%
+          map_df(function(resis){
+            mutate(.orig.df, .newy = .fitted + resis) %>%
+              update(orig.model, .newy ~ ., data = .) %>%
+              tidy()
+          })
+        
+      }else{
+        
+        .orig.df <- suppressWarnings(augment(orig.model))
+        .n <- nrow(.orig.df)
+        
+        .boot.list <- map(seq_len(n.boot.reps),
+                          function(u){
+                            .orig.df$.resid*rmammen(.n)
+                          })
+        
+        out.df <- .boot.list %>%
+          map_df(function(resis){
+            mutate(.orig.df, .newy = .fitted + resis) %>%
+              update(orig.model, .newy ~ ., data = .) %>%
+              tidy()
+          })
+      }
+    }
+    
+    # Bootstrap for p-values
+    if(!is.null(null.model)){
+      if(constant.var){
+        # obtain the original residuals
+        .orig.df <- suppressWarnings(augment(orig.model))
+        .null.df <- suppressWarnings(augment(null.model))
+        .n <- nrow(.orig.df)
+        
+        # bootstrap residuals
+        .boot.list <- map(seq_len(n.boot.reps),
+                          function(u){
+                            sample(.null.df$.resid, size = .n, replace = TRUE)
+                          })
+        
+        # fit models
+        #  generate new y under null model
+        out.df <- .boot.list %>%
+          map_df(function(resis){
+            df <- mutate(.orig.df, .newy = .null.df$.fitted + resis)
+            h1 <- update(orig.model, .newy ~ ., data = df)
+            h0 <- update(null.model, .newy ~ ., data = df)
+            
+            anova(h0, h1) %>% tidy()
+          })
+        
+      }else{
+        
+        .orig.df <- suppressWarnings(augment(orig.model))
+        .null.df <- suppressWarnings(augment(null.model))
+        .n <- nrow(.orig.df)
+        
+        .boot.list <- map(seq_len(n.boot.reps),
+                          function(u){
+                            .null.df$.resid*rmammen(.n)
+                          })
+        
+        out.df <- .boot.list %>%
+          map_df(function(resis){
+            df <- mutate(.orig.df, .newy = .null.df$.fitted + resis)
+            h1 <- update(orig.model, .newy ~ ., data = df)
+            h0 <- update(null.model, .newy ~ ., data = df)
+            
+            anova(h0, h1) %>% tidy()
+          })
+      }
+      
+      # remove extraneous lines from anova() output
+      out.df <- out.df %>%
+        filter(!is.na(statistic))
+      
+    }
+    
+    as_data_frame(out.df)
+  }"

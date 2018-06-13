@@ -1,0 +1,59 @@
+# Update \code{update()} function to work within function call.
+my_update <- function(mod, formula = NULL, data = NULL, offset = NULL) {
+  call <- getCall(mod)
+  if (is.null(call)) {
+    stop("Model object does not support updating (no call)", call. = FALSE)
+  }
+  term <- terms(mod)
+  if (is.null(term)) {
+    stop("Model object does not support updating (no terms)", call. = FALSE)
+  }
+
+  if (!is.null(data)) call$data <- data
+  if (!is.null(offset)) call$offset <- offset
+  if (!is.null(formula)) call$formula <- update.formula(call$formula, formula)
+  env <- attr(term, ".Environment")
+
+  eval(call, env, parent.frame())
+}
+
+
+# Produce confidence intervals given covariance matrix and estimates.
+#
+# Extension of \code{confint()} to allow for adjusted variance-covariance
+# matrices to be used.
+adjconfint <- function(ests, Sigma, level, dfresid){
+  parm <- names(ests)
+  a <- (1 - level)/2
+  a <- c(a, 1 - a)
+  if(missing(dfresid)){
+    fac <- qnorm(a)
+  } else {
+    fac <- qt(a, dfresid)
+  }
+  pct <- paste(format(100 * a, trim = TRUE, scientific = FALSE, digits = 3),
+               "%")
+
+  ci <- array(NA, dim = c(length(parm), 2L), dimnames = list(parm, pct))
+  ses <- sqrt(diag(Sigma))
+  ci[] <- ests + ses %o% fac
+  ci
+}
+
+
+# Produces a classical-looking ANOVA table from the anova() function.
+my_anova <- function(object, ...){
+  .table <- as.matrix(anova(object, ...))
+
+  .table <- data.frame(
+    source = c("Additional Terms", "Error"),
+    df = .table[2, c(3, 1)],
+    ss = .table[2, c(4, 2)],
+    ms = .table[2, c(4, 2)]/.table[2, c(3,1)],
+    statistic = .table[c(2, 1), 5],
+    p.value = .table[c(2, 1), 6],
+    row.names = NULL
+  )
+
+  .table
+}

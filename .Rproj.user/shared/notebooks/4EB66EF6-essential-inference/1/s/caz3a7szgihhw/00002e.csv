@@ -1,0 +1,50 @@
+"0","# estimate_mean_response(fit_p, "
+"0","#                        confidence.level = 0.95,"
+"0","#                        Intercept = 1)"
+"0","estimate_mean_response(fit_p,"
+"0","                       confidence.level = 0.95,"
+"0","                       Intercept = 1,"
+"0","                       method = ""parametric"")"
+"1","debugging in: "
+"1","bootstrap_parametric_predict(mean.model, newdata = .newdat, reps = bootstrap.replications)
+"
+"1","debug at C:/Users/Administrator/OneDrive - Rose-Hulman Institute of Technology/Github/IntroAnalysis/R/bootstrap_glm.R#109: "
+"1","{
+"
+"1","    .boot <- simulate(fit, reps)
+"
+"1","    .refit <- function(newy, fit, newdata) {
+"
+"1","        .newfit <- my_update(fit, newy ~ .)
+"
+"1","        .yhat <- predict(.newfit, newdata = newdata, type = ""response"", 
+"
+"1","            se.fit = TRUE)
+"
+"1","        c(.yhat$fit, .yhat$se.fit)
+"
+"1","    }
+"
+"1","    .all <- apply(.boot, 2, .refit, fit = fit, newdata = newdata)
+"
+"1","    .ests <- .all[1:nrow(newdata), ]
+"
+"1","    .orig <- predict(fit, newdata = newdata, type = ""response"", 
+"
+"1","        se.fit = TRUE)
+"
+"1","    attr(.ests, ""std.err"") <- .all[-c(1:nrow(newdata)), ]
+"
+"1","    attr(.ests, ""original.estimates"") <- .orig$fit
+"
+"1","    attr(.ests, ""original.std.err"") <- .orig$se.fit
+"
+"1","    .ests
+"
+"1","}
+"
+"0","# obtain parametric bootstraps"
+"0","  .boot <- simulate(fit, reps)"
+"0","update(fit, .boot[,1] ~ .)"
+"2","Error in eval(predvars, data, env) : object '.boot' not found
+"

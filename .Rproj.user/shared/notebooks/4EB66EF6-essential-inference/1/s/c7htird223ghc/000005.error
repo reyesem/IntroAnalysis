@@ -1,0 +1,1 @@
+{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"estimate_parameters(fit_single1, confidence.interval = 0.95, \n    assume.constant.variance = TRUE, assume.normality = TRUE)","line_number":0}],"message":"Error in estimate_parameters.lm(fit_single1, confidence.interval = 0.95,  : \n  unused argument (confidence.interval = 0.95)\n"}

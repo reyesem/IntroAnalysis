@@ -1,0 +1,2 @@
+"0","reg.model.h1 = specify_mean_model(mpg ~ 1 + hp, data = mtcars)"
+"0","reg.model.h0 = specify_mean_model(mpg ~ 1, data = mtcars)"

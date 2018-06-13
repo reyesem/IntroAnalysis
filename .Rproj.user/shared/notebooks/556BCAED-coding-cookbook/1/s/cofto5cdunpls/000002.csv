@@ -1,0 +1,1 @@
+"0","mpg.model.h0 = specify_mean_model(mpg ~ constant(18), data = mtcars)"

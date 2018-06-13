@@ -1,0 +1,3 @@
+"0","my_update(fit, .boot[,1] ~ .)"
+"2","Error in eval(predvars, data, env) : object '.boot' not found
+"

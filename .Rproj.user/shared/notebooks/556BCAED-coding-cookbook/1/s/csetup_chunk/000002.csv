@@ -1,0 +1,41 @@
+"0","## ---- Load Packages ----"
+"0","pkgs <- c(""tidyverse"","
+"0","          ""knitr"","
+"0","          ""IntroAnalysis"")"
+"0","for(pkg in pkgs) library(pkg, character.only = TRUE)"
+"2","[30m-- [1mAttaching packages[22m --------------------------------------- tidyverse 1.2.1 --[39m
+"
+"2","[30m[32mv[30m [34mggplot2[30m 2.2.1     [32mv[30m [34mpurrr  [30m 0.2.4
+[32mv[30m [34mtibble [30m 1.4.2     [32mv[30m [34mdplyr  [30m 0.7.4
+[32mv[30m [34mtidyr  [30m 0.8.0     [32mv[30m [34mstringr[30m 1.3.0
+[32mv[30m [34mreadr  [30m 1.1.1     [32mv[30m [34mforcats[30m 0.3.0[39m
+"
+"2","[30m-- [1mConflicts[22m ------------------------------------------ tidyverse_conflicts() --
+[31mx[30m [34mdplyr[30m::[32mfilter()[30m  masks [34mstats[30m::filter()
+[31mx[30m [34mpurrr[30m::[32mis_null()[30m masks [34mtestthat[30m::is_null()
+[31mx[30m [34mdplyr[30m::[32mlag()[30m     masks [34mstats[30m::lag()
+[31mx[30m [34mdplyr[30m::[32mmatches()[30m masks [34mtestthat[30m::matches()
+[31mx[30m [34mdplyr[30m::[32mselect()[30m  masks [34mMASS[30m::select()[39m
+"
+"0","## ---- Change Options ----"
+"0","# Suppress status bar in dplyr."
+"0","# Change handling of ordered factors"
+"0","options(dplyr.show_progress = FALSE,"
+"0","        contrasts = rep(""contr.treatment"", 2))"
+"0","# Change theme for plots"
+"0","theme_set(theme_bw(12))"
+"0","theme_update(legend.position = ""bottom"")"
+"0","## ---- Load Packages ----"
+"0","pkgs <- c(""tidyverse"","
+"0","          ""broom"","
+"0","          ""knitr"","
+"0","          ""IntroAnalysis"")"
+"0","for(pkg in pkgs) library(pkg, character.only = TRUE)"
+"0","## ---- Change Options ----"
+"0","# Suppress status bar in dplyr."
+"0","# Change handling of ordered factors"
+"0","options(dplyr.show_progress = FALSE,"
+"0","        contrasts = rep(""contr.treatment"", 2))"
+"0","# Change theme for plots"
+"0","theme_set(theme_bw(12))"
+"0","theme_update(legend.position = ""bottom"")"

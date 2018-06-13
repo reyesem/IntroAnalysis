@@ -1,0 +1,10 @@
+"0","```r
+lm.p.residual.2 <- boot_model(fit.lm, fit.lm.null, constant.var = FALSE)
+lm.p.residual.2
+```"
+"1","p-value: 
+[1] 0.991
+
+
+ Snippet of Distribution:
+"

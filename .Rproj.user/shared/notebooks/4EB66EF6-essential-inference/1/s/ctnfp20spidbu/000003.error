@@ -1,0 +1,1 @@
+{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"compare_models(fit_anova1, fit_anova0, assume.constant.variance = TRUE, \n    assume.normality = TRUE)","line_number":0}],"message":"Error in UseMethod(\"compare_models\") : \n  no applicable method for 'compare_models' applied to an object of class \"lm\"\n"}

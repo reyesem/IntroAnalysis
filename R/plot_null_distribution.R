@@ -9,8 +9,8 @@
 #' distribution.
 #'
 #' @param statistics result of a call to \code{\link{compare_models}}.
-#' @param p.value boolean indicating whether the p-value region should be
-#' drawn on the graphic.  If \code{TRUE}, the region is drawn; if
+#' @param show.pvalue boolean indicating whether the p-value region should
+#' be drawn on the graphic.  If \code{TRUE}, the region is drawn; if
 #' \code{FALSE} (default), the region is not drawn.
 #'
 #' @return \code{ggplot2} object.
@@ -18,30 +18,42 @@
 #' @seealso \code{\link{compare_models}}
 #'
 #' @examples
-#' test.df <- data.frame(x = seq(10), y = seq(10) + rnorm(10))
-#' fit <- lm(y ~ x, data = test.df)
-#' fit0 <- lm(y ~ 1, data = test.df)
-#' null_distn <- compare_models(fit, fit0,
-#' assume.constant.variance = TRUE,
-#' assume.normality = FALSE)
-#' plot_null_distribution(null_distn)
+#' fit1 <- lm(mpg ~ hp, data = mtcars)
+#' fit0 <- lm(mpg ~ 1, data = mtcars)
+#'
+#' null_distn <- compare_models(fit1, fit0,
+#'   assume.identically.distributed = TRUE,
+#'   assume.normality = FALSE)
+#'
+#' plot_null_distribution(null_distn,
+#'   show.pvalue = TRUE)
 #'
 #' @export
 plot_null_distribution <- function(statistics,
-                                   p.value = FALSE){
-  # restructure data for easy plotting
-  .boot <- data.frame(statistic = attr(statistics, "Null Distribution"))
+                                   show.pvalue = FALSE){
 
-  .out <- ggplot2::qplot(data = .boot, x = statistic, geom = "density") +
+  # estimate density (similar to ggplot2 but with higher n)
+  .stats <- attr(statistics, "Null Distribution")
+  .dens <- density(.stats, n = 1024, from = min(.stats), to = max(.stats))
+  .dens <- data.frame(.dens[c(1, 2)])
+
+  .out <- ggplot2::ggplot(data = .dens,
+                          mapping = ggplot2::aes(x = x, y = y)) +
+    ggplot2::geom_area(fill = NA, color = "black") +
     ggplot2::labs(x = paste("Standardized Statistic Across Repeated",
                             "Samples Under Null Hypothesis")) +
     ggplot2::theme(axis.title.y = ggplot2::element_blank(),
                    axis.ticks.y = ggplot2::element_blank(),
                    axis.text.y = ggplot2::element_blank())
 
-  if (p.value){
+  if (show.pvalue){
+    .tstat <- statistics$statistic[1]
+    .dens2 <- subset(.dens, .dens$x >= .tstat)
+
     .out <- .out +
-      ggplot2::geom_vline(data = data.frame(stat = statistics$statistic[1]),
+      ggplot2::geom_area(data = .dens2,
+                         fill = "red", color = "black") +
+      ggplot2::geom_vline(data = data.frame(`stat` = .tstat),
                           mapping = ggplot2::aes(xintercept = stat),
                           color = "red", linetype = 2)
   }

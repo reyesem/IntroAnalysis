@@ -1,0 +1,4 @@
+"0","summarize_variable(mpg ~ am, data = mtcars, quantile(., probs = c(0.25, 0.75)))"
+"2","Error in summarise_impl(.data, dots) : 
+  Column `mpg` must be length 1 (a summary value), not 2
+"

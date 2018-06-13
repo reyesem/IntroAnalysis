@@ -1,0 +1,12 @@
+"0","```r
+anova.p.residual.2 <- boot_model(fit.anova,
+                                null.model = fit.anova.null,
+                                constant.var = FALSE)
+anova.p.residual.2
+```"
+"1","p-value: 
+[1] 0.001
+
+
+ Snippet of Distribution:
+"
