@@ -217,16 +217,6 @@ Q2 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.75, na.rm = na.rm, type = type, names = FALSE)
 }
 
-#' @describeIn perc01
-#'
-#' @inheritParams perc01
-#'
-#' @export
-IQR <- function(x, na.rm = FALSE, type = 7){
-  diff(quantile(x, probs = c(0.25, 0.75), na.rm = na.rm, type = type,
-                names = FALSE))
-}
-
 
 #' Compute percent for a binary variable.
 #'

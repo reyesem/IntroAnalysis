@@ -1,3 +1,8 @@
+# round numbers below machine epsilon to 0
+my_round <- function(u){
+  u * (abs(u) > .Machine$double.eps)
+}
+
 # Update \code{update()} function to work within function call.
 my_update <- function(mod, formula = NULL, data = NULL, offset = NULL) {
   call <- getCall(mod)

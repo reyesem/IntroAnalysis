@@ -54,6 +54,8 @@ bootstrap_residual <- function(fit,
                                               (sqrt(.w) * .bootr))),
            nrow = nrow(.ests), ncol = ncol(.ests), byrow = TRUE)
 
+
+  .sse <- my_round(.sse)
   .stderrs <- sqrt(diag(chol2inv(qr.R(fit$qr))) * (.sse/fit$df.residual))
 
   attr(.ests, "std.err") <- .stderrs
@@ -108,6 +110,7 @@ bootstrap_parametric_linear <- function(fit,
                                               (sqrt(.w) * .booty))),
            nrow = nrow(.ests), ncol = ncol(.ests), byrow = TRUE)
 
+  .sse <- my_round(.sse)
   .stderrs <- sqrt(diag(chol2inv(qr.R(fit$qr))) * (.sse/fit$df.residual))
 
   attr(.ests, "std.err") <- .stderrs
