@@ -1,0 +1,1 @@
+"0","summarize_variable((am==""Manual Transmission"") ~ 1, data = mtcars, percent)"

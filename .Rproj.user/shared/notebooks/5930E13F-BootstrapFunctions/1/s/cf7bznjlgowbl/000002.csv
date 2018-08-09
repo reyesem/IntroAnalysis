@@ -1,0 +1,6 @@
+"0","```r
+lm.boot.resid.2 <- boot_model(fit.lm, method = \"residual\", constant.var = FALSE)
+lm.boot.resid.2
+```"
+"1","95% CI: 
+"

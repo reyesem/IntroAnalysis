@@ -1,0 +1,57 @@
+#' Compute summary statistics for a variable.
+#'
+#' Compute summary statistics, such as the mean or median, for a variable,
+#' potentially within various groups.
+#'
+#' @param formula an object of class "\code{}
+#' @param variable Variable for which summaries should be computed.
+#' @param group Grouping variable; if specified, summaries are computed within
+#' each level of \code{group}. If missing, summaries computed across entire
+#' data set.
+#' @param formula Alternative way of entering grouping structure to
+#' @param data An
+#' @param n Number of observations. If \code{length(n) > 1}, the length is taken
+#' to be the number required.
+#' @param construct Character string; indicates which of three constructs from
+#' which to generate.  One of "two-point mass", "normal-1", normal-2" (default).
+#'
+#' @return A vector of length \code{n}.
+#'
+#' @examples
+#' mammen_sample <- rmammen(10000, construct = "normal-2")
+#' mean(mammen_sample)
+#' mean(mammen_sample^2)
+#' mean(mammen_sample^3)
+#'
+#' plot(density(mammen_sample,
+#' main = "Mammen's Suggested Distribution for the Wild Bootstrap"))
+#'
+#' @aliases summarise_variable
+#'
+#' @import stats
+#' @export
+rmammen <- function(n,
+                    construct = c("normal-2", "normal-1", "two-point mass")){
+  construct <- match.arg(construct)
+
+  if(length(n)>1) n <- length(n)
+
+  if(construct=="two-point mass"){
+    .vals <- c(-(sqrt(5)-1)/2, (sqrt(5)+1)/2)
+    .probs <- rev(abs(.vals)/sqrt(5))
+
+    sample(.vals, size = n, replace = TRUE, prob = .probs)
+  } else if(construct=="normal-1"){
+    .v <- rnorm(n)
+
+    (.v/sqrt(2)) + (0.5*((.v*.v) - 1))
+  } else {
+    .delta1 <- sqrt((3/4) + (sqrt(17)/12))
+    .delta2 <- sqrt((3/4) - (sqrt(17)/12))
+    .v <- matrix(rnorm(2*n), nrow=n, ncol=2)
+
+    (.delta1 + (.v[,1]/sqrt(2)))*(.delta2 + (.v[,2]/sqrt(2))) -
+      (.delta1*.delta2)
+  }
+}
+

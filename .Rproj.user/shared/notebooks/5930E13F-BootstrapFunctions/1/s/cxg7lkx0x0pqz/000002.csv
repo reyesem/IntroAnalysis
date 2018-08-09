@@ -1,0 +1,6 @@
+"0","```r
+mtcars <- mtcars %>%
+  mutate(cyl = factor(cyl))
+fit.lm <- lm(mpg ~ wt + am, data = mtcars)
+fit.anova <- lm(mpg ~ cyl, data = mtcars)
+```"

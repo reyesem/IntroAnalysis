@@ -9,14 +9,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-The `IntroAnalysis` package provides wrappers for estimating parameters in linear models and comparing nested linear models (conducting hypothesis tests).  These wrappers provide a single interface for performing statistical inference imposing the classical conditions or via bootstrapping.  The functions have been written specifically with introductory statistics students in mind.  The introductory course we had in mind introduces students to statistical inference using the linear model as the primary framework.  The course covers inference for a single mean, multiple means (ANOVA) and regression (single and multiple).  We cover each of these topics through the lens of the linear model.  In order to facilitate analysis in these scenarios, we have the following goals:
+The `IntroAnalysis` package provides wrappers for estimating parameters and comparing nested models (conducting hypothesis tests) when working with linear and generalized linear models.  These wrappers provide a single interface for performing statistical inference imposing the classical conditions or via bootstrapping.  The functions have been written specifically with introductory statistics students in mind.  The introductory course we have in mind introduces students to statistical inference using the linear model as the primary framework.  The course covers inference for a single mean, multiple means (ANOVA) and regression.  We cover each of these topics through the lens of the linear model.  In order to facilitate analysis in these scenarios, we have the following goals:
 
-- Students use as few functions as possible, in addition to `lm()`, for performing analysis.
-- Functions names reinforce the concept behind the action they perform.
-- Inferential methods are linked to the conditions on the error term that are to be assumed, reinforcing how models for the sampling (or null) distribution are constructed.
+- Code leads to students focusing on the modeling process and not remembering the proper recipe when implementing an analysis.
+- Function names reinforce the concept behind the action they perform.
+- Inferential methods are linked to the conditions on the model that are to be assumed, reinforcing how models for the sampling (or null) distribution are constructed.
 - Both classical inference and bootstrapping are integrated into a single interface.
 
-As a result of these goals, we avoid the use of functions common in introductory tutorials with `R` such as `t.test()` and `aov()` in favor of a single workflow for each of the above described scenarios.  While not illustrated in this vignette, we also recommend the use of the `broom` and `tidyverse` packages alongside `IntroAnalysis`.
+As a result of these goals, we avoid the use of functions common in introductory tutorials with `R` such as `t.test()` and `aov()` in favor of a single workflow for each of the above described scenarios.  While not illustrated in this vignette, we also recommend the use of the `tidyverse` package alongside `IntroAnalysis` for performing data manipulation.
 
 The remainder of this vignette illustrates the use of the `IntroAnalysis` package for performing analyses typically encountered in an introductory statistics course.  This vignette is written for instructors who may be considering the adoption of this package and therefore assumes familiarity with the following topics:
 
@@ -24,14 +24,19 @@ The remainder of this vignette illustrates the use of the `IntroAnalysis` packag
 - Classical inference for two means (two-sample t-test and t-interval)
 - Classical inference for multiple means (ANOVA)
 - Classical inference for the parameters in a linear regression model
+- Classical inference for a single proportion
+- Classical inference for comparing two proportions
 - The `lm()` function in `R`
+- The `glm()` function in `R`
 - Conceptual understanding of bootstrapping
 
 We draw connections between these common methods and the functions provided by the `IntroAnalysis` package.  We also give some explanation of how this package is utilized to reinforce concptual understanding of inference.
 
-  > These "teaching tips" are separated from the remainder of the text in a special environment like this one.
+  > Such "teaching tips" are separated from the remainder of the text in a special environment like this one.
 
-Throughout the vignette, we will be working with the `mtcars` data set within `R`.  The data, extracted from the 1974 _Motor Trend_ US magazine, contains the fuel efficiency (miles per gallon) and 10 additional characteristics of the vehicle design for 32 automobiles.  More information on the variables can be obtained by typing `help("mtcars")` into the console.  The packaged can be installed from CRAN and then and loaded using `library()`.
+Throughout the vignette, we will be working with the `mtcars` data set within `R`.  The data, extracted from the 1974 _Motor Trend_ US magazine, contains the fuel efficiency (miles per gallon) and 10 additional characteristics of the vehicle design for 32 automobiles.  More information on the variables can be obtained by typing `help("mtcars")` into the console.  
+
+The `IntroAnalysis` package can be installed from CRAN and then and loaded using `library()`.
 
 ```{r, eval=FALSE}
 install.packages(IntroAnalysis)
@@ -43,53 +48,75 @@ library(IntroAnalysis)
 
 
 ```{r, eval=TRUE, echo=FALSE}
-set.seed(20180227)
+mtcars <- datasets::mtcars
+set.seed(20180228)
 ```
 
 
+## The Modeling Process
+The package considers teaching statistics through the lens of a data generating process.  As a result, all analyses begin by specifying a model for this process.  Once the model has been specified, the parameters in the model can be estimated (confidence intervals), or two competing processes can be compared (hypothesis testing).  This process is reflected in the _modeling phrases_ (functions) implemented in the package:
+
+- `specify_mean_model()`: specifies the mean model for the data generating process
+- `estimate_parameters()`: estimates the parameters of a mean model
+- `compare_models()`: computes a p-value comparing two nested models
+- `obtain_diagnostics()`: computes residuals and fitted values for assessing modeling conditions
+- `estimate_mean_response()`: estimates the mean response of a model given a specified set of covariates
+
+
 ## Confidence Intervals
-We first consider the goal of constructing interval estimates for a parameter of interest.
+Consider the goal of constructing interval estimates for a parameter of interest.
 
 ### Single Mean
 Suppose we are interested in estimating the overall fuel efficiency (miles per gallon, mpg) of cars in 1974.  The parameter of interest is then
 $$\mu = \text{mean fuel efficieny (mpg) for 1974 automobiles}.$$
 
-In order to estimate this parameter, we consider the following model for the data generating process:
+This parameter defines the "mean model", the deterministic portion of the following model for the data generating process:
 $$(\text{MPG})_i = \mu + \epsilon_i$$
 
 where $(\text{MPG})_i$ represents the fuel efficiency for the $i$-th vehicle and $\epsilon_i$ represents the error in the $i$-th observed fuel efficiency.  
 
   > We emphasize that we always have two models --- one for the data generating process and one for the sampling distribution of the estimates.  The data generating process attacks our goal of explaining the variability in the response variable as a function of our parameters of interest.  The model of the sampling distribution allows us to perform inference on the parameters.
 
-
-This model can be represented using the `lm()` function.
+This model must be specified in `R`.  This is done through the `specify_mean_model()` function.
 
 ```{r}
-fit_single <- lm(mpg ~ 1, data = mtcars)
+fit_single <- specify_mean_model(mpg ~ 1, data = mtcars)
 ```
 
-  > We explain the `lm()` function as a way of representing a model for the data generating process to the computer.  While it clearly does a lot more than that, we simply tell students that it stores additional information regarding the model which is then accessed by helper functions.
+The `specify_mean_model()` function is a wrapper for `lm()`; there are three important differences:
+
+- Generalized linear models can also be specified through `specify_mean_model()`
+- Instead of using `offset()` in the formula interface, we recommend using `constant()` to allow for scalar offsets
+- The intercept is _not_ fit by default
+
+The primary reason we introduce this wrapper is that the function name itself links to the modeling process.  
+
+__Additional Notes:__ `lm()` or `glm()` can be used in place of `specify_mean_model()` if you prefer.
+
+  > If you choose to use the `lm()` function, we recommend explaining it as a way of representing a model for the data generating process to the computer.  While it clearly does a lot more than that, we simply tell students that it stores additional information regarding the model which is then accessed by helper functions.
 
 __Classical Inference:__ The classical approach to constructing an interval estimate for $\mu$ would be to begin with our point estimate $\widehat{\mu} = \bar{x}$ and then model the sampling distribution of 
 $$T = \frac{\bar{x} - \mu}{s/\sqrt{n}}$$
 
 using a t-distribution with $n - 1 = `r nrow(mtcars) - 1`$ degrees of freedom.  Such a model requires we impose the following conditions on the error term:
 
-- The errors are independently and identically distributed.
-- The errors have mean 0.
-- The errors follow a Normal distribution.
+- The errors are independent of one another
+- The errors have mean 0
+- The errors are identically distributed (constant variance)
+- The errors follow a Normal distribution
 
-As the goal here is to compute an interval _estimate_, we use the function `estimate_parameters()`.  In addition to the model for the data generating process, we must also communicate the above conditions.  As the first two conditions are imposed on any linear model (at least in the introductory course), these are always imposed by the function.
+As the goal here is to compute an interval _estimate_, we use the function `estimate_parameters()`.  In addition to the model for the data generating process, we must also communicate the above conditions.  As the first two conditions are imposed on any linear model (at least in the introductory course), these are always imposed by the function.  The remaining assumptions, however, must be specified by the user.
 
 ```{r}
 estimate_parameters(fit_single,
-                    conf.level = 0.95,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
                     assume.normality = TRUE)
 ```
 
-  > The function reinforces that the confidence interval is an estimate of the unknown parameter.  It is not divorced from the construction of the point estimate.
+  > The function reinforces that the confidence interval is an __estimate__ of the unknown parameter.  
   
-The function provides the following:
+The function outputs the following (stored in a `data.frame`):
 
 - `estimate`: point (least squares) estimate of the parameter(s).
 - `std.error`: standard error of the estimate.
@@ -102,19 +129,20 @@ We notice the output is similar to that provided by the common `t.test()` functi
 t.test(mtcars$mpg, conf.level = 0.95)
 ```
 
-The primary difference is that `t.test()` combines hypothesis testing and interval estimation within the same interface, while we choose to separate these two in our package.  Conversely, if we instead prefer to change the underlying conditions, `t.test()` is no longer applicable, where `estimate_parameters()` is.
+The primary difference is that `t.test()` combines hypothesis testing and interval estimation within the same interface, while we choose to separate these two in our package.  Conversely, if we instead prefer to change the underlying conditions, `t.test()` is no longer applicable, where `estimate_parameters()` is, as we now see.
 
 __Inference via Bootstrap:__ Suppose we are unwilling to assume the data is consistent with the condition that the errors are Normally distributed.  In that case, it may be inappropriate to model the sampling distribution using the t-distribution as above.  Instead, we build an empirical model of the sampling distribution via bootstrapping.  The standard error and associated confidence interval are then built upon this empirical model.  Conceptually, we are implementing the same process: constructing an interval estimate based on a model for the sampling distribution.  It is the conditions we are willing to impose which now differ.  This suggests using the same interface with different parameters.
 
 ```{r}
 estimate_parameters(fit_single,
-                    conf.level = 0.95,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
                     assume.normality = FALSE)
 ```
 
 The output has the same form as before: we have a point estimate, associated standard error and accompanying confidence interval.  However, without assuming the response is Normally distributed, the standard error and accompanying confidence interval are computed via a residual bootstrap.
 
-  > We do not expect students to become familiar with the various bootstrapping algorithms.  Instead, we focus on teaching bootstrapping as resampling the data and do not feel the need to discuss that we are implementing a residual bootstrap within the functions.  Again, the focus is on conceptual understanding as opposed to particular algorithm.  Similarly, while many types of bootstrap intervals can be computed, we only teach the percentile interval.
+  > We do not expect students to become familiar with the various bootstrapping algorithms.  Instead, we focus on teaching bootstrapping as resampling the data and do not feel the need to discuss that we are implementing a residual bootstrap within the functions.  Again, the focus is on conceptual understanding as opposed to knowing the details of a particular algorithm.  Similarly, while many types of bootstrap intervals can be computed, we only teach the percentile interval.
   
 From the student perspective, they are not focused on memorizing different functions but on which conditions they feel are appropriate given the data.
 
@@ -123,7 +151,7 @@ __Additional Notes:__ As bootstrapping has an element of randomness, results are
 
 
 ### Two Independent Means
-In 1974, automatic and manual transmissions were both common.  We are interested in estimating the difference in the fuel efficiency, on average, between vehicles with automatic and manual transmissions in 1974.  The parameter of interest is then
+In 1974, automatic and manual transmissions were both common.  Suppose we are interested in using the data to estimate the difference in the fuel efficiency, on average, between vehicles with automatic and manual transmissions in 1974.  The parameter of interest is then
 $$\beta_1 = \mu_m - \mu_a$$
 
 where $\mu_m$ and $\mu_a$ represent the mean fuel efficiency (mpg) for manual and automatic transmissions, respectively.  This parameter is incorporated into the following data generating process:
@@ -143,35 +171,37 @@ mtcars$am <- factor(mtcars$am,
 
   > Again, we recomend the `tidyverse` package for data manipulation whenever possible instead of the above, especially for introductory students.
 
-The model can be represented using the `lm()` function.
+The model can be represented using the `specify_mean_model()` function.
 
 ```{r}
-fit_two <- lm(mpg ~ am, data = mtcars)
+fit_two <- specify_mean_model(mpg ~ 1 + am, data = mtcars)
 ```
+
+Notice that unlike `lm()`, using `specify_mean_model(mpg ~ am, data = mtcars)` would _not_ have resulted in the same model.  This decision was made to force students to think about the intercept as a parameter in the process, instead of accepting it by default.
 
 __Classical Inference:__ The classical approach to constructing an interval estimate for $\beta_1$ would be to begin with our point estimate $\widehat{\beta}_1$, the least squares estimator, and then model the sampling distribution of 
 $$T = \frac{\widehat{\beta}_1 - \beta_1}{SE_{\widehat{\beta}_1}}$$
 
 using a t-distribution with $n - 2 = `r nrow(mtcars) - 2`$ degrees of freedom.  Such a model requires we impose the following conditions on the error term:
 
-- The errors are independent of one another.
-- The errors have mean 0.
-- The variability of the errors in each of the two groups is identical.
-- The errors follow a Normal distribution.
+- The errors are independent of one another
+- The errors have mean 0
+- The errors are identically distributed (constant variance)
+- The errors follow a Normal distribution
 
 Again, this can be accomplished within `estimate_parameters()`.
 
 ```{r}
 estimate_parameters(fit_two,
-                    conf.level = 0.95,
-                    assume.constant.variance = TRUE,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
                     assume.normality = TRUE)
 ```
 
 These are the same intervals that would be produced using `confint()` or `t.test()` where `var.equal = TRUE`.  
 
 
-__Inference via Bootstrapping:__ If instead of imposing all the conditions above, we could choose to relax these and impose only the following:
+__Inference via Bootstrapping:__ Instead of imposing all the conditions above, consider choosing to relax these and impose only the following:
 
 - The errors are independent of one another.
 - The errors have mean 0.
@@ -180,19 +210,19 @@ Turning off these flags in the `estimate_parameters()` function produces differe
 
 ```{r}
 estimate_parameters(fit_two,
-                    conf.level = 0.95,
-                    assume.constant.variance = FALSE,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = FALSE,
                     assume.normality = FALSE)
 ```
 
 In order to accommodate these relaxed conditions, we use a wild bootstrap to compute the standard error and confidence intervals for each parameter.
 
-  > Again, students are aware that a different bootstrapping procedure is being implemented but need not worry about the details of the algorithm.
+  > Again, students are aware that a different bootstrapping procedure is being implemented but need not worry about the details of the algorithm.  We want them to focus on the conditions they are imposing.
   
 
-__Additional Notes:__ Notice that we avoided the common "two-sample Satterthwaite interval" for the difference in means in which normality is assumed but constant variance is not.  Our goal in the course is not to teach a multitude of tools but instead reinforce the idea that the model for the sampling distribution depends upon the conditions imposed.  In large enough samples, the wild bootstrap procedure and the Sattertwaite interval will give similar results.  Instead of memorizing a different interval and an additional approximation (to the degrees of freedom of the t-distribution) we ask students to learn two approaches: a classical approach based on probability theory and a randomization-based approach via bootstrapping.  If you specify that normality can be assumed (`assume.normality = TRUE`) but constant variance cannot (`assume.constant.variance = FALSE`), then the White-Huber method (see `?car::hccm`) is used to adjust the variance-covariance matrix prior to construct the confidence interval.  We choose this form of the variance-covariance matrix instead of the Satterhwaite because it is more general.
+__Additional Notes:__ Notice that we avoided the common "two-sample Satterthwaite interval" for the difference in means in which normality is assumed but constant variance is not.  Our goal in the course is not to teach a multitude of tools but instead reinforce the idea that the model for the sampling distribution depends upon the conditions imposed.  If you specify that normality can be assumed (`assume.normality = TRUE`) but constant variance cannot (`assume.identically.distributed = FALSE`), then the Huber-White method (see `?car::hccm`) is used to adjust the variance-covariance matrix prior to construct the confidence interval.  We choose this form of the variance-covariance matrix instead of the Satterhwaite because it handles a broader class of problems.
 
-Suppose instead of estimating the difference in the two means, you simply wanted to place a confidence interval on each mean individually.  This can also be done by changing the model for the data generating process:
+Suppose instead of estimating the difference in the two means, you simply wanted to place a confidence interval on each mean individually.  As our focus is on understanding the process, and not manipulating `R` output, we attack this by re-defining the model for the data generating process:
 $$
 \begin{aligned}
   (\text{MGP})_i &= \mu_a \mathbb{I}(\text{i-th vehicle has automatic transmission}) \\
@@ -200,11 +230,14 @@ $$
 \end{aligned}
 $$
 
-This model is communicated in `lm()` and the parameters estimated (under the classical conditions) below.
+This model is specified and the parameters estimated (under the classical conditions) below.
 
 ```{r}
-fit_two_alt <- lm(mpg ~ am - 1, data = mtcars)
-estimate_parameters(fit_two_alt)
+fit_two_alt <- specify_mean_model(mpg ~ am, data = mtcars)
+estimate_parameters(fit_two_alt,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
 ```
 
 
@@ -214,22 +247,28 @@ By this point, it should seem straight forward how to compute a confidence inter
 For example, suppose we are concerned (rightly so, given this is observational data) that the difference in the average fuel efficiency we estimated above could be due to confounding.  In addition to the transmission type, we would like to account for the horsepower of the vehicle.  A model for this process is
 $$(\text{MPG})_i = \beta_0 + \beta_1 \mathbb{I}(\text{i-th vehicle has manual transmission}) + \beta_2 (\text{HP})_i + \epsilon_i$$
 
-This model is communicated to `lm()` and the parameters estimated as follows.
+This model is specified and the parameters estimated as follows.
 
 ```{r}
-fit_reg <- lm(mpg ~ am + hp, data = mtcars)
-estimate_parameters(fit_reg)
+fit_reg <- lm(mpg ~ 1 + am + hp, data = mtcars)
+estimate_parameters(fit_reg,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
 ```
 
 The benefit of `estimate_parameters()` over `summary()` in our mind is that we are not combining p-values and confidence intervals into the same output.  Instead, we clearly separate the inferential goals of estimation and hypothesis testing via p-values.  We also have a single interface for addressing bootstrapping.
 
 ```{r}
 estimate_parameters(fit_reg,
-                    assume.constant.variance = TRUE,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
                     assume.normality = FALSE)
 ```
 
 Here, a residual bootstrap is performed in order to account for this particular mix of conditions imposed.
+
+__Additional Notes:__ We intentionally chose to not implement a default confidence level and chose the default assumptions to be `FALSE` for constant variance and normality.  Again, we have introductory students in mind, and we want to them to think about an appropriate confidence level and to think about what conditions they will impose on the model and recognize these as assumptions. 
 
 
 ## Hypothesis Testing
@@ -255,7 +294,7 @@ $$
 \end{aligned}
 $$
 
-Testing the above hypotheses corresponds to comparing these two models for the data generating process and asking if the simpler model is sufficient for explaining the variability in the response.  Since we are comparing models, we use the `compare_models()` function.  This function requires both the "full" model (under the alternative) and the "reduced" model (under the null).  We now communicate each to the computer through the `lm()` function.  We again do a little cleaning first.
+Testing the above hypotheses corresponds to comparing these two models for the data generating process and asking if the simpler model is sufficient for explaining the variability in the response.  Since we are comparing models, we use the `compare_models()` function.  This function requires both the "full" model (under the alternative) and the "reduced" model (under the null).  Before specifying these models, we again do a little cleaning.
 
 ```{r}
 mtcars$cyl <- factor(mtcars$cyl,
@@ -265,8 +304,8 @@ mtcars$cyl <- factor(mtcars$cyl,
 Now, we fit both models.
 
 ```{r}
-fit_anova1 <- lm(mpg ~ cyl, data = mtcars)
-fit_anova0 <- lm(mpg ~ 1, data = mtcars)
+fit_anova1 <- specify_mean_model(mpg ~ cyl, data = mtcars)
+fit_anova0 <- specify_mean_model(mpg ~ 1, data = mtcars)
 ```
 
   > Forcing students to fit both models reinforces the key idea of hypothesis testing.  Instead of relying on the default test produced by many programs, we ask students to critically consider how the hypothesis changes their explanation for how the data was generated.
@@ -284,11 +323,11 @@ We communicate these conditions to the `compare_models()` function.
 ```{r}
 compare_models(fit_anova1,
                fit_anova0,
-               assume.constant.variance = TRUE,
+               assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
-The `compare_models()` function produces the form of a classical ANOVA table with the following elements:
+The `compare_models()` function produces a `data.frame` which takes the form of a classical ANOVA table with the following elements:
 
 - `source`: an indicator of which component of variability is being summarized
 - `df`: the degrees of freedom associated with each component (may not add to the total if not all terms are tested)
@@ -304,13 +343,13 @@ summary(aov(mpg ~ cyl, data = mtcars))
 ```
 
 
-The `anova()` function in the `stats` package provides similar functionality but is more suitable to a course on linear models.  When working with introductory students, we find the classical ANOVA table more appealing for discussing the various sources of variability.
+The `anova()` function in the `stats` package provides similar functionality to `compare_models()` but is more suitable to a course on linear models.  When working with introductory students, we find the classical ANOVA table more appealing for discussing the various sources of variability.
 
 ```{r}
 anova(fit_anova0, fit_anova1)
 ```
 
-A key difference is that the `aov()` approach is specific to ANOVA while `compare_models()` is not.  Both the `aov()` approach and the `anova()` approach are also limited to classical inference; `compare_models()` allows for inference via bootstrapping.
+A key limitation of the `aov()` function is that it is specific to ANOVA while `compare_models()` is not.  Both the `aov()` approach and the `anova()` approach are also limited to classical inference; `compare_models()` allows for inference via bootstrapping.
 
 __Inference via Bootstrapping:__ Many traditional curriclum do not allow for relaxing the conditions of the classical ANOVA framework.  However, if students are familiar with bootstrapping, this can be extended to comparing multiple means.  
 
@@ -327,7 +366,7 @@ This can be done by changing the conditions within the `compare_models()` functi
 ```{r}
 compare_models(fit_anova1,
                fit_anova0,
-               assume.constant.variance = TRUE,
+               assume.identically.distributed = TRUE,
                assume.normality = FALSE)
 ```
 
@@ -340,7 +379,7 @@ If we wish to relax the assumptions further, we can remove the constraint that t
 ```{r}
 compare_models(fit_anova1,
                fit_anova0,
-               assume.constant.variance = FALSE,
+               assume.identically.distributed = FALSE,
                assume.normality = FALSE)
 ```
 
@@ -352,10 +391,10 @@ $$p = \frac{\text{# test statistics} >= \text{observed test statistic}}{b + 1}$$
 
 where "# test statistics" includes the observed test statistic and $b$ is the number of bootstrap samples taken.  In this case, none of the bootstrap test statistics were greater than the observed.  That is, only the observed test statistic was at least as large as the observed test statistic; so, the numerator is 1.  The denominator is 500 since the default value of $b = 4999$.  Therefore, the p-value given by the bootstrap procedure is always a bit conservative.  See the discussion in Boos and Stefanski[^BoosStefanski] within the Bootstrap chapter for more details (and the "99" rule).
 
-Finally, we implemented the above models within `lm()` using indicators such that we really encoded the difference from the reference groups.  The results are of course equivalent if we fit the full model as
+Finally, we implemented the above models within `specify_mean_model()` using a parameterization for the mean of each group directly.  The results are of course equivalent if we fit the full model as
 
 ```{r, eval=FALSE}
-fit_anova1 <- lm(mpg ~ cyl - 1, data = mtcars)
+fit_anova1 <- specify_mean_model(mpg ~ 1 + cyl, data = mtcars)
 ```
 
 Estimating the parameters differs, but comparing the models is equivalent.
@@ -388,24 +427,24 @@ __Classical Inference:__ Suppose we are willing to impose the standard condition
 
 - The errors are independent of one another
 - The errors have mean 0 for all values of the predictors
-- The variability of the errors is constantfor all values of the predictors
+- The variability of the errors is constant for all values of the predictors
 - The errors are Normally distributed
 
-Then, we have that the test statistic comparing these two models follows an F-distribution with 1 numerator and $n - 4 = `nrow(mtcars) - 4` denominator degrees of freedom.  This is obtained via `compare_models()`.
+Then, we have that the test statistic comparing these two models follows an F-distribution with 1 numerator and $n - 4 = `nrow(mtcars) - 4` denominator degrees of freedom.  This is obtained via `compare_models()` below.  The process is similar to before, and we are asking students to really consider the two models being compared.
 
 ```{r}
-fit_reg1 <- lm(mpg ~ hp + cyl, data = mtcars)
-fit_reg0 <- lm(mpg ~ cyl, data = mtcars)
+fit_reg1 <- specify_mean_model(mpg ~ 1 + hp + cyl, data = mtcars)
+fit_reg0 <- specify_mean_model(mpg ~ 1 + cyl, data = mtcars)
 
 compare_models(fit_reg1,
                fit_reg0,
-               assume.constant.variance = TRUE,
+               assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
 This p-value could have been obtained readily using `summary(fit_reg1)` from the more traditional "t-test" of this hypothesis.  However, this also conflates many different hypotheses being tested simultaneously which often leads students to over-interpret the results instead of first understanding the process of hypothesis testing.  
 
-  > We actually do show students `summary()` (or `tidy()` from the `broom` package), but only after they are comfortable with what they are actually testing.
+  > Forcing students to consider each hypothesis forces them to think about the questions when developing the models instead of fitting first and then asking questions after looking at the output.
   
 An advantage of `compare_models()` is that it provides a seamless framework for more complex hypotheses, which `summary()` does not readily allow.  For example, consider testing instead whether the number of cylinders a car has is related to the fuel efficiency, after accounting for the horsepower.  Then, our hypothesis would have been
 $$H_0: \beta_2 = \beta_3 = 0 \qquad \text{vs.} \qquad H_1: \text{at least one } \beta_j \text{ not equal to 0}$$
@@ -413,11 +452,11 @@ $$H_0: \beta_2 = \beta_3 = 0 \qquad \text{vs.} \qquad H_1: \text{at least one } 
 This could be tested as follows:
 
 ```{r}
-fit_reg0_alt <- lm(mpg ~ hp, data = mtcars)
+fit_reg0_alt <- specify_mean_model(mpg ~ 1 + hp, data = mtcars)
 
 compare_models(fit_reg1,
                fit_reg0_alt,
-               assume.constant.variance = TRUE,
+               assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
@@ -433,7 +472,7 @@ Then, under these conditions, the p-value can be computed via a wild bootstrap p
 ```{r}
 compare_models(fit_reg1,
                fit_reg0_alt,
-               assume.constant.variance = FALSE,
+               assume.identically.distributed = FALSE,
                assume.normality = FALSE)
 ```
 
@@ -443,57 +482,86 @@ compare_models(fit_reg1,
 Hypothesis testing is typically introduced in the case of a single mean.  In the case of a single mean, we prefer inference be conducted via confidence intervals.  In the case of ANOVA, inference via a p-value is more easily motivated in our opinion.  However, for completeness, we present the code below for testing a hypothesis of the form
 $$H_0: \mu = 23 \qquad \text{vs.} \qquad H_1: \mu \neq 23$$
 
-where $\mu$ represents the mean fuel efficiency (mpg) for all 1974 vehicles.  From a classical perspective, this is typically done using a one-sample t-test.  This can be implemented via `compare_models()`, but its implementation is we admit, not intuitive.
+where $\mu$ represents the mean fuel efficiency (mpg) for all 1974 vehicles.  From a classical perspective, this is typically done using a one-sample t-test.  This can be implemented via `compare_models()`.  Again, we focus on the data generating processes being compared.
 
 The model for the data generating process under the alternative is quite simple:
 $$(\text{MPG})_i = \mu + \epsilon_i$$
 
-which is translated into `R` via `lm()` as follows.
+which is translated into `R` via `specify_mean_model()` as follows.
 
 ```{r}
-fit_single1 <- lm(mpg ~ 1, data = mtcars)
+fit_single1 <- specify_mean_model(mpg ~ 1, data = mtcars)
 ```
 
 Under the null hypothesis, the model is easy to write down:
 $$(\text{MPG})_i = 23 + \epsilon_i$$
 
-However, this model is a bit more difficult to specify in `lm()` and requires the use of the `offset = ` option.
+This model can be translated into `R` using the `constant()` notation within the `specify_mean_model()` function.  Anything inside `constant()` is treated as a constant term in the data generating process and no parameter is specified.
 
 ```{r}
+fit_single0 <- specify_mean_model(mpg ~ constant(23), data = mtcars)
+```
+
+Keep in mind that the intercept is not forced into the model with the `specify_mean_model()` function and therefore this model corresponds closely with the mathematical equation expressed above.  This is one of the benefits of `specify_mean_model()`.  Specifying this same model in `lm()` is not intuitive as the `offset()` function does not allow scalars:
+
+```{r, eval = FALSE}
 fit_single0 <- lm(mpg ~ -1, offset = rep(23, length(mpg)), data = mtcars)
 ```
 
-This communicates to `R` that no estimation is to be performed (no parameters in the model to estimate).  Then, the two models can be compared.
+Now, the two models can be compared.
 
 ```{r}
 compare_models(fit_single1,
                fit_single0,
-               assume.constant.variance = TRUE,
+               assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
-This matches the output of `t.test()`; again, the benefit is that it can be easily extended to relaxing the conditions and implementing a bootstrap procedure.  However, we admit that this is not as intiutive for students.  Therefore, in this situation, we have implemented a short-cut for null models.  The above can be obtained using the following short-cut:
+This matches the output of `t.test()`; again, the benefit is that it can be easily extended to relaxing the conditions and implementing a bootstrap procedure.  
+
+__Additional Notes:__ The use of the `constant()` notation can be helpful in specifying more complex hypotheses, such as testing whether the slope in a regression model takes on a particular value.  Again, the notation is meant to link directly to the model a student would write down using mathematical terms.
+
+
+
+## Additional Features
+The above sections illustrate the primary components of the package, but other features are available and discussed in this section.
+
+### Computing Summaries
+In order to make a link between the data generating process and making data summaries, the `summarize_variable()` and `summarize_relationship()` functions were constructed.
+
+Consider computing the mean fuel efficiency and the standard deviation of the fuel efficiency for vehicles with the same type of transmission.  This is done using `summarize_variable()`:
 
 ```{r}
-compare_models(fit_single1,
-               23,
-               assume.constant.variance = TRUE,
-               assume.normality = TRUE)
+summarize_variable(mpg ~ am, data = mtcars, mean, sd)
 ```
 
-Placing a scalar in place of the null model always results in the null model having the form of that constant plus error.  In more general problems (such as specifying a particular value of a coefficient in a regression model, the `offset = ` approach can be invaluable).
+The `summarize_variable()` function takes a list of functions (standard `R`) functions that should be applied to the variable.  If that function requires additional parameters, they can be specified; you just need to ensure the function returns only a single value.
+
+```{r}
+summarize_variable(mpg ~ am, data = mtcars, quantile(., probs = c(0.25)))
+```
+
+Computing the correlation between two variables, such as the fuel efficiency and the horsepower, can be done using the `summarize_relationship()` function.
+
+```{r}
+summarize_relationship(mpg ~ hp, data = mtcars, FUN = cor)
+```
+
+This function has a different syntax (more like `apply()` in order to address the increased complexity of the functions that might be used).
 
 
-
-## Plotting the Sampling and Null Distributions
-Making the connection between the construction of confidence intervals and the underlying model for the sampling distribution is a critical learning objective for introductory students.  The same can be said regarding the connection between the computation of a p-value and the underlying model for the null distribution.  While the functions `estimate_parameters()` and `compare_models()` discussed above try to emphasize this connection through the specification of their parameters (`assume.normality` and `assume.constant.variance`), it can be helpful to plot the sampling distribution.  
+### Plotting the Sampling and Null Distributions
+Making the connection between the construction of confidence intervals and the underlying model for the sampling distribution is a critical learning objective for introductory students.  The same can be said regarding the connection between the computation of a p-value and the underlying model for the null distribution.  While the functions `estimate_parameters()` and `compare_models()` discussed above try to emphasize this connection through the specification of their parameters (`assume.normality` and `assume.identically.distributed`), it can be helpful to plot the sampling distribution.  
 
 Consider the problem of estimating the mean fuel efficiency.  As we have seen, the confidence interval (under the classical assumptions) is constructed as follows:
 
 ```{r}
-fit_single1 <- lm(mpg ~ 1, data = mtcars)
+fit_single1 <- specify_mean_model(mpg ~ 1, data = mtcars)
 
-samp_distn <- estimate_parameters(fit_single1)
+samp_distn <- estimate_parameters(fit_single1,
+                                  confidence.level = 0.95,
+                                  assume.identically.distributed = TRUE,
+                                  assume.normality = TRUE)
 samp_distn
 ```
 
@@ -503,12 +571,17 @@ In order to visualize the corresponding model for the sampling distribution, we 
 plot_sampling_distribution(samp_distn)
 ```
 
-Built on top of `ggplot2`, this function returns a density _estimate_ of the underlying sampling distribution.  In the cases in which a specific probability model is known (such as this case), a random sample was taken from the known distribution and the summary of that is what is shown.  In the cases in which the confidence interval was constructed via bootstrapping, the density plot of the bootstrap statistics is given.  Additional parameters to the function allow you to display the confidence interval or restrict which sampling distributions are displayed (when the linear model has more than one parameter).
+Built on top of `ggplot2`, this function returns a density _estimate_ of the underlying sampling distribution.  In the cases in which a specific probability model is known (such as this case), a random sample was taken from the known distribution and the summary of that random sample is what is shown.  In the cases in which the confidence interval was constructed via bootstrapping, the density plot of the bootstrap statistics is given.  Additional parameters to the function allow you to display the confidence interval or restrict which sampling distributions are displayed (when the linear model has more than one parameter).
 
 Similarly, we can plot the null distribution for a specific test with the function `plot_null_distribution()`.
 
 ```{r}
-null_distn <- compare_models(fit_single1, 23)
+fit_single0 <- specify_mean_model(mpg ~ constant(23), data = mtcars)
+
+null_distn <- compare_models(fit_single1,
+                             fit_single0,
+                             assume.identically.distributed = TRUE,
+                             assume.normality = TRUE)
 
 plot_null_distribution(null_distn)
 ```
@@ -516,7 +589,78 @@ plot_null_distribution(null_distn)
 We note that since we always use a test statistic of the form $\frac{MSR}{MSE}$, the null distribution will not be symmetric but follows (at least approximately) and F-distribution.
 
 
-## Future Work
-Currently, the above procedures only work in the linear model setting.  We hope to extend these to the logistic regression setting to allow for comparisons of proportions in a similar fashion.  However, case-base resampling methods are typically implemented in generalized linear model settings, leading to slower bootstrapping methods.
+### Estimating the Mean Response
+Consider predicting the fuel efficiency as a function of both the horsepower of the vehicle as well as the number of cylinders it has.  The model could be written as
+$$
+\begin{aligned}
+  (\text{MPG})_i &= \beta_0 + \beta_1 (\text{HP})_i \\
+    &\qquad + \beta_2 \mathbb{I}(\text{i-th vehicle has 6 cylinders}) \\
+    &\qquad + \beta_3 \mathbb{I}(\text{i-th vehicle has 8 cylinders}) + \epsilon_i
+\end{aligned}
+$$
+
+We have already discussed how the _parameters_ of this model are estimated:
+
+```{r}
+fit_reg <- specify_mean_model(mpg ~ 1 + hp + cyl, data = mtcars)
+
+estimate_parameters(fit_reg, 
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
+```
+
+However, suppose we are primarily interested in estimating the _average fuel efficiency_ for a vehicle with 123 horsepower and a 6 cylinder engine.  This can be done using `estimate_mean_response()`.
+
+```{r}
+estimate_mean_response(fit_reg,
+                       confidence.level = 0.95,
+                       assume.identically.distributed = TRUE,
+                       assume.normality = TRUE,
+                       hp = 123,
+                       cyl = factor(c("6"), levels = c("4", "6", "8")))
+```
+
+
+### Assessing Conditions
+In order to make residual diagnostic plots, we must obtain the residuals and fitted values which we do through the function `obtain_diagnostics()` which is a wrapper for the `augment()` function in the `broom` package.  The primary reason for providing a wrapper is to provide a clear "phrase" for identifying the function.
+
+```{r}
+diagnostics_mtcars <- obtain_diagnostics(fit_reg, data = mtcars)
+```
+
+
+
+
+### Inference for Proportions
+Many introductory courses cover inference about a single proportion to comparing two proportions.  For example, suppose we are interested in determining if there is evidence that more than half of cars produced in 1974 had an automatic transmission.  That is, we are interested in testing
+$$H_0: p \leq 0.5 \qquad \text{vs.} \qquad H_1: p > 0.5$$
+
+where $p$ is the proportion of vehicles with an automatic transmission.  Letting $Y_i$ take on the value 1 if the $i$-th vehicle has an automatic transmission (and 0 otherwise), the model for our data generating process is 
+$$Pr\left(Y_i = y\right) = p^y (1 - p)^{1-y}$$
+
+That is, $Y_i \sim Bin(1, p)$ and $E\left(Y_i\right) = p$.  That is, our mean model has a single parameter but has a different distributional family than when working with the linear model.  This distributional family needs to be communicated when specifying the mean model.
+
+```{r}
+fit_p <- specify_mean_model((am=="automatic") ~ 1, data = mtcars, 
+                            family = binomial)
+```
+
+Notice that the left-hand-side of the formula specifies which event we are interested in modeling.  We do not ask the user to switch to a different function (`glm()` for logistic regression instead of `lm()`) but specify the model using the same function `specify_mean_model()` to illustrate that while the distributional family is now being specified, the essential process is the same.  We can now estimate the mean response (since that is the parameter of interest).
+
+```{r}
+estimate_mean_response(fit_p,
+                       confidence.level = 0.95,
+                       Intercept = 1)
+```
+
+The parameter(s) of the logistic regression model can also be estimated.
+
+```{r}
+estimate_parameters(fit_p,
+                    confidence.level = 0.95)
+```
+
+
 
 [^BoosStefanski]: Boos D.D., Stefanski L.A.  _Essential Statistical Inference: Theory and Methods_ (2013). Springer-Verlag New York.

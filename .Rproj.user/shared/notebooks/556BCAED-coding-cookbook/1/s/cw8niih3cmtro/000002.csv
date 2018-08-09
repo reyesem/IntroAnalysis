@@ -1,0 +1,4 @@
+"0","mtcars = mtcars %>%"
+"0","  mutate(am = recode(am, "
+"0","                     `0` = ""automatic"","
+"0","                     `1` = ""manual""))"

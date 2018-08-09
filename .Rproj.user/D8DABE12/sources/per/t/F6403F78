@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1527173596575.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2752141060",
+    "id" : "F6403F78",
+    "lastKnownWriteTime" : 1520884545,
+    "last_content_update" : 1520884545,
+    "path" : "C:/Users/Administrator/OneDrive - Rose-Hulman Institute of Technology/Github/IntroAnalysis/R/compare_models.R",
+    "project_path" : "R/compare_models.R",
+    "properties" : {
+        "cursorPosition" : "97,31",
+        "scrollLine" : "65"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,983 @@
+---
+title: "Coding Cookbook for Introductory Statistics"
+author: "Eric Reyes"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Essential Inference using Linear Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+## ---- Load Packages ----
+pkgs <- c("tidyverse",
+          "broom",
+          "knitr",
+          "IntroAnalysis")
+
+for(pkg in pkgs) library(pkg, character.only = TRUE)
+
+
+## ---- Change Options ----
+# Suppress status bar in dplyr.
+# Change handling of ordered factors
+options(dplyr.show_progress = FALSE,
+        contrasts = rep("contr.treatment", 2))
+
+# Change theme for plots
+theme_set(theme_bw(12))
+theme_update(legend.position = "bottom")
+```
+
+This document provides a list of the code most commonly used in the course.  There may be times, especially when working on an independent capstone project, when you want to move beyond what is discussed in class.  There are many resources available online, or feel free to ask for guidance from the instructor.  However, the majority of code needed for the course is documented here.
+
+Throughout this document, we will be making use of the `mtcars` dataset available with all R installations.  More information can be found about the variables in this dataset by typing `?mtcars` into your R console or typing `mtcars` into the help search box in RStudio.  Here are the first few records of the dataset:
+
+```{r data, echo=FALSE}
+mtcars %>%
+  head() %>%
+  knitr::kable(digits = 3)
+```
+
+As you progress through the following examples, remember that R is _case sensitive_.
+
+
+# Basics
+Before proceeding to the specific aspects of the course; let's first talk about a few basics about programming in R.
+
+## Packages
+Throughout the course we will be using a standard suite of packages (additional functions which provide additional analytical capabilities).  In order to ensure that you have all required functionality for the course, be sure that each RMarkdown file you write has the following block at the top, which should not be altered:
+
+```{r packages, eval=FALSE, echo=TRUE}
+## ---- Load Packages ----
+pkgs <- c("tidyverse",
+          "knitr",
+          "IntroAnalysis")
+
+for(pkg in pkgs) library(pkg, character.only = TRUE)
+
+
+## ---- Change Options ----
+# Suppress status bar in dplyr.
+# Change handling of ordered factors
+options(dplyr.show_progress = FALSE,
+        contrasts = rep("contr.treatment", 2))
+
+# Change theme for plots
+theme_set(theme_bw(12))
+theme_update(legend.position = "bottom")
+```
+
+## Anatomy of RMarkdown File
+An RMarkdown file is comprised of two components: basic text and "code chunks" which perform the analysis.  When the document is compiled ("knit") the code is evaluated and the results added seemlessly into your document.  This encourages a reproducible workflow (someone can recreate all your results should the data change).  
+
+Code blocks can be added using the "Insert" button at the top of the script window.  Code blocks have the following form:
+
+```{r, echo=FALSE, eval=TRUE}
+cat("```{r}","\n", "Code goes here...","\n", "```", "\n", sep="")
+```
+
+Notice that the code blocks always begin and end with the triple backticks (found on your keyboard in the upper-left-hand corner with the tilde).
+
+## Anatomy of R Code
+Most code chunks all look the same.  Below is a very simple code chunk.  Objects are "assigned" to an object using an equal sign (or arrow `<-`).  The code essentially says that the thing on the left will contain anything generated on the right.
+
+```{r, echo=TRUE, eval=FALSE}
+# Comments (not evaluated) begin with a hashtag.
+ObjectName = code to generate results
+```
+
+  > Just typing the name of an object prints that object out; that output, in turn, will appear in your final document.
+
+If we want to do something to that object, we will make use of the "pipe operator" (`%>%`) which essentially says take the thing before and use it in the next function.  For example, we might summarise an object as follows:
+
+```{r, echo=TRUE, eval=FALSE}
+ObjectTwo = ObjectOne %>%
+  summarise()
+```
+
+This code says take the thing called "ObjectOne" and "pipe it into" (use within) the summarise function; whatever the result of this operation is will be called "ObjectTwo."
+
+
+# Data Manipulation
+Data is rarely perfect when we first obtain it.  Often times, we will need to make changes.  There are a few tasks which are performed regularly; these can generally be accomplished with the following two functions:
+
+  - `mutate()`: manipulate variables or make transformations.
+  - `filter()`: subset the data based on some criteria.
+  
+## mutate(): creating or changing variables
+As an example, while the US measures fuel efficiency in miles per gallon, other countries often report the gallons required for a single mile.  This new variable `Gallons_per_Mile` can be created using `mutate()`:
+
+```{r mutate}
+mtcars = mtcars %>%
+  mutate(Gallons_per_Mile = 1/mpg)
+```
+
+Notice that we use the pipe operator (`%>%`) here; this essentially says take the dataset `mtcars` and feed it into the `mutate()` function.  The `mutate()` function itself uses the notation `New_Variable_Name = transformation of stuff`.  In this case, we create a new variable within the dataset `mtcars`.  The result is stored within a dataset called `mtcars` (since that is on the left of the equal sign), essentially overwriting the original dataset.
+
+The first few records of this dataset are shown below:
+
+```{r, echo=FALSE}
+mtcars %>%
+  head() %>%
+  knitr::kable(digits = 3)
+```
+
+## filter(): subsetting a variable
+If we only want to look at a subset of the data, we use the `filter()` function.  For example, suppose we only want to consider vehicles which have automatic transmissions.  Further, we would like to store those in a new dataset called `automatic.only`, we use the following code:
+
+```{r filter}
+automatic.only = mtcars %>%
+  filter(am == 0)
+```
+
+When making comparisons, `==` is asking "are you equal?"  We keep the records for which we would anser "yes" to this question.  The original `mtcars` dataset is not altered; it remains unchanged.  Instead, we have taken it, filtered it down, and then stored the results in `automatic.only` (the first few records of which are shown below).
+
+```{r, echo=FALSE}
+automatic.only %>%
+  head() %>%
+  knitr::kable(digits = 3)
+```
+
+## recode(): Changing the values of a variable
+When we work with categorical variables, we often want the values (or group labels) to be something readable.  In order to do this, we may need to recode the data.  Consider the variable `am` (transmission type).  It is currently a 0/1 variable, and it is not obvious that 1 represents manual transmission and 0 automatic transmission.  We can make this clearer by mutating the dataset and recoding that variable.
+
+```{r factors}
+mtcars = mtcars %>%
+  mutate(am = recode(am, 
+                     `0` = "automatic",
+                     `1` = "manual"))
+```
+
+There is a difference between backticks `\`` and single quotes `'`.  In the above, the backticks are used because we are converting a number into a phrase.  The first few records of the updated dataset are shown below:
+
+```{r, echo=FALSE}
+mtcars %>%
+  head() %>%
+  knitr::kable(digits = 3)
+```
+
+If we now wanted to go further and change "automatic" to "Automatic Transmission", we could recode again; this time, since the variable is already a phrase, we do not use backticks.
+
+```{r factors-cont}
+mtcars = mtcars %>%
+  mutate(am = recode(am, 
+                     "automatic" = "Automatic Transmission",
+                     "manual" = "Manual Transmission"))
+```
+
+  > If your dataset has groups coded as numbers (like above when 0 = automatic and 1 = manual), it is best to recode in order for graphics and models to work appropriately.
+
+
+# Numerical Summaries
+Numerical summaries (statistics) tell us about the distribution of our sample.  These also estimate the corresponding parameters of interest in the population.  The functions we introduce below make use of "formula" notation in `R`.  We take a second to introduce that here, and it will make more sense in the later modeling sections.  Let's compare two basic formulas: 
+
+  1. `y ~ 1`
+  2. `y ~ group`
+  
+Both formulas have two essential components: a left-hand-side and a right-hand-side separated by the `~`.  Think of the `~` as an "equal sign" in a mathematical formula or as a way of saying "related to."  The first formula says that the variable `y` is not related to anything; you are interested in summarizing it across all records.  The second formula says you want to summarize the variable `y` within groups which are defined by the variable `group`.  
+
+Of course, the "variable `y`" is not very helpful unless you tell the computer where to look for that variable.  So, formulas are often accompanied by a `data = ` argument to allow you to specify the data set in which the variable is located.
+
+
+## summarize_variable(): Summarizing a single variable.
+The `summarize_variable()` function allows us to compute individual summaries of variables.  The following code computes the average mpg of vehicles in the sample as well as the standard deviation.
+
+```{r summarise_one}
+summarize_variable(mpg ~ 1, data = mtcars, mean, sd)
+```
+
+The average fuel efficiency might differ for automatic and manual transmissions.  In order to compute the above summaries for each type of car, we include the grouping variable.
+
+```{r summarise_two}
+summarize_variable(mpg ~ am, data = mtcars, mean, sd)
+```
+
+After the `data = ` option, we specify key words for computing summaries.  The most used key words are given in a table later in this section.  to compute a proportion, we need to specify what value we want the proportion for:
+
+```{r summarise}
+summarize_variable((am=="Manual Transmission") ~ 1, data = mtcars, percent)
+```
+
+
+## List of functions for numerical summaries
+The following table contains a list of functions used to construct common summaries.
+
+Numerical Summary    Keyword/Function
+-------------------  ----------
+Mean/Average         `mean`
+Standard Deviation   `sd`
+Median               `median`
+Minimum              `min`
+Maximum              `max`
+25-th Percentile     `Q1`
+75-th Percentile     `Q3`
+Interquartile Range  `IQR`
+Percent              `percent`
+Proportion           `mean`
+
+Table: List of functions for numerical summaries
+
+If missing values are present in the data, these summaries cannot be computed.  In order to make the computations excluding the missing values, pass the argument `na.rm = TRUE` to the function:
+
+```{r summary_missing}
+summarize_variable(mpg ~ 1, data = mtcars, mean, .args = list(na.rm = TRUE))
+```
+
+
+## summarize_relationship(): Summarize the relationship between two variables.
+When numerically summarizing the relationship between two variables, we are typically interested in computing the correlation coefficient relating two numeric variables.  This is done with `summarize_relationship()`.  The following code computes the correlation relating the fuel efficiency with the horsepower of the engine.
+
+```{r summary_relationship}
+summarize_relationship(mpg ~ hp, data = mtcars)
+```
+
+Again, the formula interface is used to suggest which two variables we are relating.
+
+
+# Graphics
+A picture is worth 1000 words.  A good graphical summary of the data should not only be a first step in an analysis, but it should also accompany any good analysis to help convey the message of the data.  All graphics in this class will be produced with the `qplot()` function.  If you are interested in moving beyond what is described here, I would encourage you to look at the `ggplot2` package and would guide you toward the [Ggplot Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf).  However, all required graphics for this course can be constructed using `qplot()`.
+
+The `qplot()` function has a couple of basic components:
+
+  - `data = ` specifies the data set in which the variables exist.
+  - `x = ` specifies the variable for the x-axis.
+  - `y = ` if needed, specifies the variable for the y-axis.
+  - `geom = ` determines the way the data is displayed on the graphic.
+  
+Additional components allow you to group similar observations based on another variable.  The idea is to "map" variables to attributes of the graphic:
+
+  - `color = ` specifies which variable in the data determines the exterior color of the objects.
+  - `fill = ` specifies which variable in the data determines the fill-color of the objects plotted.
+  - `size = ` specifies which variable in the data determines the size of the objects plotted.
+  - `shape = ` specifies which variable in the data determines the shape of the objects plotted.
+
+In addition to the components above, we can "add" labels using the `labs()` function.  As the examples below illustrate, labels are defined by the features set in the graphic command itself (`x`, `y`, `color`, etc.).  We now discuss various ways of combining these settings to create common graphics.
+
+## Categorical Variable: Bar Chart
+A bar chart is the simplest (and often best) method for summarizing the distribution of a categorical variable.  The key steps to making a bar chart include:
+
+  1. Place the variable you want to summarize on the x-axis.
+  2. Set `geom = "bar"`.
+  3. Note: nothing goes on the y-axis.
+  
+For example, we can summarize the number of vehicles with each type of transmission using the following code.
+
+```{r bar-chart}
+qplot(data = mtcars,
+      x = am,
+      geom = "bar") +
+  labs(x = "",
+       y = "Frequency")
+```
+
+We remove the label on the x-axis because the value of the variable makes it clear what is being summarized.
+
+## Multiple Categorical Variables: Bar Charts
+If you have multiple categorical variables, consider using additional aesthetics to group variables.  We will consider a bar chart summarizing the type of engine and the type of transmission for each vehicle.  First, we clean up the way that the variable `vs` is coded:
+
+```{r}
+mtcars = mtcars %>%
+  mutate(vs = recode(vs,
+                     `0` = "V Engine",
+                     `1` = "Straight Engine"))
+```
+
+Now, we construct the graphic using the following steps:
+
+  1. Place primary variable of interest on x-axis.
+  2. Use `fill = ` to set the secondary variable.
+  3. Use `geom = "bar"`.
+  
+Again, we remove the labels of both the `fill` and the `x` variables because the values are self-evident.
+
+```{r double-bar-chart}
+qplot(data = mtcars,
+      x = am,
+      fill = vs,
+      geom = "bar") +
+  labs(x = "",
+       fill = "",
+       y = "Frequency")
+```
+
+## Quantitative Variable: Histogram
+When looking at the distribution of a single variable, a histogram is a reasonable choice, especially for medium-sized datasets.  
+
+  1. Set the variable to summarize on the x-axis.
+  2. Choose `geom = "histogram"`.
+  3. Set the `binwidth = ` option to a reasonable size (how large do you want each bin to be).  This changes for each problem and is a matter of opinion on what gives a reasonable looking graphic.
+  
+```{r histogram-1}
+qplot(data = mtcars,
+      x = mpg,
+      geom = "histogram",
+      binwidth = 1) +
+  labs(x = "Miles per Gallon",
+       y = "Frequency")
+```
+
+In this graphic, we set the binwidth to be 1.  We could also have considered a larger binwidth of 3, for example:
+
+```{r histogram-2}
+qplot(data = mtcars,
+      x = mpg,
+      geom = "histogram",
+      binwidth = 3) +
+  labs(x = "Miles per Gallon",
+       y = "Frequency")
+```
+
+If you exclude the `binwidth = ` option, it will choose a value for you:
+
+```{r histogram-3}
+qplot(data = mtcars,
+      x = mpg,
+      geom = "histogram") +
+  labs(x = "Miles per Gallon",
+       y = "Frequency")
+```
+
+## Quantitative Variable: Density
+A density plot is like a smooth histogram; this works best with larger datasets.
+
+  1. Set the variable to summarize on the x-axis.
+  2. Choose `geom = "density"`
+
+```{r density-plot}
+qplot(data = mtcars,
+      x = mpg,
+      geom = "density") +
+  labs(x = "Miles per Gallon",
+       y = "Density")
+```
+
+The y-axis on this graphic is not directly interpretable; essentially they have been chosen such that the area under the curve is equal to 1.  Our primary interest here is that larger values mean the values on the x-axis are more likely.
+
+## Quantitative Variable: Boxplot
+A boxplot gives a quick summary of location and spread for a numeric variable.
+
+  1. Set the variable to summarize on the y-axis.
+  2. Set the x-axis to be empty: "".
+  3. Choose `geom = "boxplot"`
+
+```{r density-plot}
+qplot(data = mtcars,
+      y = mpg,
+      x = "",
+      geom = "boxplot") +
+  labs(y = "Miles per Gallon",
+       x = "")
+```
+
+## Quantitative Variable Across Groups: Boxplots
+If we are examining the distribution of a quantitative variable across various groups formed by a categorical variable, we can use side-by-side graphics, such as boxplots.
+
+  1. Set the variable to be summarized on the y-axis.
+  2. Place the grouping variable on the x-axis.
+  3. Set `geom = "boxplot"`.
+  
+```{r boxplot-1}
+qplot(data = mtcars,
+      y = mpg,
+      x = am,
+      geom = "boxplot") +
+  labs(x = "",
+       y = "Miles per Gallon")
+```
+
+## Quantitative Variable Across Groups: Violin Plots
+Boxplots summarize the center and spread of the data, but the shape is lost.  Violin plots generalize boxplots by incorporating the shape.
+
+  1. Set the variable to be summarized on the y-axis.
+  2. Place the grouping variable on the x-axis.
+  3. Set `geom = "violin"`.
+  
+```{r violin-plots}
+qplot(data = mtcars,
+      y = mpg,
+      x = am,
+      geom = "violin") +
+  labs(x = "",
+       y = "Miles per Gallon")
+```
+
+## Quantitative Variable Across Groups: Individual Value Plots
+When we have a small sample, boxplots are inappropriate because they hide the raw data and present an overly confident summary.  Instead, we prefer to place the raw values on the plot.
+
+  1. Set the variable to be summarized on the y-axis.
+  2. Place the grouping variable on the x-axis.
+  3. Set `geom = "point"`.
+  
+```{r ivp}
+qplot(data = mtcars,
+      y = mpg,
+      x = am,
+      geom = "point") +
+  labs(x = "",
+       y = "Miles per Gallon")
+```
+
+If it looks too overwhelming because you have just enough points that they overlap, you can "jitter" the points:
+
+  1. Set the variable to be summarized on the y-axis.
+  2. Place the grouping variable on the x-axis.
+  3. Set `geom = "jitter"`.
+  4. Set `height = 0` to prevent the data from being jittered vertically.
+  
+```{r jitter}
+qplot(data = mtcars,
+      y = mpg,
+      x = am,
+      geom = "jitter",
+      height = 0) +
+  labs(x = "",
+       y = "Miles per Gallon")
+```
+
+## Quantitative Variable Across Multiple Groups
+Boxplots, Violin Plots, and Individual Value Plots can all be extended to include additional other groups by adding aesthetics.  For example, we can construct a side-by-side boxplot which also fills according to the engine type.
+
+  1. Set variable to be summarized on the y-axis.
+  2. Set the primary grouping variable on the x-axis.
+  3. Set the secondary grouping variable as an aesthetic (`fill =`, `color =`, etc.)
+  4. Set `geom = "boxplot"` for example.
+
+
+```{r boxplot-2}
+qplot(data = mtcars,
+      y = mpg,
+      x = am,
+      fill = vs,
+      geom = "boxplot") +
+  labs(x = "",
+       y = "Miles per Gallon",
+       fill = "")
+```
+
+## Two Quantitative Variables: Scatterplot
+When examining the relationship between two quantitative variables, we can use a scatterplot.
+
+  1. Set the response (variable to be explained or predicted) on the y-axis.
+  2. Set the predictor (the "given" information) on the x-axis.
+  3. Set `geom = "point"`.
+
+```{r scatterplot-1}
+qplot(data = mtcars,
+      y = mpg,
+      x = wt,
+      geom = "point") +
+  labs(y = "Miles per Gallon",
+       x = "Weight (1000 lbs)")
+```
+
+## Adding Features to Scatterplots
+Just as with other plots, we can add additional features to a scatterplot.  In general, the following two guiding principles help when thinking about these additional aesthetics:
+
+  - Groups are best distinguished using color or shape.
+  - Quantitative variables are captured using color or size.
+  
+The following graphic examines the relationship between the fuel efficiency (MPG) of a vehicle and its weight, while also considering the transmission type of the vehicle.  Since "transimission type" is categorical, we use the color to separate these groups.
+
+  1. Set the response (variable to be explained or predicted) on the y-axis.
+  2. Set the predictor (the "given" information) on the x-axis.
+  3. Set the grouping variable using `color = `.
+  4. Set `geom = "point"`.
+
+```{r scatterplot-2}
+qplot(data = mtcars,
+      y = mpg,
+      x = wt,
+      color = am,
+      geom = "point") +
+  labs(y = "Miles per Gallon",
+       x = "Weight (1000 lbs)",
+       color = "")
+```
+
+We could also have used shape of the points instead.
+
+```{r scatterplot-3}
+qplot(data = mtcars,
+      y = mpg,
+      x = wt,
+      shape = am,
+      geom = "point") +
+  labs(y = "Miles per Gallon",
+       x = "Weight (1000 lbs)",
+       shape = "")
+```
+
+If we want to look at the relationship between the fuel efficiency (MPG) of a vehicle and its weight, while also considering its horsepower, we do things a bit differently.  Since "horsepower" is quantitative, we can use color or size to distinguish between various values.  Both versions are shown below.
+
+  1. Set the response (variable to be explained or predicted) on the y-axis.
+  2. Set the predictor (the "given" information) on the x-axis.
+  3. Set the secondary predictor using `color = `.
+  4. Set `geom = "point"`.
+
+```{r scatterplot-4}
+qplot(data = mtcars,
+      y = mpg,
+      x = wt,
+      color = hp,
+      geom = "point") +
+  labs(y = "Miles per Gallon",
+       x = "Weight (1000 lbs)",
+       color = "Horsepower")
+```
+
+```{r scatterplot-5}
+qplot(data = mtcars,
+      y = mpg,
+      x = wt,
+      size = hp,
+      geom = "point") +
+  labs(y = "Miles per Gallon",
+       x = "Weight (1000 lbs)",
+       size = "Horsepower")
+```
+
+
+# Specifying a Mean Model
+Parameters in a population govern the data-generating process for a particular variable of interest.  Throughout this course, we are focused on making inference on the mean response.  For example, suppose we are interested in estimating the mean fuel efficiency; then, our model for the data generating process will have the form
+
+$$(\text{MPG})_i = \mu + \epsilon_i$$
+
+where $\mu$ is the parameter of interest (the average fuel efficiency).  In order to communicate this data generating process to the computer, we use the function `specify_mean_model()` which makes use of the formula notation similar to when summarizing variables.
+
+```{r specify-model}
+mpg.model = specify_mean_model(mpg ~ 1, data = mtcars)
+```
+
+Here, the left-hand-side of the formula corresponds to the variable on the left-hand-side of the mathematical formula constructed above.  The right-hand-side specifies the terms which contain a parameter.  Since the $\mu$ in our mathematical model is alone, it is multiplied by a 1 (hence the 1 in the formula for the function).  Again, we use the `data = ` option in order to specify in which data set `mpg` can be found.
+
+  > Note: the error term is understood in the model and need not be communicated to the computer.
+  
+Finally, this mean model is something that we will be working with; so, it should be saved.  Here, we save it under the name `mpg.model`.
+
+
+# Confidence Interval for a Single Mean
+We begin with the same mean model described in the previous section:
+
+```{r ref.label="specify-model"}
+```
+
+In order to construct a confidence interval, we use the `estimate_parameters()` function:
+
+```{r}
+estimate_parameters(mpg.model,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
+```
+
+This function has a few requirements:
+
+  1. You must specify the mean model containing the parameters of interest.
+  2. You must specify the confidence level for confidence intervals computed; failing to do this will result in only point estimates provided.
+  3. Specify whether certain conditions should be assumed.
+  
+Note that the computer will _always_ assume the data is independent of one another and that the mean model is correctly specified.
+
+Classical theory will be employed if both the normality and identically distributed conditions are assumed true.  Otherwise, bootstrapping will be used to compute the confidence intervals.  For example, to compute a 95\% confidence interval using bootstrapping while assuming the fuel efficiency of each car comes from the same underlying distribution, use the following code:
+
+```{r single-boot}
+estimate_parameters(mpg.model,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = FALSE)
+```
+
+Remember that each time you use a bootstrap procedure, the model for the sampling distribution will change slightly due to randomness.  Therefore, the endpoints of the interval may very slightly.  In order to prevent this, you can "set a seed" for random number generation.  Think of this as specifying how the random number generator should begin.  Running the same block of code multiple times will produce the same ouptut.
+
+```{r}
+set.seed(123)
+estimate_parameters(mpg.model,
+                    confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = FALSE)
+```
+
+The seed value can be any integer.
+
+
+## Examining sampling distribution graphically.
+If you want to examine the entire model for the sampling distribution graphically (instead of just having the CI), you must first save the output of the `estimate_parameters()` function and then use it in the `plot_sampling_distribution()` function.  Below is the plot of the model for the sampling distribution of the sample mean fuel efficiency when we do not assume normality.  Here, the results of `estimate_parameters()` is stored in the name `sampling.distn` which can be used later on.
+
+```{r}
+sampling.distn = estimate_parameters(mpg.model,
+                                     confidence.level = 0.95,
+                                     assume.identically.distributed = TRUE,
+                                     assume.normality = FALSE)
+
+plot_sampling_distribution(sampling.distn,
+                           show.confidence.interval = TRUE)
+```
+
+We can optionally choose to illustrate the confidence interval on the plot, which can be printed by printing out the contents of `sampling.distn`, which just holds the result of the call to the `estimate_parameters()` function:
+
+```{r}
+sampling.distn
+```
+
+
+# P-values for Mean
+We begin with the same mean model 
+$$(\text{MPG})_i = \mu + \epsilon_i$$
+Suppose we are interested in testing the hypothesis
+$$H_0: \mu = 18 \qquad \text{vs.} \qquad H_1: \mu \neq 18$$
+
+Hypothesis testing at its core is about comparing two models: a full (unrestricted) model (alternative hypothesis) and a restricted model (null hypothesis).  Specifically, notice that under the alternative hypothesis, we have
+$$\text{Unrestricted Model:} \quad (\text{MPG})_i = \mu + \epsilon_i$$
+
+This is easily communicated to the computer:
+```{r mean-h1}
+mpg.model.h1 = specify_mean_model(mpg ~ 1, data = mtcars)
+```
+
+
+Under the null hypothesis, we have
+$$\text{Restricted Model:} \quad (\text{MPG})_i = 18 + \epsilon_i$$
+
+In this restricted model, there are no parameters to estimate.  Instead, the parameter has a specific constant value.  When specifying this model, we need to use the `constant()` notation to signify this.
+
+```{r mean-h0}
+mpg.model.h0 = specify_mean_model(mpg ~ constant(18), data = mtcars)
+```
+
+Now, the two models can be compared:
+
+```{r mean-compare}
+compare_models(mpg.model.h1,
+               mpg.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
+```
+
+## Examining null distribution graphically.
+If you want to examine the entire model for the null distribution graphically (instead of just having the p-value), you must first save the output of the `compare_models()` function and then use it in the `plot_null_distribution()` function.  Below is the plot of the model for the null distribution of the statistic summarizing the evidence against the null hypothesis described above.  Here, the results of `compare_models()` is stored in the name `null.distn` which can be used later on.
+
+```{r}
+null.distn = compare_models(mpg.model.h1,
+               mpg.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = FALSE)
+
+plot_null_distribution(null.distn,
+                       show.pvalue = TRUE)
+```
+
+We can optionally choose to illustrate the region which will make up the p-value, which can be printed by printing out the contents of `null.distn`, which just holds the result of the call to the `compare_models()` function:
+
+```{r}
+null.distn
+```
+
+
+
+# Simple Linear Regression Models
+Regression models extend our mean model by allowing the response to depend linearly on a covariate.  Consider the following simple model allowing the fuel efficiency to depend upon the weight of the vehicle.
+
+$$(\text{MPG})_i = \beta_0 + \beta_1(\text{Weight})_i + \epsilon_i$$
+
+This is specified to the computer using `specify_mean_model()` as follows:
+
+```{r reg}
+reg.model = specify_mean_model(mpg ~ 1 + wt, data = mtcars)
+```
+
+Again, the left-hand-side communicates the response variable.  The right-hand-side has a 1 (indicating the intercept term) plus the variable `wt`.  Each term separated by a plus sign will have a parameter associated with it, which are understood by the computer.
+
+  > Parameters do not need to be specified; one is attached to each term separated by a `+` sign.
+
+
+## Fitting Regression Models: Least Squares Estimates
+The "best fit" line typically encountered is formed by computing the least squares estimates of the parameters in the regression model.  The `estimate_parameters()` function does this.  
+
+```{r ls-estimates}
+estimate_parameters(reg.model)
+```
+
+The output does not contain confidence intervals because we did not specify a confidence level or the conditions we are willing to assume.
+
+## Confidence Intervals for Regression Parameters
+In order to obtain confidence intervals, we need to specify the conditions we are willing to assume.
+
+```{r}
+estimate_parameters(reg.model, 
+                    confidence.level = 0.99,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
+```
+
+If both normality and identically distributed are assumed, classical method are used to compute the confidence intervals.  Otherwise, bootstrapping is used.
+
+## P-values Comparing Two Models
+Hypothesis testing at its core is about comparing two models: a full (unrestricted) model (alternative hypothesis) and a restricted model (null hypothesis).  Refering to our model for the fuel efficiency described above, suppose we wanted to test the hypothesis that
+
+$$H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0$$
+
+Under the alternative hypothesis (no restriction on $\beta_1$), we have the same model we began with:
+$$\text{Unrestricted Model:} \quad (\text{MPG})_i = \beta_0 + \beta_1(\text{Weight})_i + \epsilon_i$$
+
+Under the null hypothesis, we have a restricted model:
+$$\text{Restricted Model:} \quad (\text{MPG})_i = \beta_0 + \epsilon_i$$
+
+We can communicate each of these models to the computer using `specify_mean_model()`.  Both must be specified so that they can be compared in the program.
+
+```{r reg-comparison}
+reg.model.h1 = specify_mean_model(mpg ~ 1 + hp, data = mtcars)
+reg.model.h0 = specify_mean_model(mpg ~ 1, data = mtcars)
+```
+
+These two models are then compared (to generate a p-value) using the `compare_models()` function.
+
+```{r compare-regressions}
+compare_models(reg.model.h1,
+               reg.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
+```
+
+What results is an ANOVA table summarizing the comparison between the two models.  The line "Additional Terms" refers to the additional variability in the response captured by the lack of restrictions in the alternative hypothesis.  The p-value is the last component of this output.
+
+Similar to estimating parameters, bootstrapping is performed if either the normality or identically distributed conditions are not assumed.
+
+
+## Computing R-Squared
+R-squared is one measure for quantifying the predictive ability of the model.  It can be obtained using the `glance()` function.
+
+```{r r2}
+glance(reg.model)
+```
+
+While `glance()` returns a lot of information about the model, we will focus on the `r.squared` value.
+
+
+## Computing Residuals
+Diagnostic graphics used to assess conditions on the stochastic portion of the model depend on residuals and fitted values.  In order to obtain the residuals, we augment the original data based on the model constructed using the `obtain_diagnostics()` function.  These results must be stored in a dataset.  This function cannot be used until you first specify a model so that residuals can be computed.
+
+  1. First argument is the model fit (from the full model under the alternative hypothesis if comparing two models).
+  2. Second argument is the dataset we want to add to.
+
+```{r reg-augment}
+mtcars.augment = obtain_diagnostics(reg.model, data = mtcars)
+```
+
+The result is actually a new dataset which includes various new variables (beginning with period in the name) used to assess a model fit.  The variable `.resid` contains the residuals, and the variable `.fitted` contains the fitted values or predicted values.  The first few records of this new dataset are shown below:
+
+```{r, echo=FALSE}
+mtcars.augment %>%
+  head() %>%
+  knitr::kable(digits = 3)
+```
+
+## Diagnostic Plots: Time-Series Plot
+If the data is recorded in the order in which it was collected, we can construct a time-series plot of the residuals.
+
+  1. Use the augmented dataset (see above) that contains the residuals.
+  2. Set `y = .resid`.
+  3. Set `x = seq_along(.resid)` to construct the order of the observations.
+  4. Set `geom = c("line", "point")` to connect the dots for an better view.
+  
+```{r reg-time-series}
+qplot(data = mtcars.augment,
+      y = .resid,
+      x = seq_along(.resid),
+      geom = c("line", "point")) +
+  labs(y = "Residuals",
+       x = "Order of Observations")
+```
+
+The nice thing about this graphic is that the only thing that changes is the dataset from which to pull the residuals.
+
+## Diagnostic Plots: Residual vs. Fitted Values
+A plot of the residuals against the fitted values can be helpful for assessing various conditions.
+
+  1. Use the augmented dataset (see above) that contains the residuals.
+  2. Set `y = .resid`.
+  3. Set `x = .fitted`.
+  4. Set `geom = "point"`.
+  
+```{r reg-resid-1}
+qplot(data = mtcars.augment,
+      y = .resid,
+      x = .fitted,
+      geom = "point") +
+  labs(y = "Residuals",
+       x = "Fitted Values")
+```
+
+It can sometimes be helpful to include a smoother on this graphic.  This can be done easily by adjusting the `geom` option.
+
+```{r reg-resid-2}
+qplot(data = mtcars.augment,
+      y = .resid,
+      x = .fitted,
+      geom = c("point", "smooth")) +
+  labs(y = "Residuals",
+       x = "Fitted Values")
+```
+
+## Diagnostic Plots: Probability Plot
+A probability plot, or quanitile-quantile plot (QQ-plot for short) can also be made of the residuals.
+
+  1. Use the augmented dataset (see above) that contains the residuals.
+  2. Set `sample = .resid`.
+  3. Set `geom = "qq"`.
+
+```{r reg-prob-plot}
+qplot(data = mtcars.augment,
+      sample = .resid,
+      geom = "qq") +
+  labs(x = "Theoretical Quantiles",
+       y = "Sample Quantiles")
+```
+
+
+## Estimating the Mean Response
+Consider our model for allowing the mean fuel efficiency to depend upon the weight of the vehicle:
+$$\text{Unrestricted Model:} \quad (\text{MPG})_i = \beta_0 + \beta_1(\text{Weight})_i + \epsilon_i$$
+
+Suppose we are interested in estimating the average fuel efficiency for a vehicle which weighs 2000 pounds and one which weighs 3000 pounds (keeping in mind that `wt` is specified in 1000's of pounds).  Instead of estimating the parameters of the model, we are interested in estimating the mean response, which is done with `estimate_mean_response()`:
+
+```{r mean-response}
+estimate_mean_response(reg.model,
+                       confidence.level = 0.95,
+                       assume.identically.distributed = TRUE,
+                       assume.normality = TRUE,
+                       wt = c(2, 3))
+```
+
+The majority of the arguments for this function are similar to `estimate_parmaeters()`.  However, you must also specify the values of the covariates for which to estimate your response.  Multiple values are placed in a vector using the `c()` construct.
+
+
+# ANOVA Models
+ANOVA models are extensions of regression model which compare a quantitative response across the levels of a categorical variable.  For our purposes, consider comparing the efficiency of vehicles with an automatic transmission to those with a manual transmission.  Our model has the following form:
+
+$$
+\begin{aligned}
+  (\text{MPG})_i &= \mu_1\mathbb{I}(\text{i-th vehicle has automatic transmission}) \\
+    &\quad + \mu_2\mathbb{I}(\text{i-th vehicle has manual transmission}) + \epsilon_i
+\end{aligned}
+$$
+
+As with any model, our first step is to specify that model in the computer.  Notice that the above model has a parameter for each level of the variable `am` and does not have an intercept.  This can be specified as follows:
+
+```{r anova-fit}
+anova.model = specify_mean_model(mpg ~ am, data = mtcars)
+```
+
+As long as the variable on the right-hand-side is a categorical variable, the computer will automatically construct the appropriate indicator functions.
+
+
+## Computing a P-Value
+Comparing two ANOVA models is not different than comparing two regression models.  Consider the hypothesis of interest:
+
+$$H_0: \mu_1 = \mu_2 \qquad \text{vs.} \qquad H_1: \mu_1 \neq \mu_2$$
+
+Under the alternative hypothesis, we have an unrestricted model:
+$$
+\begin{aligned}
+  \text{Unrestricted Model:} \quad (\text{MPG})_i &= \mu_1\mathbb{I}(\text{i-th vehicle has automatic transmission}) \\
+    &\quad + \mu_2\mathbb{I}(\text{i-th vehicle has manual transmission}) + \epsilon_i
+\end{aligned}
+$$
+
+If the null hypothesis is true, the model for our data generating process would be restricted:
+$$\text{Restricted Model:} \quad (\text{MPG})_i = \mu + \epsilon_i$$
+
+where $\mu$ is the overall mean response --- the common value of $\mu_1$ and $\mu_2$.  In order to construct the p-value we must communicate both models to the computer and then compuare them.
+
+```{r anova-compare}
+anova.model.h1 = specify_mean_model(mpg ~ am, data = mtcars)
+anova.model.h0 = specify_mean_model(mpg ~ 1, data = mtcars)
+
+compare_models(anova.model.h1,
+               anova.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
+```
+
+The output contains a summary of the comparison between the two models in the form of a classical ANOVA table.  Changing the conditions will determine if the p-value is computed via bootstrapping or classical probability theory.
+
+## Computing Residuals
+Diagnostic graphics are similar to those in regresion.  The one change is that it is often helpful to view the residuals across the groups.  This can be done by making a side-by-side boxplot of the residuals from augmented data.
+
+```{r side-by-side-residuals}
+mtcars.augment = obtain_diagnostics(anova.model.h1, data = mtcars)
+
+qplot(data = mtcars.augment,
+      y = .resid,
+      x = am,
+      geom = "boxplot") +
+  labs(y = "Residuals",
+       x = "")
+```
+
+
+
+
+
+# Frequently Asked Questions
+There are some things students run into a lot.  Here are some common situations.
+
+## I just want to look at my dataset; how?
+The easiest way is to go to the "Environment" tab in RStudio and double-click on the name of the dataset.  It will open a spread-sheet like interface for looking at your dataset.
+
+## My variable name has spaces and R does not like it!
+Variable names which have spaces in them need to be wrapped in back ticks.  Technically, all variable names can be done this way, but it is a requirement when the variable name has spaces.  For example, the following is allowed:
+
+```{r, eval=FALSE}
+mtcars = mtcars %>%
+  mutate(`Miles Per Gallon` = mpg)
+```
+
+## Why does my code block not have a green arrow?
+A code block should be completely separate from surrounding text.  So, be sure there is a blank line both before the code block and after it.  Usually, this fixes the problem.
+
+## How can I make a caption for my graphic?
+In your code chunk, include the `fig.cap` option.  For example, a code chunk might look like the following:
+
+```{r, echo=FALSE, eval=TRUE}
+cat('```{r, fig.cap="Relationship between fuel efficiency and the horsepower of a vehicle."}',"\n",
+"qplot(data = mtcars","\n",
+"      x = hp", "\n",
+"      y = mpg) +", "\n",
+'  labs(x = "Horse Power",', "\n",
+'       y = "Miles per Gallon")', "\n",
+"```","\n", sep="")
+```
+
+This block would produce the following image (notice caption below image):
+
+```{r, echo=FALSE, eval=TRUE, fig.cap="Relationship between fuel efficiency and the horsepower of a vehicle."}
+qplot(data = mtcars,
+      x = hp,
+      y = mpg) +
+  labs(x = "Horse Power",
+       y = "Miles per Gallon")
+```
+
+## R is not treating my "grouping" variable correctly!
+Generally, this happens when your "grouping" variable is a number instead of a phrase.  For example, in the `mtcars` dataset, the variable `cyl` takes values 4, 6, or 8.  However, R does not know that these values represent groups instead of actual values.  In order to get the program to recognize it as a group, rewrite the variable using `factor()`:
+
+```{r, echo=TRUE, eval=FALSE}
+mtcars = mtcars %>%
+  mutate(cyl = factor(cyl))
+```
+
+Now, `cyl` will be treated as a grouping variable.  This needs to be done only once and will work for all subsequent graphics and models constructed.  
+
+Note: you could also recode the variable manually if you wanted to:
+
+```{r, echo=TRUE, eval=FALSE}
+mtcars = mtcars %>%
+  mutate(cyl = recode(cyl,
+                      `4` = "4 Cylinder",
+                      `6` = "6 Cylinder",
+                      `8` = "8 Cylinder"))
+```
+
+The choice is yours.

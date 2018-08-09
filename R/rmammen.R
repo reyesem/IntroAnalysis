@@ -47,14 +47,14 @@ rmammen <- function(n,
                     construct = c("normal-2", "normal-1", "two-point mass")){
   construct <- match.arg(construct)
 
-  if(length(n)>1) n <- length(n)
+  if (length(n) > 1) n <- length(n)
 
-  if(construct=="two-point mass"){
+  if (construct == "two-point mass"){
     .vals <- c(-(sqrt(5)-1)/2, (sqrt(5)+1)/2)
     .probs <- rev(abs(.vals)/sqrt(5))
 
     sample(.vals, size = n, replace = TRUE, prob = .probs)
-  } else if(construct=="normal-1"){
+  } else if (construct == "normal-1"){
     .v <- rnorm(n)
 
     (.v/sqrt(2)) + (0.5*((.v*.v) - 1))

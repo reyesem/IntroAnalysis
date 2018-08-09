@@ -1,0 +1,5 @@
+"0","qplot(data = mtcars,"
+"0","      x = am,"
+"0","      geom = ""bar"") +"
+"0","  labs(x = """","
+"0","       y = ""Frequency"")"

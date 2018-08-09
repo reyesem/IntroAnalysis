@@ -1,0 +1,2 @@
+"0","diagnostics_mtcars <- obtain_diagnostics(fit_reg, data = mtcars)"
+"0","diagnostics_mtcars <- obtain_diagnostics(fit_reg, data = mtcars)"

@@ -17,11 +17,13 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: car,
+Imports: broom,
     dplyr,
     ggplot2,
+    purrr,
     tidyr
-Depends: stats
+Depends: stats,
+    MASS
 Suggests: knitr,
     rmarkdown,
     testthat,

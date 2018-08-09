@@ -1,0 +1,1 @@
+"0","reg.model = specify_mean_model(mpg ~ 1 + wt, data = mtcars)"

@@ -4,18 +4,17 @@
 \name{IntroAnalysis-package}
 \alias{IntroAnalysis}
 \alias{IntroAnalysis-package}
-\title{Functions for aiding in introductory statistics using linear models.}
+\title{Functions for aiding model development in introductory statistics courses.}
 \description{
-Wrappers are provided that allow a single framework for estimate parameters
-in a linear model as well as comparing nested linear models (hypothesis
-testing). This allows us to place the entire introductory statistics course
-under the umbrella of linear models.
+Wrappers are provided that allow a single framework for estimating parameters
+and comparing nested models (hypothesis testing). This allows us to place the
+entire introductory statistics course under the umbrella of linear and
+potentially generalized linear models.
 }
 \details{
-The two primary functions you will utilize from \pkg{IntroAnalysis} are
-\code{\link{estimate_parameters}} and \code{\link{compare_models}}. Note that
-in order to use these functions, you must be familar with the 
-\code{\link[stats]{lm}} function.
+The three primary functions you will utilize from \pkg{IntroAnalysis} are
+\code{\link{specify_mean_model}}, \code{\link{estimate_parameters}} and
+\code{\link{compare_models}}.
 }
 \author{
 \strong{Maintainer}: Reyes Eric \email{reyesem@rose-hulman.edu}

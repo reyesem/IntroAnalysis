@@ -1,0 +1,9 @@
+"0","# estimate_mean_response(fit_p, "
+"0","#                        confidence.level = 0.95,"
+"0","#                        Intercept = 1)"
+"0","estimate_mean_response(fit_p,"
+"0","                       confidence.level = 0.95,"
+"0","                       Intercept = 1,"
+"0","                       method = ""parametric"")"
+"2","Error in eval(predvars, data, env) : object 'newy' not found
+"

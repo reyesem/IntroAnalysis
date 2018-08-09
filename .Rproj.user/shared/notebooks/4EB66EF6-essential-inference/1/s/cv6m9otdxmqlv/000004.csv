@@ -1,0 +1,4 @@
+"0","diagnostics_mtcars <- obtain_diagnostics(fit_reg, data = mtcars)"
+"2","Error in subset.data.frame(.out, which(!is.element(colnames(.out), c("".hat"",  : 
+  'subset' must be logical
+"

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1527193895198.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4177061187",
+    "id" : "A3D0AE83",
+    "lastKnownWriteTime" : 1527196769,
+    "last_content_update" : 1527196769814,
+    "path" : "C:/Users/Administrator/OneDrive - Rose-Hulman Institute of Technology/Github/IntroAnalysis/R/variable_summaries.R",
+    "project_path" : "R/variable_summaries.R",
+    "properties" : {
+        "cursorPosition" : "19,44",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

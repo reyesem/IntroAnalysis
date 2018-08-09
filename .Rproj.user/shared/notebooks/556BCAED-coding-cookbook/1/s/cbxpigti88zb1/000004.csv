@@ -1,0 +1,5 @@
+"0","estimate_mean_response(reg.model,"
+"0","                       confidence.level = 0.95,"
+"0","                       assume.identically.distributed = TRUE,"
+"0","                       assume.normality = TRUE,"
+"0","                       wt = c(2, 3))"

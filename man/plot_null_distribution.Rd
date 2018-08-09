@@ -4,13 +4,13 @@
 \alias{plot_null_distribution}
 \title{Plot the null distribution of a test statistic.}
 \usage{
-plot_null_distribution(statistics, p.value = FALSE)
+plot_null_distribution(statistics, show.pvalue = FALSE)
 }
 \arguments{
 \item{statistics}{result of a call to \code{\link{compare_models}}.}
 
-\item{p.value}{boolean indicating whether the p-value region should be
-drawn on the graphic.  If \code{TRUE}, the region is drawn; if
+\item{show.pvalue}{boolean indicating whether the p-value region should
+be drawn on the graphic.  If \code{TRUE}, the region is drawn; if
 \code{FALSE} (default), the region is not drawn.}
 }
 \value{
@@ -27,13 +27,15 @@ This is extracted and used to construct a graphic summarizing this
 distribution.
 }
 \examples{
-test.df <- data.frame(x = seq(10), y = seq(10) + rnorm(10))
-fit <- lm(y ~ x, data = test.df)
-fit0 <- lm(y ~ 1, data = test.df)
-null_distn <- compare_models(fit, fit0,
-assume.constant.variance = TRUE,
-assume.normality = FALSE)
-plot_null_distribution(null_distn)
+fit1 <- lm(mpg ~ hp, data = mtcars)
+fit0 <- lm(mpg ~ 1, data = mtcars)
+
+null_distn <- compare_models(fit1, fit0,
+  assume.identically.distributed = TRUE,
+  assume.normality = FALSE)
+
+plot_null_distribution(null_distn,
+  show.pvalue = TRUE)
 
 }
 \seealso{

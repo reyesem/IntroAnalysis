@@ -1,0 +1,2 @@
+"0","mtcars = mtcars %>%"
+"0","  mutate(Gallons_per_Mile = 1/mpg)"
