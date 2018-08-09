@@ -63,13 +63,13 @@ specify_mean_model <- function(formula,
   formula <- as.character(formula)
 
   # check if intercept is specified (look for 1)
-  formula[3] <- gsub(pattern = "\\s",
-                     replacement = "",
-                     formula[3])
+  reduced.formula.3 <- gsub(pattern = "\\s",
+                            replacement = "",
+                            formula[3])
 
   reduced.formula.3 <- gsub(pattern = "\\+*((constant)|(offset))\\(.+\\)\\+*",
                             replacement = "",
-                            formula[3])
+                            reduced.formula.3)
 
   reduced.formula.3 <- gsub(pattern = "\\(|\\)",
                             replacement = "",
