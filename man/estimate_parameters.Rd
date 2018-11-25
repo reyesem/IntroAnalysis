@@ -7,7 +7,8 @@
 \title{Estimate the parameters of linear or generalized linear models.}
 \usage{
 \method{estimate_parameters}{lm}(mean.model, confidence.level,
-  simulation.replications = 4999, assume.identically.distributed = TRUE,
+  simulation.replications = 4999,
+  assume.identically.distributed = TRUE,
   assume.constant.variance = assume.identically.distributed,
   assume.normality = FALSE, construct = c("normal-2", "normal-1",
   "two-point mass"), type = c("percentile", "BC", "bootstrap-t"))

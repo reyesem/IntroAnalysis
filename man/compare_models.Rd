@@ -7,13 +7,15 @@
 \title{Compute a p-value comparing two nested models.}
 \usage{
 \method{compare_models}{lm}(full.mean.model, reduced.mean.model,
-  simulation.replications = 4999, assume.identically.distributed = TRUE,
+  simulation.replications = 4999,
+  assume.identically.distributed = TRUE,
   assume.constant.variance = assume.identically.distributed,
   assume.normality = FALSE, construct = c("normal-2", "normal-1",
   "two-point mass"))
 
 \method{compare_models}{glm}(full.mean.model, reduced.mean.model,
-  simulation.replications = 4999, method = c("classical", "parametric"))
+  simulation.replications = 4999, method = c("classical",
+  "parametric"))
 
 compare_models(full.mean.model, reduced.mean.model,
   simulation.replications = 4999, ...)

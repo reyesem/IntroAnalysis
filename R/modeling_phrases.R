@@ -445,5 +445,8 @@ obtain_diagnostics <- function(mean.model,
                                                      ".se.fit",
                                                      ".std.resid"))))
 
+  # adjust column names to undo what broom does
+  colnames(.out)[1:ncol(data)] <- colnames(data)
+
   .out
 }
