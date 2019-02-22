@@ -21,7 +21,7 @@ estimate_mean_response(mean.model, confidence.level,
   simulation.replications = 4999, ...)
 }
 \arguments{
-\item{mean.model}{\code{lm} or \code{glm} model fit defining the model
+\item{mean.model}{\code{lm} or \code{glm} model fit defining the model and
 therefore the parameters of the mean model to be estimated.}
 
 \item{confidence.level}{scalar between 0 and 1 indicating the confidence

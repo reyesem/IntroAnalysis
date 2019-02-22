@@ -7,8 +7,8 @@
 obtain_diagnostics(mean.model, data = stats::model.frame(mean.model))
 }
 \arguments{
-\item{mean.model}{\code{lm} or \code{glm} model fit defining the model
-therefore the parameters of the mean model to be estimated.}
+\item{mean.model}{\code{lm} or \code{glm} model fit defining the model from
+which residuals and predicted values are to be computed.}
 
 \item{data}{the original data set to which the fitted values and residuals
 should be added. Defaults to extracting the data from the model.}

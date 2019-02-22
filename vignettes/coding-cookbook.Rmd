@@ -12,7 +12,6 @@ vignette: >
 ```{r setup, include=FALSE}
 ## ---- Load Packages ----
 pkgs <- c("tidyverse",
-          "broom",
           "knitr",
           "IntroAnalysis")
 
@@ -218,6 +217,15 @@ Maximum              `max`
 Interquartile Range  `IQR`
 Percent              `percent`
 Proportion           `mean`
+1-st Percentile      `perc01`
+5-th Percentile      `perc05`
+10-th Percentile     `perc10`
+20-th Percentile     `perc20`
+80-th Percentile     `perc80`
+85-th Percentile     `perc85`
+90-th Percentile     `perc90`
+95-th Percentile     `perc95`
+99-th Percentile     `perc99`
 
 Table: List of functions for numerical summaries
 
@@ -748,13 +756,13 @@ Similar to estimating parameters, bootstrapping is performed if either the norma
 
 
 ## Computing R-Squared
-R-squared is one measure for quantifying the predictive ability of the model.  It can be obtained using the `glance()` function.
+R-squared is one measure for quantifying the predictive ability of the model.  It can be obtained using the `summarize_model_fit()` function.
 
 ```{r r2}
-glance(reg.model)
+summarize_model_fit(reg.model)
 ```
 
-While `glance()` returns a lot of information about the model, we will focus on the `r.squared` value.
+While `summarize_model_fit()` returns a lot of information about the model, we will focus on the `r.squared` value.
 
 
 ## Computing Residuals

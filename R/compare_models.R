@@ -38,6 +38,11 @@ compare_models.lm <- function(full.mean.model,
     stop("Both the full and reduced models must be linear models.")
   }
 
+  if (full.mean.model$df.residual >= reduced.mean.model$df.residual){
+    stop(paste0("The reduced model has as many parameters as the full model. ",
+                "The full and reduced models were probably switched."))
+  }
+
   if (assume.normality && assume.constant.variance){
     .anova <- my_anova(reduced.mean.model, full.mean.model)
 
@@ -84,6 +89,11 @@ compare_models.glm <- function(full.mean.model,
 
   if (any(class(full.mean.model) != class(reduced.mean.model))){
     stop("Both the full and reduced models must be linear models.")
+  }
+
+  if (full.mean.model$df.residual >= reduced.mean.model$df.residual){
+    stop(paste0("The reduced model has as many parameters as the full model. ",
+                "The full and reduced models were probably switched."))
   }
 
   if (method == "classical"){
