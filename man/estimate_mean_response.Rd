@@ -6,19 +6,33 @@
 \alias{estimate_mean_response}
 \title{Estimate the mean response for a given set of covariates.}
 \usage{
-\method{estimate_mean_response}{lm}(mean.model, confidence.level,
+\method{estimate_mean_response}{lm}(
+  mean.model,
+  confidence.level,
   simulation.replications = 4999,
   assume.identically.distributed = TRUE,
   assume.constant.variance = assume.identically.distributed,
-  assume.normality = FALSE, construct = c("normal-2", "normal-1",
-  "two-point mass"), type = c("percentile", "BC"), ...)
+  assume.normality = FALSE,
+  construct = c("normal-2", "normal-1", "two-point mass"),
+  type = c("percentile", "BC"),
+  ...
+)
 
-\method{estimate_mean_response}{glm}(mean.model, confidence.level,
-  simulation.replications = 4999, method = c("classical", "parametric",
-  "case-resampling"), type = c("percentile", "BC", "bootstrap-t"), ...)
+\method{estimate_mean_response}{glm}(
+  mean.model,
+  confidence.level,
+  simulation.replications = 4999,
+  method = c("classical", "parametric", "case-resampling"),
+  type = c("percentile", "BC", "bootstrap-t"),
+  ...
+)
 
-estimate_mean_response(mean.model, confidence.level,
-  simulation.replications = 4999, ...)
+estimate_mean_response(
+  mean.model,
+  confidence.level,
+  simulation.replications = 4999,
+  ...
+)
 }
 \arguments{
 \item{mean.model}{\code{lm} or \code{glm} model fit defining the model and
@@ -55,25 +69,14 @@ from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
 constructed. If \code{"BC"} the bias-corrected percentile interval is
 constructed. Currently, the bootstrap-t interval is not supported.}
 
-\item{...}{comma separated list of variables indicating the value of the
-covariate(s) at which to make the predictions.}
+\item{...}{additional arguments to be passed to other methods including the
+list of variables and their values at which to estimate the mean response.}
 
 \item{method}{string defining the methodology to employ. If
 \code{"classical"} (default), the model is assumed correct and classical
 large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
 is performed. If \code{"case-resampling"}, a case-resampling bootstrap is
 performed.}
-
-\item{type}{string defining the type of confidence interval to construct. If
-\code{"percentile"} (default) an equal-tailed percentile interval is
-constructed. If \code{"BC"} the bias-corrected percentile interval is
-constructed. If \code{"bootstrap-t"} the bootstrap t interval is constructed.}
-
-\item{...}{comma separated list of variables indicating the value of the
-covariate(s) at which to make the predictions.}
-
-\item{...}{additional arguments to be passed to other methods including the
-list of variables and their values at which to estimate the mean response.}
 }
 \value{
 data.frame containing a table of estimates. The object has an

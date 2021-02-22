@@ -1,0 +1,248 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "06 - Assessing Conditions in Regression"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+
+RealEstate <- RealEstate %>%
+  mutate(Pool = recode(Pool,
+                       `1` = "Has Pool",
+                       `0` = "Does not have Pool"))
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+When purchasing or selling a home, your real estate agent helps you determine if a house is priced correctly.  This involves comparing the price of the home with its "comparables" (similar homes in the area) to determine if the price is similar.  One way of doing this is to build a statistical model which predicts the sale price of a home based on various characteristics.  We have data on over 500 sales from real estate transactions across the United States.  Each record corresponds to the sale of a particular home and includes the following variables:
+
+  - `ID`: Unique identification for each sale.
+  - `Price`: Sale price of home (\$).
+  - `Area`: Finished area of residence (square feet).
+  - `BedRooms`: Number of bedrooms in the residence.
+  - `BathRooms`: Number of bathrooms in the residence.
+  - `AC`: Indicator of whether home has central air conditioning (1 = Yes, 0 = No).
+  - `Garage`: Number of cars that garage will hold.
+  - `Pool`: Indicator of whether home has a swimming pool (1 = Yes, 0 = No).
+  - `Year`: Year property was originally constructed.
+  - `Quality`: Indicator of the quality of the construction (1 = High quality, 2 = Medium, 3 = Low).
+  - `Style`: Indicator of the architectural style (mapping unknown).
+  - `Lot`: Lot size (square feet).
+  - `Highway`: Indicator of whether home is located near highway (1 = Yes, 0 = No).
+
+The data is available in `R` (`RealEstate`).
+
+
+
+## Questions
+Previously, we have examined a model which used the living area of a home to predict its price:
+
+$$(\text{Home Price})_i = \beta_0 + \beta_1 (\text{Living Area})_i + \epsilon_i$$
+
+This model is fit using the following code.
+
+```{r s6-model, echo=TRUE}
+realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
+```
+
+```{r s6-models, ref.label="s6-model"}
+```
+
+
+
+
+### Exercise: Compute Residuals
+> Obtain the residauls and fitted values for the above model, and store them in a dataset called `realestate.diag`.
+
+```{r s6-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-models"}
+realestate.diag = obtain_diagnostics()
+```
+
+```{r s6-ex-resid-solution, exercise.setup="s6-models"}
+realestate.diag = obtain_diagnostics(realestate.model, 
+                                     data = RealEstate)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0b8788df-b22b-44ba-b396-ac80013c89ab&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox tip">
+You must always obtain the residuals from the full model (not the one under the null hypothesis) before trying to assess conditions.
+</div>
+
+
+### Exercise: Assessing Normality
+> Is it reasonable to assume the error in the price of a home follows a Normal distribution?  Construct an appropriate graphic to justify your answer. 
+
+```{r s6-resids, include=FALSE, exercise.setup="s6-models", ref.label="s6-ex-resid-solution"}
+```
+
+```{r s6-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
+qplot() +
+  labs()
+```
+
+```{r s6-ex-normality-solution}
+qplot(data = realestate.diag,
+      sample = .resid,
+      geom = "qq") +
+  labs(y = "Sample Quantiles",
+       x = "Theoretical Quantiles")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bb2b2170-3457-4e0d-b647-ac80013e35ea&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Assessing Homoskedasticity
+> Is it reasonable to assume the variability of the error in the price of a home is constant for all size homes?  Use an appropriate graphic to justify your answer. 
+
+```{r s6-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
+qplot() +
+  labs()
+```
+
+```{r s6-ex-homoskedasticity-solution}
+qplot(data = realestate.diag,
+      y = .resid,
+      x = .fitted,
+      geom = "point") +
+  labs(y = "Residuals",
+       x = "Predicted Home Price")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=571d10b2-01e1-4fc0-bd55-ac80013f5068&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Assessing Independence
+> Is there reason to believe the error in the home price for one home is not independent of the error in the home price for any other home?  Explain.
+
+```{r s6-ex-indep, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
+qplot() +
+  labs()
+```
+
+```{r s6-ex-indep-solution}
+qplot(data = realestate.diag,
+      x = seq_along(.resid),
+      y = .resid,
+      geom = c("point", "line")) +
+  labs(y = "Residuals",
+       x = "Order in Which Data is Presented")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=d987a1a7-6e18-4ff3-8924-ac80014023b1&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Assessing Mean 0
+> We have assumed the price of a home is linearly related to the area of a home.  Is this linear model reasonable?  Or, is there concern the deterministic portion has been misspecified?  Explain.
+
+```{r s6-ex-mean0, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
+qplot() +
+  labs()
+```
+
+```{r s6-ex-mean0-solution}
+qplot(data = realestate.diag,
+      y = .resid,
+      x = .fitted,
+      geom = "point") +
+  labs(y = "Residuals",
+       x = "Predicted Home Price")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=de6c61a4-89e5-4847-8005-ac800141b78e&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox keyidea">
+We are __never__ able to say that a condition is met/true/etc.
+</div>
+
+
+### Exercise: Modeling the Null Distribution
+> Based upon your above conclusions, how would you model the null distribution of the standardized statistic?  Explain.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b3d9d265-c193-4c95-924b-ac800142fdbb&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+

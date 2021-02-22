@@ -1,6 +1,5 @@
 #' @describeIn compare_models Computes p-value comparing nested linear models.
 #'
-#' @inheritParams compare_models
 #' @param assume.identically.distributed boolean; if \code{TRUE} (default),
 #' homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
 #' assumed.
@@ -25,7 +24,8 @@ compare_models.lm <- function(full.mean.model,
                               assume.normality = FALSE,
                               construct = c("normal-2",
                                             "normal-1",
-                                            "two-point mass")){
+                                            "two-point mass"),
+                              ...){
 
   if (!missing(assume.identically.distributed) &&
       !missing(assume.constant.variance) &&
@@ -73,7 +73,6 @@ compare_models.lm <- function(full.mean.model,
 #' @describeIn compare_models Computes p-value comparing nested generalized
 #' linear models.
 #'
-#' @inheritParams compare_models
 #' @param method string defining the methodology to employ. If
 #' \code{"classical"} (default), the model is assumed correct and classical
 #' large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
@@ -85,7 +84,8 @@ compare_models.glm <- function(full.mean.model,
                                reduced.mean.model,
                                simulation.replications = 4999,
                                method = c("classical",
-                                          "parametric")){
+                                          "parametric"),
+                               ...){
 
   if (any(class(full.mean.model) != class(reduced.mean.model))){
     stop("Both the full and reduced models must be linear models.")

@@ -25,10 +25,12 @@ summarize_variable <- function(formula,
                                ...,
                                .args = list()){
 
-  .mf <- model.frame.default(formula, data)
+  .mf <- model.frame.default(formula, data, na.action = na.pass)
   .mf <- dplyr::group_by_at(.mf, -1)
 
-  as.data.frame(dplyr::summarise_at(.mf, 1, dplyr::funs(..., .args = .args)))
+  .funs <- tibble::lst(...)
+
+  as.data.frame(dplyr::summarise_at(.mf, 1, .funs = .funs, !!!.args))
 }
 
 
@@ -48,7 +50,7 @@ summarize_variable <- function(formula,
 #' @param data an optional data frame containing the variables appearing in
 #' \code{formula}.
 #' @param FUN a function taking at least two arguments, in which the first
-#' two arguments are the two variables to be related.
+#' two arguments are the two variables to be related. Should return a scalar.
 #' @param ... additional parameters to pass to FUN.
 #'
 #' @return data.frame containing the statistics of interest
@@ -59,6 +61,7 @@ summarize_variable <- function(formula,
 #'
 #' @aliases summarise_relationship
 #'
+#' @importFrom rlang .data
 #' @export
 summarize_relationship <- function(formula,
                                    data = NULL,
@@ -79,16 +82,18 @@ summarize_relationship <- function(formula,
   }
 
   FUN <- match.fun(FUN)
+  #browser()
 
   # group data and then apply function to each group
-  .mf <- tidyr::nest(.mf, .key = "statistic")
+  .mf <- tidyr::nest(.mf,
+                     statistic = tidyselect::one_of(colnames(.mf)[1:2]))
 
   .out <- dplyr::mutate(.mf,
-                        statistic = purrr::map(statistic, function(u){
-                          FUN(u[, 1], u[, 2], ...)
+                        statistic = purrr::map(.data$statistic, function(u){
+                          drop(FUN(u[, 1], u[, 2], ...))
                         }))
 
-  as.data.frame(tidyr::unnest(.out))
+  as.data.frame(tidyr::unnest(.out, cols = .data$statistic))
 }
 
 
@@ -120,8 +125,6 @@ perc01 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
 perc05 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.05, na.rm = na.rm, type = type, names = FALSE)
@@ -129,8 +132,6 @@ perc05 <- function(x, na.rm = FALSE, type = 7){
 
 
 #' @describeIn perc01
-#'
-#' @inheritParams perc01
 #'
 #' @export
 perc10 <- function(x, na.rm = FALSE, type = 7){
@@ -140,8 +141,6 @@ perc10 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
 perc20 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.20, na.rm = na.rm, type = type, names = FALSE)
@@ -149,8 +148,6 @@ perc20 <- function(x, na.rm = FALSE, type = 7){
 
 
 #' @describeIn perc01
-#'
-#' @inheritParams perc01
 #'
 #' @export
 perc80 <- function(x, na.rm = FALSE, type = 7){
@@ -160,8 +157,6 @@ perc80 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
 perc85 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.85, na.rm = na.rm, type = type, names = FALSE)
@@ -169,8 +164,6 @@ perc85 <- function(x, na.rm = FALSE, type = 7){
 
 
 #' @describeIn perc01
-#'
-#' @inheritParams perc01
 #'
 #' @export
 perc90 <- function(x, na.rm = FALSE, type = 7){
@@ -180,8 +173,6 @@ perc90 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
 perc95 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.95, na.rm = na.rm, type = type, names = FALSE)
@@ -189,8 +180,6 @@ perc95 <- function(x, na.rm = FALSE, type = 7){
 
 
 #' @describeIn perc01
-#'
-#' @inheritParams perc01
 #'
 #' @export
 perc99 <- function(x, na.rm = FALSE, type = 7){
@@ -200,8 +189,6 @@ perc99 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
 Q1 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.25, na.rm = na.rm, type = type, names = FALSE)
@@ -210,10 +197,8 @@ Q1 <- function(x, na.rm = FALSE, type = 7){
 
 #' @describeIn perc01
 #'
-#' @inheritParams perc01
-#'
 #' @export
-Q2 <- function(x, na.rm = FALSE, type = 7){
+Q3 <- function(x, na.rm = FALSE, type = 7){
   quantile(x, probs = 0.75, na.rm = na.rm, type = type, names = FALSE)
 }
 

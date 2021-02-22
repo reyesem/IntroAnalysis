@@ -1,5 +1,0 @@
-"0","estimate_parameters(fit_p,"
-"0","                    confidence.level = 0.95)"
-"2","Error in names(x) <- value : 
-  'names' attribute [5] must be the same length as the vector [4]
-"

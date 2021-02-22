@@ -28,6 +28,7 @@
 #' plot_null_distribution(null_distn,
 #'   show.pvalue = TRUE)
 #'
+#' @importFrom rlang .data
 #' @export
 plot_null_distribution <- function(statistics,
                                    show.pvalue = FALSE){
@@ -38,7 +39,8 @@ plot_null_distribution <- function(statistics,
   .dens <- data.frame(.dens[c(1, 2)])
 
   .out <- ggplot2::ggplot(data = .dens,
-                          mapping = ggplot2::aes(x = x, y = y)) +
+                          mapping = ggplot2::aes(x = .data$x,
+                                                 y = .data$y)) +
     ggplot2::geom_area(fill = NA, color = "black") +
     ggplot2::labs(x = paste("Standardized Statistic Across Repeated",
                             "Samples Under Null Hypothesis")) +
@@ -54,7 +56,8 @@ plot_null_distribution <- function(statistics,
       ggplot2::geom_area(data = .dens2,
                          fill = "red", color = "black") +
       ggplot2::geom_vline(data = data.frame(`stat` = .tstat),
-                          mapping = ggplot2::aes(xintercept = stat),
+                          mapping = ggplot2::aes(xintercept =
+                                                   .data$stat),
                           color = "red", linetype = 2)
   }
 

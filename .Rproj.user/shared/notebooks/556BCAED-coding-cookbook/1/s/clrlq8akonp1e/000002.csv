@@ -1,6 +1,0 @@
-"0","qplot(data = mtcars.augment,"
-"0","      y = .resid,"
-"0","      x = seq_along(.resid),"
-"0","      geom = c(""line"", ""point"")) +"
-"0","  labs(y = ""Residuals"","
-"0","       x = ""Order of Observations"")"

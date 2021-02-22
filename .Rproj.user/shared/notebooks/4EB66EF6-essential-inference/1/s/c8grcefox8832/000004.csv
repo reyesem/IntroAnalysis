@@ -1,6 +1,0 @@
-"0","fit_reg1 <- specify_mean_model(mpg ~ 1 + hp + cyl, data = mtcars)"
-"0","fit_reg0 <- specify_mean_model(mpg ~ 1 + cyl, data = mtcars)"
-"0","compare_models(fit_reg1,"
-"0","               fit_reg0,"
-"0","               assume.constant.variance = TRUE,"
-"0","               assume.normality = TRUE)"

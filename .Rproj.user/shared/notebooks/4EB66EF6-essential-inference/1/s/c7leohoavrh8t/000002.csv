@@ -1,3 +1,0 @@
-"0","fit_two <- specify_mean_model(mpg ~ am, data = mtcars)"
-"0","fit_two <- specify_mean_model(mpg ~ 1 + am, data = mtcars)"
-"0","fit_two <- specify_mean_model(mpg ~ 1 + am, data = mtcars)"

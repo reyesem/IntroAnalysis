@@ -4,7 +4,7 @@
 \alias{obtain_diagnostics}
 \title{Obtain residuals and fitted values for diagnostics.}
 \usage{
-obtain_diagnostics(mean.model, data = stats::model.frame(mean.model))
+obtain_diagnostics(mean.model, data)
 }
 \arguments{
 \item{mean.model}{\code{lm} or \code{glm} model fit defining the model from
@@ -21,7 +21,7 @@ two columns added to the original data:
   \item \code{.resid}: the residuals for the model.}
 }
 \description{
-A wrapper for \code{\link[broom]{augment}} which obtains residuals and
+A wrapper for \code{\link[generics]{augment}} which obtains residuals and
 fitted values only for a specified data generating process.
 }
 \examples{

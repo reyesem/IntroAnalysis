@@ -535,10 +535,11 @@ Consider computing the mean fuel efficiency and the standard deviation of the fu
 summarize_variable(mpg ~ am, data = mtcars, mean, sd)
 ```
 
-The `summarize_variable()` function takes a list of functions (standard `R`) functions that should be applied to the variable.  If that function requires additional parameters, they can be specified; you just need to ensure the function returns only a single value.
+The `summarize_variable()` function takes a series of functions (standard `R`) functions that should be applied to the variable.  If that function requires additional parameters, they can be specified using the `.args` argument; you just need to ensure the function returns only a single value.
 
 ```{r}
-summarize_variable(mpg ~ am, data = mtcars, quantile(., probs = c(0.25)))
+summarize_variable(mpg ~ am, data = mtcars, quantile, 
+                   .args = list(probs = c(0.25)))
 ```
 
 Computing the correlation between two variables, such as the fuel efficiency and the horsepower, can be done using the `summarize_relationship()` function.

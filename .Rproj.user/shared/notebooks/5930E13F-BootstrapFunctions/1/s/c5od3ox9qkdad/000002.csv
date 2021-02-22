@@ -1,3 +1,0 @@
-"0","```r
-anova(fit.anova) %>% tidy()
-```"

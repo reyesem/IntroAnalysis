@@ -1,2 +1,0 @@
-"0","fit_anova1 <- lm(mpg ~ cyl, data = mtcars)"
-"0","fit_anova0 <- lm(mpg ~ 1, data = mtcars)"

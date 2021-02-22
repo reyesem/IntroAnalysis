@@ -4,15 +4,18 @@
 \alias{plot_sampling_distribution}
 \title{Plot the sampling distribution of a statistic.}
 \usage{
-plot_sampling_distribution(estimates, parameter,
-  show.confidence.interval = FALSE)
+plot_sampling_distribution(
+  estimates,
+  parameter,
+  show.confidence.interval = FALSE
+)
 }
 \arguments{
 \item{estimates}{result of a call to \code{\link{estimate_parameters}}.}
 
 \item{parameter}{character string indicating for which parameter the modeled
 sampling distribution should be plotted. This should match the output of the
-"term" column in \code{\link{estimate_parameters()}} output. If missing
+"term" column in \code{\link{estimate_parameters}} output. If missing
 (default), the model for the sampling distribution of the first term is
 plotted.}
 

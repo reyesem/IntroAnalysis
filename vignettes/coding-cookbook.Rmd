@@ -4,7 +4,7 @@ author: "Eric Reyes"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Essential Inference using Linear Models}
+  %\VignetteIndexEntry{Coding Cookbook}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

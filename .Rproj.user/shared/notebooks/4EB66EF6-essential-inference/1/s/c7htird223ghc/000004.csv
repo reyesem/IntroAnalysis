@@ -1,8 +1,0 @@
-"0","fit_single1 <- specify_mean_model(mpg ~ 1, data = mtcars)"
-"0","samp_distn <- estimate_parameters(fit_single1,"
-"0","                                  confidence.interval = 0.95,"
-"0","                                  assume.constant.variance = TRUE,"
-"0","                                  assume.normality = TRUE)"
-"2","Error in estimate_parameters.lm(fit_single1, confidence.interval = 0.95,  : 
-  unused argument (confidence.interval = 0.95)
-"

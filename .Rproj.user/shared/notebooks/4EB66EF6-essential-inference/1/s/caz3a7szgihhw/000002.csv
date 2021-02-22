@@ -1,6 +1,0 @@
-"0","estimate_mean_response(fit_p, "
-"0","                       confidence.level = 0.95)"
-"2","the condition has length > 1 and only the first element will be used"
-"2","Error in family(object)$mu.eta(fit) : 
-  Argument eta must be a nonempty numeric vector
-"

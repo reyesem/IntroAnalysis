@@ -1,0 +1,219 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "09 - Block Designs"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+Grocery retail is a particular difficult industry as the products often have a short shelf life.  Manufacturers are interested in determining ways to extend the shelf life of a product; in milk production, this includes reducing the growth of bacteria.  
+
+Three different washing solutions are being compared to study their effectiveness in retarding bacteria in 5-gallon milk containers.  The analysis is done in a laboratory, and only three trials can be run on any day due to the resources involved.  Unfortunately, the conditions in the lab from day to day can vary and pose an additional source of variability in the study.  On each of four days, three 5-gallon containers were washed using one of the three solutions.  The containers were then exposed, for a fixed period of time, to conditions to allow bacteria growth under an accelerated timeline.  Following this exposure, the number of colony-forming units of bacteria was obtained from a sample of the container.  The washing solution applied to each container was randomly determined, ensuring that each of the three solutions was applied on each of the four days (a total of 12 responses obtained).  Interest is in determining if, on average, the bacteria growth differs for at least one of the washing solutions.
+
+The data contains the following variables:
+
+  - `Day`: indicator of the day on which the corresponding response was collected.
+  - `Solution`: indicator of the washing solution utilized.
+  - `CFU`: the number of colony-forming units (CFU's) of bacteria.
+  
+
+The data is available in `R` (`MilkBacteria`).
+
+
+
+## Questions
+
+### Exercise: Variables
+> Identify the response, the factor of interest, and the block term.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=2874cfd3-af89-46ec-adaf-ac8001567b05&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+
+### Exercise: Graphical Summary
+> Construct a graphic summarizing the data to address the question of interest.  What does the plot suggest?
+
+```{r s9-ex-graph, exercise=TRUE, exercise.eval=FALSE}
+# This part ensures Day is treated as a categorical variable.
+MilkBacteria = MilkBacteria %>%
+  mutate(Day = factor(Day))
+
+qplot() +
+  labs()
+```
+
+```{r s9-ex-graph-solution}
+# This part ensures Day is treated as a categorical variable.
+MilkBacteria = MilkBacteria %>%
+  mutate(Day = factor(Day))
+
+qplot(data = MilkBacteria,
+      y = CFU,
+      x = Solution,
+      color = Day,
+      geom = "point") +
+  labs(y = "Bacteria Growth (CFU)",
+       x = "",
+       color = "Day of Study")
+```
+
+```{r s9-mutation, include=FALSE}
+MilkBacteria = MilkBacteria %>%
+  mutate(Day = factor(Day))
+```
+
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=6b3014ce-f991-4328-b3c1-ac8001572bfa&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Model for Data Generating Process
+> Write a model for the data generating process which allows the bacteria growth to vary across the solutions as well as acounts for the variability introduced by needing to conduct the across different days.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=9111f568-0cb9-409f-afb1-ac800158e15d&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Estimating Parameters
+> We are interested in estimating the parameters in the above model.  Assuming the data is consistent with all conditions for the classical repeated measures ANOVA model, compute a 95% CI for each of the parameters.  Interpret the value 0.583 found in the output.
+
+```{r s9-ex-ci, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9-mutation"}
+milk.model = specify_mean_model()
+
+estimate_parameters()
+```
+
+```{r s9-ex-ci-solution}
+milk.model = specify_mean_model(CFU ~ Solution + Day, data = MilkBacteria)
+
+estimate_parameters(milk.model, confidence.level = 0.95,
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
+```
+
+```{r s9-models, include=FALSE, exercise.setup="s9-mutation"}
+milk.model = specify_mean_model(CFU ~ Solution + Day, data = MilkBacteria)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=1e93bd2f-4452-4864-9096-ac80015b67bf&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Hypotheses
+> State the null and alternative hypotheses which will be tested to address the research objective.  Then, write the model for the data generating process under the null hypothesis.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=ab077b95-ca88-478c-b7de-ac80015d30dd&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Compute the P-Value
+> Assuming the data is consistent with the conditions for the classical repeated measures ANOVA model, compute a p-value to assess the researchers' objective.  Based on this p-value, what conclusion can they reach?
+
+```{r s9-ex-pvalue, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9-models"}
+milk.model.h0 = specify_mean_model()
+
+compare_models()
+```
+
+```{r s9-ex-pvalue-solution}
+milk.model.h0 = specify_mean_model(CFU ~ 1 + Day, data = MilkBacteria)
+
+compare_models(milk.model,
+               milk.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=aa55c512-0232-4a2e-b44c-ac80015e1dc4&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Assessing Conditions
+> How do you think we assess conditions for this type of model?
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=486e811f-4167-4c9c-9665-ac80015eec51&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>

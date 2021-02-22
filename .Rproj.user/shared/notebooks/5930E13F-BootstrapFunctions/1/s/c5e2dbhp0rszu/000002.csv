@@ -1,6 +1,0 @@
-"0","```r
-lm.boot.pairwise <- boot_model(fit.lm, method=\"pairwise\")
-lm.boot.pairwise
-```"
-"1","95% CI: 
-"

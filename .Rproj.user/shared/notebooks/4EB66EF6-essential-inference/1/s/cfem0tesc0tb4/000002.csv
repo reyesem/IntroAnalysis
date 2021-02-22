@@ -1,1 +1,0 @@
-"0","fit_single1 <- lm(mpg ~ 1, data = mtcars)"

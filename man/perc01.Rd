@@ -11,7 +11,7 @@
 \alias{perc95}
 \alias{perc99}
 \alias{Q1}
-\alias{Q2}
+\alias{Q3}
 \title{Compute specific percentiles of a numeric variable.}
 \usage{
 perc01(x, na.rm = FALSE, type = 7)
@@ -34,7 +34,7 @@ perc99(x, na.rm = FALSE, type = 7)
 
 Q1(x, na.rm = FALSE, type = 7)
 
-Q2(x, na.rm = FALSE, type = 7)
+Q3(x, na.rm = FALSE, type = 7)
 }
 \arguments{
 \item{x}{numeric vector whose sample quantiles are wanted.  \code{NA} and
@@ -74,7 +74,7 @@ interquartile range.
 
 \item \code{Q1}: 
 
-\item \code{Q2}: 
+\item \code{Q3}: 
 }}
 
 \examples{

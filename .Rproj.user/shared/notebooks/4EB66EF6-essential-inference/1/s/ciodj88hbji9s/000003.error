@@ -1,1 +1,0 @@
-{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"specify_mean_model((am == \"automatic\") ~ 1, data = mtcars, family = binomial)","line_number":0}],"message":"Error in specify_mean_model((am == \"automatic\") ~ 1, data = mtcars, family = binomial) : \n  '...' used in an incorrect context\n"}

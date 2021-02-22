@@ -16,7 +16,7 @@ optionally a grouping variable.}
 \code{formula}.}
 
 \item{FUN}{a function taking at least two arguments, in which the first
-two arguments are the two variables to be related.}
+two arguments are the two variables to be related. Should return a scalar.}
 
 \item{...}{additional parameters to pass to FUN.}
 }

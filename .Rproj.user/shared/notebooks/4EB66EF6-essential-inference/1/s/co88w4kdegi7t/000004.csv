@@ -1,9 +1,0 @@
-"0","estimate_mean_response(fit_reg,"
-"0","                       confidence.level = 0.95,"
-"0","                       assume.constant.variance = TRUE,"
-"0","                       assume.normality = TRUE,"
-"0","                       hp = 123,"
-"0","                       cyl = 6)"
-"2","variable 'cyl' is not a factor"
-"2","Error: variable 'cyl' was fitted with type ""factor"" but type ""numeric"" was supplied
-"

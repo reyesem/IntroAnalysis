@@ -102,7 +102,7 @@ specify_mean_model <- function(formula,
     .call[[1]] <- quote(glm)
   }
 
-  eval.parent(.call, n = 2)
+  eval.parent(.call, n = 1)
 }
 
 
@@ -412,7 +412,7 @@ estimate_mean_response <- function(mean.model,
 
 #' Obtain residuals and fitted values for diagnostics.
 #'
-#' A wrapper for \code{\link[broom]{augment}} which obtains residuals and
+#' A wrapper for \code{\link[generics]{augment}} which obtains residuals and
 #' fitted values only for a specified data generating process.
 #'
 #' @param mean.model \code{lm} or \code{glm} model fit defining the model from
@@ -432,8 +432,15 @@ estimate_mean_response <- function(mean.model,
 #'
 #' @import stats
 #' @export
-obtain_diagnostics <- function(mean.model,
-                               data = stats::model.frame(mean.model)){
+obtain_diagnostics <- function(mean.model, data){
+
+  # determine data if not available, and adjust for missing data
+  if (base::missing(data)) {
+    data = stats::model.frame(mean.model)
+  } else if (class(mean.model$na.action) == "omit") {
+    data = data[-na.action(mean.model), ]
+  }
+
   .out <- broom::augment(mean.model, data = data,
                   type.predict = "response",
                   type.residuals = "deviance")
@@ -456,7 +463,7 @@ obtain_diagnostics <- function(mean.model,
 
 #' Produce metrics for the quality of the model fit.
 #'
-#' A wrapper for \code{\link[broom]{glance}} which obtains metrics on the
+#' A wrapper for \code{\link[generics]{glance}} which obtains metrics on the
 #' goodness of fit of the model. For the linear model in particular, some
 #' metrics are suppressed.
 #'
@@ -482,4 +489,6 @@ summarize_model_fit <- function(mean.model){
                                                       "p.value",
                                                       "df"))))
   }
+
+  .out
 }
