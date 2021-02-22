@@ -1,6 +1,5 @@
 #' @describeIn estimate_mean_response Estimates mean response for linear models.
 #'
-#' @inheritParams estimate_mean_response
 #' @param assume.identically.distributed boolean; if \code{TRUE} (default),
 #' homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
 #' assumed.
@@ -17,8 +16,6 @@
 #' \code{"percentile"} (default) an equal-tailed percentile interval is
 #' constructed. If \code{"BC"} the bias-corrected percentile interval is
 #' constructed. Currently, the bootstrap-t interval is not supported.
-#' @param ... comma separated list of variables indicating the value of the
-#' covariate(s) at which to make the predictions.
 #'
 #' @import stats
 #' @export
@@ -139,18 +136,11 @@ estimate_mean_response.lm <- function(mean.model,
 #' @describeIn estimate_mean_response Estimates mean response for generalized
 #' linear models.
 #'
-#' @inheritParams estimate_mean_response
 #' @param method string defining the methodology to employ. If
 #' \code{"classical"} (default), the model is assumed correct and classical
 #' large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
 #' is performed. If \code{"case-resampling"}, a case-resampling bootstrap is
 #' performed.
-#' @param type string defining the type of confidence interval to construct. If
-#' \code{"percentile"} (default) an equal-tailed percentile interval is
-#' constructed. If \code{"BC"} the bias-corrected percentile interval is
-#' constructed. If \code{"bootstrap-t"} the bootstrap t interval is constructed.
-#' @param ... comma separated list of variables indicating the value of the
-#' covariate(s) at which to make the predictions.
 #'
 #' @import stats
 #' @export

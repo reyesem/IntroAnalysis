@@ -1,4 +1,0 @@
-"0","summarize_relationship(mpg ~ am, data = mtcars, FUN = cor)"
-"2","Error in mutate_impl(.data, dots) : 
-  Evaluation error: 'y' must be numeric.
-"

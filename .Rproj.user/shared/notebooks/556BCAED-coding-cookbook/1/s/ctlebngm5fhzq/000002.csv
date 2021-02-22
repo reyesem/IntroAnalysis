@@ -1,4 +1,0 @@
-"0","mtcars = mtcars %>%"
-"0","  mutate(vs = recode(vs,"
-"0","                     `0` = ""V Engine"","
-"0","                     `1` = ""Straight Engine""))"

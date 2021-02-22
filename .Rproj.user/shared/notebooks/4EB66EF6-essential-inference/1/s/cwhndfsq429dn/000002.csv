@@ -1,6 +1,0 @@
-"0","fit_single0 <- specify_mean_model(mpg ~ constant(23), data = mtcars)"
-"0","null_distn <- compare_models(fit_single1,"
-"0","                             fit_single0,"
-"0","                             assume.constant.variance = TRUE,"
-"0","                             assume.normality = TRUE)"
-"0","plot_null_distribution(null_distn)"

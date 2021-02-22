@@ -1,0 +1,181 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "01 - Statistical Process"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+Large surveys are commonly conducted to inform policy decisions. The Study on the Efficacy of Nosocomial Infection Control (SENIC Project) was to determine whether infection surveillance and control programs have reduced the rates of nosocomial (hospital-acquired) infection in the United States hospitals. This data set consists of a random sample of 113 hospitals selected from across the US.  Each record corresponds to information on the hospital's performance. The data contains the following variables:
+
+  - `ID`: Unique hospital identifer.
+  - `Length of Stay`: Average length of stay of all patients in hospital (days).
+  - `Age`: Average age of patients (in years)
+  - `Infection Risk`: estimated probability of acquiring infection in hospital (percent).
+  - `Routine Culturing Ratio`: Ratio of number of cultures performed to the number of patients without
+signs or symptoms of hospital-acquired infection, times 100.
+  - `Routine Xray Ratio`: Ratio of number of X-rays performed to number of patients without signs or
+symptoms of pneumonia, times 100.
+  - `Number of Beds`: number of beds in hospital during study period.
+  - `Medical School`: Indicator of whether the hospital is associated with a medical school (1 = Yes, 2 =
+No).
+  - `Region`: Indicator of the geographic region for hospital (1 = NE, 2 = NC, 3 = S, 4 = W).
+  - `Average Census`: number of patients per day in hospital during study period.
+  - `Number Nurses`: number of full-time equivalent registered and licensed practical nurses
+during study period (number of full time plus one half the number of part time).
+  - `Available Facilities`: Percent of 35 potential facilities and services that are provided by the hospital.
+
+The data is available in `R` (`senic`).
+
+
+## Questions
+For this series of exercises, suppose researchers are interested in determining if there is evidence the average _infection risk_ for a hospital in the US exceeds 75%.
+
+
+### Exercise: Population
+> For the stated research objective, what is the population of interest?
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=65e68c10-8451-41b3-85fa-ac800110217b&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox tip">
+  When describing the population, be as descriptive as possible based on the context of the problem.
+</div>
+
+
+### Exercise: Sample
+> For this study, what is the sample?
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a283f64f-5e44-4b52-8c55-ac8001106fa7&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Variable
+> For the stated research objective, what is the (response) variable being recorded for each unit?
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bf68d5dc-4a8f-4612-9fdf-ac800110ef7e&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Parameter
+> For the stated research objective, what is the (population) parameter of interest?
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=1a79e134-dbe9-42e3-92b4-ac8001114156&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox tip">
+  It is common for students to confuse a parameter and a variable (perhaps due to the use of _parameter_ in other science courses). While the variable is the measurement you record, the _parameter_ is the summary of that variable within the population.  The phrase "population parameter" is sometimes used instead of simply "parameter" to emphasize that it characterizes the variable within the population.
+</div>
+
+
+### Exercise: Hypotheses
+> State the null and alternative hypotheses that capture the research objective.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b7ea2921-5664-4369-b4fc-ac800111f136&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Graphic
+> Using the available data (`senic`, already available in R), construct a histogram summarizing the distribution of the infection risk within the sample.  Describe the graphic.
+
+```{r s1-ex-histogram, exercise=TRUE, exercise.eval=FALSE}
+qplot()
+```
+
+```{r s1-ex-histogram-solution}
+qplot(data = senic,
+      x = `Infection Risk`,
+      geom = "histogram") +
+  labs(y = "Number of Hospitals",
+       x = "Estimated Probability (%) of Acquiring Hospital Infection")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=257a13d4-da10-4ed4-af1b-ac8001138244&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox tip">
+  Choosing the binwidth is a bit of an artform.  If you are unsure of an appropriate binwidth, leave it off and the software will choose one appropriately.
+</div>
+

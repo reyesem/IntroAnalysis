@@ -1,6 +1,0 @@
-"0","estimate_parameters(fit_p,"
-"0","                    confidence.level = 0.95,"
-"0","                    method = ""case"")"
-"2","Error in bootstrap_case(mean.model, reps = bootstrap.replications) : 
-  object '.all' not found
-"

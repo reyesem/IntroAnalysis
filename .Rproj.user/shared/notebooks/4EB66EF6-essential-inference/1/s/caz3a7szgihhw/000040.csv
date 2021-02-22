@@ -1,9 +1,0 @@
-"0","estimate_mean_response(f0,
-                       confidence.level = 0.95,
-                       Intercept = 1,
-                       method = ""case"",
-                       bootstrap.replications = 20)
-"
-"2","Error in attributes(.boot) <- list(dim = c(nrow(.newdat), bootstrap.replications)) : 
-  dims [product 20] do not match the length of object [2]
-"

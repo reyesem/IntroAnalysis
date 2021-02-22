@@ -1,6 +1,5 @@
 #' @describeIn estimate_parameters Estimates for linear models.
 #'
-#' @inheritParams estimate_parameters
 #' @param assume.identically.distributed boolean; if \code{TRUE} (default),
 #' homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
 #' assumed.
@@ -32,7 +31,8 @@ estimate_parameters.lm <- function(mean.model,
                                                  "two-point mass"),
                                    type = c("percentile",
                                             "BC",
-                                            "bootstrap-t")){
+                                            "bootstrap-t"),
+                                   ...){
 
   construct <- match.arg(construct)
   type <- match.arg(type)
@@ -127,16 +127,11 @@ estimate_parameters.lm <- function(mean.model,
 
 #' @describeIn estimate_parameters Estimates for generalized linear models.
 #'
-#' @inheritParams estimate_parameters
 #' @param method string defining the methodology to employ. If
 #' \code{"classical"} (default), the model is assumed correct and classical
 #' large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
 #' is performed. If \code{"case-resampling"}, a case-resampling bootstrap is
 #' performed.
-#' @param type string defining the type of confidence interval to construct. If
-#' \code{"percentile"} (default) an equal-tailed percentile interval is
-#' constructed. If \code{"BC"} the bias-corrected percentile interval is
-#' constructed. If \code{"bootstrap-t"} the bootstrap-t interval is constructed.
 #'
 #' @import stats
 #' @import MASS
@@ -149,7 +144,8 @@ estimate_parameters.glm <- function(mean.model,
                                                "case-resampling"),
                                     type = c("percentile",
                                              "BC",
-                                             "bootstrap-t")){
+                                             "bootstrap-t"),
+                                    ...){
 
   method <- match.arg(method)
   type <- match.arg(type)

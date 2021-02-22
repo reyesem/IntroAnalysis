@@ -1,0 +1,185 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "03 - Null Distributions and P-Values"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+Large surveys are commonly conducted to inform policy decisions. The Study on the Efficacy of Nosocomial Infection Control (SENIC Project) was to determine whether infection surveillance and control programs have reduced the rates of nosocomial (hospital-acquired) infection in the United States hospitals. This data set consists of a random sample of 113 hospitals selected from across the US.  Each record corresponds to information on the hospital's performance. The data contains the following variables:
+
+  - `ID`: Unique hospital identifer.
+  - `Length of Stay`: Average length of stay of all patients in hospital (days).
+  - `Age`: Average age of patients (in years)
+  - `Infection Risk`: estimated probability of acquiring infection in hospital (percent).
+  - `Routine Culturing Ratio`: Ratio of number of cultures performed to the number of patients without
+signs or symptoms of hospital-acquired infection, times 100.
+  - `Routine Xray Ratio`: Ratio of number of X-rays performed to number of patients without signs or
+symptoms of pneumonia, times 100.
+  - `Number of Beds`: number of beds in hospital during study period.
+  - `Medical School`: Indicator of whether the hospital is associated with a medical school (1 = Yes, 2 =
+No).
+  - `Region`: Indicator of the geographic region for hospital (1 = NE, 2 = NC, 3 = S, 4 = W).
+  - `Average Census`: number of patients per day in hospital during study period.
+  - `Number Nurses`: number of full-time equivalent registered and licensed practical nurses
+during study period (number of full time plus one half the number of part time).
+  - `Available Facilities`: Percent of 35 potential facilities and services that are provided by the hospital.
+
+The data is available in `R` (`senic`).
+
+
+
+## Questions
+
+A large hospital network would like to lobby for more funding.  As part of their case, they would like to establish that on average, hospitals in the country have less than 280 beds available. Use the data provided to address the following questions.
+
+### Exercise: Graphically Summarizing the Data
+> Below is a graphic summarizing the data collected; explain why this graphic is a poor summary, and construct a more appropriate graphic for addressing the above research objective.
+
+```{r bad-plot, echo=FALSE, fig.cap = "Summary of number of beds available in a hospital."}
+ggplot(data = summarise(senic, Mean = mean(`Number of Beds`)),
+       mapping = aes(y = Mean, x = "")) +
+  geom_bar(stat = "identity", width = 0.25) +
+  labs(y = "Average Number of Beds in Hospital",
+       x = "")
+```
+
+```{r s3-ex-graph, exercise=TRUE, exercise.eval=FALSE}
+qplot() +
+  labs()
+```
+
+```{r s3-ex-graph-solution}
+qplot(data = senic,
+      y = `Number of Beds`,
+      x = "",
+      geom = "boxplot") +
+  labs(y = "Number of Beds in Hospital",
+       x = "")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e8f7d6ae-b9bd-4943-8b30-ac8001225674&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Hypotheses
+> State the null and alternative hypotheses that capture their research objective.  Be sure to define the parameter(s) of interest.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bd2f1387-f7ca-405f-98ae-ac80012373ff&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Model for Data Generating Process
+> Using mathematical notation, state the model for the data generating process under each hypothesis.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e9d16839-d6a2-4869-99ca-ac8001244e92&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox keyidea">
+  Hypotheses are statements about parameters that appear in the model for the data generating process.  The null hypothesis suggests a simpler model for the data generating process.
+</div>
+
+
+### Exercise: Computing a P-Value
+> Assuming the data is representative of all hospitals in the US and that the number of beds in one hospital does not affect the number of beds in any other hospital, what conclusions can the lobbyists reach?  Compute a p-value for addressing this question, and then use it to address the question.
+
+```{r s3-ex-pval, exercise=TRUE, exercise.eval=FALSE}
+senic.h1 = specify_mean_model()
+senic.h0 = specify_mean_model()
+
+compare_models()
+```
+
+```{r s3-ex-pval-solution}
+senic.model.h1 = specify_mean_model(`Number of Beds` ~ 1, data = senic)
+senic.model.h0 = specify_mean_model(`Number of Beds` ~ constant(280), 
+                                    data = senic)
+
+compare_models(senic.model.h1,
+               senic.model.h0,
+               assume.identically.distributed = TRUE)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=74c93d1b-c08b-4f0b-a6dd-ac800126881f&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+

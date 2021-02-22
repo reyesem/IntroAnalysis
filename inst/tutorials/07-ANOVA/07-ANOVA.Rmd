@@ -1,0 +1,217 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "07 - ANOVA"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+Physical therapy is a vital part of the recovery process for any surgery, particularly surgery which corrects motor function, such as knee or hip surgery.  A rehabilitation center researcher was interested in examining the relationship between physical fitness prior to surgery of persons undergoing corrective knee surgery and time required in physical therapy until successful rehabilitation.  Patient records in the rehabilitation center were examined, and 24 male subjects ranging in age from 18 to 30 years who had undergone similar corrective knee surgery during the past year were selected for the study.  The number of days required for successful completion of physical therapy and the prior physical fitness status (below average, average, above average) for each patient was obtained. 
+
+The data contains the following variables:
+
+  - `Subject`: unique patient identifer.
+  - `Prior Activity Level`: indicator of the activity level of the subject prior to surgery.
+  - `Recovery Time`: time (days) required to complete physical therapy successfully.
+  - `Age`: age (years, rounded to nearest tenth) of patient.
+
+The data is available in `R` (`Therapy`).
+
+
+
+## Questions
+Researchers are primarily interested in determining if, on average, the recovery time (in days) following surgery differs for subjects classified with different activity levels prior to their surgery.
+
+
+### Exercise: Graphical Summary
+> Construct a graphic summarizing the recovery time for each prior activity level.  Using the graphic, what does this data suggest about the activity level of patients prior to surgery and the recovery time following surgery?
+
+```{r s7-ex-graph, exercise=TRUE, exercise.eval=FALSE}
+qplot() +
+  labs()
+```
+
+```{r s7-ex-graph-solution}
+qplot(data = Therapy,
+      y = `Recovery Time`,
+      x = `Prior Activity Level`,
+      geom = c("boxplot", "jitter")) +
+  labs(y = "Recovery Time of Patients (Days)",
+       x = "Activity Level Prior to Surgery")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=ff7b0e16-c3d4-4367-921d-ac80014402d4&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+
+### Exercise: Parameters
+> Define population parameter(s) that we should estimate with the data in order to address their research objective.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=49348322-852d-4f33-8d9a-ac80014558ba&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Model for Data Generating Process
+> Write a model for the data generating process which is a function of the parameters defined above.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=22ef2948-21c8-4aef-ae8d-ac800146ebd4&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Estimating Parameters
+> We are interested in estimating the parameters in the above model.  Assuming the data is consistent with all conditions for the classical ANOVA model, compute a 95% CI for each of the parameters.
+
+```{r s7-ex-ci, exercise=TRUE, exercise.eval=FALSE}
+therapy.model.h1 = specify_mean_model()
+
+estimate_parameters()
+```
+
+```{r s7-ex-ci-solution}
+therapy.model.h1 = specify_mean_model(`Recovery Time` ~ `Prior Activity Level`,
+                                      data = Therapy)
+
+estimate_parameters(therapy.model.h1, confidence.level = 0.95,
+                    assume.constant.variance = TRUE,
+                    assume.normality = TRUE)
+```
+
+```{r s7-models, include=FALSE}
+therapy.model.h1 = specify_mean_model(`Recovery Time` ~ `Prior Activity Level`,
+                                      data = Therapy)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=68fdd95b-eaf3-4cfd-8a59-ac80014783f2&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Hypotheses
+> State the null and alternative hypotheses which will be tested to address the research objective.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=fcc5126b-4ce0-4168-bec1-ac8001485040&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Impact of Hypotheses
+> Specify the model for the data generating process under the null hypothesis.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=698a2f8b-22f4-4e77-908e-ac80014921fd&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Partition the Variability
+> Compute the ANOVA table which partitions the variability in the response in order to allow us to test the hypotheses specified above assuming the data is representative of the underlying population of surgical patients, the error in the recovery time for one patient is independent of the error in the recovery time for all other patients, and the error in the recovery time follows a Normal distribution.  Using the output, estimate the variability in the recovery time for someone with below typical activity level.
+
+```{r s7-ex-pvalue, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s7-models"}
+therapy.model.h0 = specify_mean_model()
+
+compare_models()
+```
+
+```{r s7-ex-pvalue-solution}
+therapy.model.h0 = specify_mean_model(`Recovery Time` ~ 1, data = Therapy)
+
+compare_models(therapy.model.h1,
+               therapy.model.h0,
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=f4012a53-1cf2-4dda-b87b-ac800149fd4b&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Interpret the P-Value
+> Given the analysis conducted, the lead therapist at the center would like to be able to make the following statement to potential patients: "research has shown that increasing your activity level prior to surgery causes a reduction in your physical recovery time following surgery."  Explain why this statement is not justified.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=13834c80-fc49-44f7-a787-ac80014af810&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+<div class = "tipbox keyidea">
+We cannot separate a p-value from everything else we know about the data, including the visualization of the data and how it was collected.
+</div>

@@ -1,5 +1,0 @@
-"0","fit_reg0_alt <- specify_mean_model(mpg ~ 1 + hp, data = mtcars)"
-"0","compare_models(fit_reg1,"
-"0","               fit_reg0_alt,"
-"0","               assume.constant.variance = TRUE,"
-"0","               assume.normality = TRUE)"

@@ -102,7 +102,7 @@ specify_mean_model <- function(formula,
     .call[[1]] <- quote(glm)
   }
 
-  eval.parent(.call, n = 2)
+  eval.parent(.call, n = 1)
 }
 
 
@@ -369,7 +369,7 @@ compare_models <- function(full.mean.model,
 #' \deqn{(\hat{\beta} - \hat{\sigma}\hat{G}^{-1}(1-\alpha),
 #' \hat{\beta} - \hat{\sigma}\hat{G}^{-1}\alpha)}
 #'
-#' @param mean.model \code{lm} or \code{glm} model fit defining the model
+#' @param mean.model \code{lm} or \code{glm} model fit defining the model and
 #' therefore the parameters of the mean model to be estimated.
 #' @param confidence.level scalar between 0 and 1 indicating the confidence
 #' level for all confidence intervals constructed. If missing (default), only
@@ -412,11 +412,11 @@ estimate_mean_response <- function(mean.model,
 
 #' Obtain residuals and fitted values for diagnostics.
 #'
-#' A wrapper for \code{\link[broom]{augment}} which obtains residuals and
+#' A wrapper for \code{\link[generics]{augment}} which obtains residuals and
 #' fitted values only for a specified data generating process.
 #'
-#' @param mean.model \code{lm} or \code{glm} model fit defining the model
-#' therefore the parameters of the mean model to be estimated.
+#' @param mean.model \code{lm} or \code{glm} model fit defining the model from
+#' which residuals and predicted values are to be computed.
 #' @param data the original data set to which the fitted values and residuals
 #' should be added. Defaults to extracting the data from the model.
 #'
@@ -432,8 +432,15 @@ estimate_mean_response <- function(mean.model,
 #'
 #' @import stats
 #' @export
-obtain_diagnostics <- function(mean.model,
-                               data = stats::model.frame(mean.model)){
+obtain_diagnostics <- function(mean.model, data){
+
+  # determine data if not available, and adjust for missing data
+  if (base::missing(data)) {
+    data = stats::model.frame(mean.model)
+  } else if (class(mean.model$na.action) == "omit") {
+    data = data[-na.action(mean.model), ]
+  }
+
   .out <- broom::augment(mean.model, data = data,
                   type.predict = "response",
                   type.residuals = "deviance")
@@ -443,7 +450,45 @@ obtain_diagnostics <- function(mean.model,
                                                      ".sigma",
                                                      ".cooksd",
                                                      ".se.fit",
-                                                     ".std.resid"))))
+                                                     ".std.resid",
+                                                     ".rownames"))))
+
+  # adjust column names to undo what broom does
+  colnames(.out)[1:ncol(data)] <- colnames(data)
+
+  .out
+}
+
+
+
+#' Produce metrics for the quality of the model fit.
+#'
+#' A wrapper for \code{\link[generics]{glance}} which obtains metrics on the
+#' goodness of fit of the model. For the linear model in particular, some
+#' metrics are suppressed.
+#'
+#' @param mean.model \code{lm} or \code{glm} model fit defining the model for
+#' which the goodness of fit should be summarized.
+#'
+#' @return A \code{data.frame} containing one row of summary metrics.
+#'
+#' @examples
+#' fit <- lm(mpg ~ hp, data = mtcars)
+#' summarize_model_fit(fit)
+#'
+#' @import stats
+#' @export
+summarize_model_fit <- function(mean.model){
+  .out <- broom::glance(mean.model)
+
+  # adjust linear model version
+  if (class(mean.model) == "lm"){
+    .out <- subset(.out, select = which(!is.element(colnames(.out),
+                                                    c("adj.r.squared",
+                                                      "statistic",
+                                                      "p.value",
+                                                      "df"))))
+  }
 
   .out
 }

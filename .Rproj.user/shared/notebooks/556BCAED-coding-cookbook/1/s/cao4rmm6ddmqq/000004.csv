@@ -1,7 +1,0 @@
-"0","mtcars.augment = obtain_diagnostics(anova.model.h1, data = mtcars)"
-"0","qplot(data = mtcars.augment,"
-"0","      y = .resid,"
-"0","      x = am,"
-"0","      geom = ""boxplot"") +"
-"0","  labs(y = ""Residuals"","
-"0","       x = """")"

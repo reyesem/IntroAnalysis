@@ -1,2 +1,0 @@
-"0","fit_two_alt <- lm(mpg ~ am - 1, data = mtcars)"
-"0","estimate_parameters(fit_two_alt)"

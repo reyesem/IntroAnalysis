@@ -6,17 +6,31 @@
 \alias{compare_models}
 \title{Compute a p-value comparing two nested models.}
 \usage{
-\method{compare_models}{lm}(full.mean.model, reduced.mean.model,
-  simulation.replications = 4999, assume.identically.distributed = TRUE,
+\method{compare_models}{lm}(
+  full.mean.model,
+  reduced.mean.model,
+  simulation.replications = 4999,
+  assume.identically.distributed = TRUE,
   assume.constant.variance = assume.identically.distributed,
-  assume.normality = FALSE, construct = c("normal-2", "normal-1",
-  "two-point mass"))
+  assume.normality = FALSE,
+  construct = c("normal-2", "normal-1", "two-point mass"),
+  ...
+)
 
-\method{compare_models}{glm}(full.mean.model, reduced.mean.model,
-  simulation.replications = 4999, method = c("classical", "parametric"))
+\method{compare_models}{glm}(
+  full.mean.model,
+  reduced.mean.model,
+  simulation.replications = 4999,
+  method = c("classical", "parametric"),
+  ...
+)
 
-compare_models(full.mean.model, reduced.mean.model,
-  simulation.replications = 4999, ...)
+compare_models(
+  full.mean.model,
+  reduced.mean.model,
+  simulation.replications = 4999,
+  ...
+)
 }
 \arguments{
 \item{full.mean.model}{\code{lm} or \code{glm} model object defining the
@@ -46,12 +60,12 @@ from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
+\item{...}{additional arguments to be passed to other methods.}
+
 \item{method}{string defining the methodology to employ. If
 \code{"classical"} (default), the model is assumed correct and classical
 large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
 is performed.}
-
-\item{...}{additional arguments to be passed to other methods.}
 }
 \value{
 data.frame containing an ANOVA table comparing the two models. The

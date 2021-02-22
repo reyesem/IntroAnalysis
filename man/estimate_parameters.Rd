@@ -6,18 +6,33 @@
 \alias{estimate_parameters}
 \title{Estimate the parameters of linear or generalized linear models.}
 \usage{
-\method{estimate_parameters}{lm}(mean.model, confidence.level,
-  simulation.replications = 4999, assume.identically.distributed = TRUE,
+\method{estimate_parameters}{lm}(
+  mean.model,
+  confidence.level,
+  simulation.replications = 4999,
+  assume.identically.distributed = TRUE,
   assume.constant.variance = assume.identically.distributed,
-  assume.normality = FALSE, construct = c("normal-2", "normal-1",
-  "two-point mass"), type = c("percentile", "BC", "bootstrap-t"))
+  assume.normality = FALSE,
+  construct = c("normal-2", "normal-1", "two-point mass"),
+  type = c("percentile", "BC", "bootstrap-t"),
+  ...
+)
 
-\method{estimate_parameters}{glm}(mean.model, confidence.level,
-  simulation.replications = 4999, method = c("classical", "parametric",
-  "case-resampling"), type = c("percentile", "BC", "bootstrap-t"))
+\method{estimate_parameters}{glm}(
+  mean.model,
+  confidence.level,
+  simulation.replications = 4999,
+  method = c("classical", "parametric", "case-resampling"),
+  type = c("percentile", "BC", "bootstrap-t"),
+  ...
+)
 
-estimate_parameters(mean.model, confidence.level,
-  simulation.replications = 4999, ...)
+estimate_parameters(
+  mean.model,
+  confidence.level,
+  simulation.replications = 4999,
+  ...
+)
 }
 \arguments{
 \item{mean.model}{\code{lm} or \code{glm} model fit defining the model
@@ -54,18 +69,13 @@ from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
 constructed. If \code{"BC"} the bias-corrected percentile interval is
 constructed. If \code{"bootstrap-t"} the bootstrap-t interval is constructed.}
 
+\item{...}{additional arguments to be passed to other methods.}
+
 \item{method}{string defining the methodology to employ. If
 \code{"classical"} (default), the model is assumed correct and classical
 large-sample theory is used. If \code{"parametric"}, a parametric bootstrap
 is performed. If \code{"case-resampling"}, a case-resampling bootstrap is
 performed.}
-
-\item{...}{additional arguments to be passed to other methods.}
-
-\item{type}{string defining the type of confidence interval to construct. If
-\code{"percentile"} (default) an equal-tailed percentile interval is
-constructed. If \code{"BC"} the bias-corrected percentile interval is
-constructed. If \code{"bootstrap-t"} the bootstrap-t interval is constructed.}
 }
 \value{
 data.frame containing a table of parameter estimates. The object

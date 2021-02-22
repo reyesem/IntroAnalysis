@@ -1,5 +1,0 @@
-"0","qplot(data = mtcars.augment,"
-"0","      sample = .resid,"
-"0","      geom = ""qq"") +"
-"0","  labs(x = ""Theoretical Quantiles"","
-"0","       y = ""Sample Quantiles"")"

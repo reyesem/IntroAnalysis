@@ -1,2 +1,0 @@
-"0","mtcars.augment = augment(reg.model, data = mtcars)"
-"0","mtcars.augment = obtain_diagnostics(reg.model, data = mtcars)"

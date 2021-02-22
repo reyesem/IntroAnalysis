@@ -1,3 +1,0 @@
-"0","fit_single1 <- specify_mean_model(mpg ~ 1, data = mtcars)"
-"0","samp_distn <- estimate_parameters(fit_single1)"
-"0","samp_distn"

@@ -1,5 +1,0 @@
-"0","qplot(data = mtcars,"
-"0","      x = mpg,"
-"0","      geom = ""density"") +"
-"0","  labs(x = ""Miles per Gallon"","
-"0","       y = ""Density"")"

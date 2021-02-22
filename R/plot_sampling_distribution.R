@@ -11,7 +11,7 @@
 #' @param estimates result of a call to \code{\link{estimate_parameters}}.
 #' @param parameter character string indicating for which parameter the modeled
 #' sampling distribution should be plotted. This should match the output of the
-#' "term" column in \code{\link{estimate_parameters()}} output. If missing
+#' "term" column in \code{\link{estimate_parameters}} output. If missing
 #' (default), the model for the sampling distribution of the first term is
 #' plotted.
 #' @param show.confidence.interval boolean indicating whether the confidence
@@ -33,6 +33,7 @@
 #' plot_sampling_distribution(samp_distn,
 #'   show.confidence.interval = TRUE)
 #'
+#' @importFrom rlang .data
 #' @export
 plot_sampling_distribution <- function(estimates,
                                        parameter,
@@ -49,14 +50,15 @@ plot_sampling_distribution <- function(estimates,
 
   if (missing(parameter)) parameter <- colnames(.boot)[1]
   .boot <- subset(.boot, select = is.element(colnames(.boot), parameter))
-  estimates <- dplyr::filter(estimates, is.element(term, parameter))
+  estimates <- dplyr::filter(estimates, is.element(.data$term, parameter))
 
   .dens <- density(.boot[, 1], n = 1024,
                    from = min(.boot[, 1]), to = max(.boot[, 1]))
   .dens <- data.frame(.dens[c(1, 2)])
 
   .out <- ggplot2::ggplot(data = .dens,
-                          mapping = ggplot2::aes(x = x, y = y)) +
+                          mapping = ggplot2::aes(x = .data$x,
+                                                 y = .data$y)) +
     ggplot2::geom_area(fill = NA, color = "black") +
     ggplot2::labs(x = "Parameter Estimate Across Repeated Samples") +
     ggplot2::theme(axis.title.y = ggplot2::element_blank(),
@@ -72,46 +74,12 @@ plot_sampling_distribution <- function(estimates,
       ggplot2::geom_area(data = .dens2, fill = "red", color = "black") +
       ggplot2::geom_area(data = .dens3, fill = "red", color = "black") +
       ggplot2::geom_vline(data = estimates,
-                          mapping = ggplot2::aes(xintercept = lower),
+                          mapping = ggplot2::aes(xintercept = .data$lower),
                           color = "red", linetype = 2) +
       ggplot2::geom_vline(data = estimates,
-                          mapping = ggplot2::aes(xintercept = upper),
+                          mapping = ggplot2::aes(xintercept = .data$upper),
                           color = "red", linetype = 2)
   }
-
-
-  # if (missing(parameters)){
-  #   parameters <- attr(attr(estimates, "Sampling Distribution"),
-  #                      "dimnames")[[2]]
-  # } else {
-  #   .boot <- dplyr::filter(.boot,
-  #                          is.element(term, parameters))
-  #
-  #   estimates <- dplyr::filter(estimates,
-  #                              is.element(term, parameters))
-  # }
-  #
-  # .out <- ggplot2::qplot(data = .boot, x = estimate, geom = "density") +
-  #   ggplot2::labs(x = "Parameter Estimate Across Repeated Samples") +
-  #   ggplot2::theme(axis.title.y = ggplot2::element_blank(),
-  #                  axis.ticks.y = ggplot2::element_blank(),
-  #                  axis.text.y = ggplot2::element_blank())
-  #
-  # if (show.confidence.interval){
-  #   colnames(estimates)[c(4,5)] <- c("lower", "upper")
-  #   .out <- .out +
-  #     ggplot2::geom_vline(data = estimates,
-  #                         mapping = ggplot2::aes(xintercept = lower),
-  #                         color = "red", linetype = 2) +
-  #     ggplot2::geom_vline(data = estimates,
-  #                         mapping = ggplot2::aes(xintercept = upper),
-  #                         color = "red", linetype = 2)
-  # }
-  #
-  # if (length(parameters) > 1){
-  #   .out <- .out + ggplot2::facet_wrap(~ term,
-  #                                      scales = "free")
-  # }
 
   return(.out)
 }

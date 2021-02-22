@@ -4,8 +4,11 @@
 \alias{bootstrap_compute_ci}
 \title{Compute confidence intervals from a bootstrap sample.}
 \usage{
-bootstrap_compute_ci(bootobj, level, type = c("percentile", "BC",
-  "bootstrap-t"))
+bootstrap_compute_ci(
+  bootobj,
+  level,
+  type = c("percentile", "BC", "bootstrap-t")
+)
 }
 \arguments{
 \item{bootobj}{matrix containing the bootstrap estimates of the parameters

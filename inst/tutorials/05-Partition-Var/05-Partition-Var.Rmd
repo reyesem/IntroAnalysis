@@ -1,0 +1,229 @@
+---
+title: "Introductory Statistics Examples"
+subtitle: "05 - Partitioning Variability in Regression"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+
+RealEstate <- RealEstate %>%
+  mutate(Pool = recode(Pool,
+                       `1` = "Has Pool",
+                       `0` = "Does not have Pool"))
+```
+
+```{css, echo=FALSE}
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.alert {
+  background: #E87722;
+  color: white;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.subtitle{
+  color: #696969;
+  font-style: normal;
+}
+
+.author{
+  font-weight: normal;
+  font-style: italic;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+div.alert p a {
+  color: #DFD1A7;
+}
+```
+
+
+
+## Background
+When purchasing or selling a home, your real estate agent helps you determine if a house is priced correctly.  This involves comparing the price of the home with its "comparables" (similar homes in the area) to determine if the price is similar.  One way of doing this is to build a statistical model which predicts the sale price of a home based on various characteristics.  We have data on over 500 sales from real estate transactions across the United States.  Each record corresponds to the sale of a particular home and includes the following variables:
+
+  - `ID`: Unique identification for each sale.
+  - `Price`: Sale price of home (\$).
+  - `Area`: Finished area of residence (square feet).
+  - `BedRooms`: Number of bedrooms in the residence.
+  - `BathRooms`: Number of bathrooms in the residence.
+  - `AC`: Indicator of whether home has central air conditioning (1 = Yes, 0 = No).
+  - `Garage`: Number of cars that garage will hold.
+  - `Pool`: Indicator of whether home has a swimming pool (1 = Yes, 0 = No).
+  - `Year`: Year property was originally constructed.
+  - `Quality`: Indicator of the quality of the construction (1 = High quality, 2 = Medium, 3 = Low).
+  - `Style`: Indicator of the architectural style (mapping unknown).
+  - `Lot`: Lot size (square feet).
+  - `Highway`: Indicator of whether home is located near highway (1 = Yes, 0 = No).
+
+The data is available in `R` (`RealEstate`).
+
+
+
+## Questions
+Is there a difference, on average, in the price of homes with a pool and those without?
+
+<div class = "tipbox alert">
+Note: While this set of examples showcases comparing the mean response for two groups, the ideas of partitioning variability and computing a p-value can be done with a quantitative predictor.
+</div>
+
+Before proceeding, notice that the variable `Pool` is coded as a numeric variable in the dataset (1 = Yes and 0 = No).  In order to ensure the computer recognizes this is a categorical variable (and for ease of reading output), we convert this to a text variable.
+
+```{r clean-data, eval=FALSE, echo=TRUE}
+RealEstate <- RealEstate %>%
+  mutate(Pool = recode(Pool,
+                       `1` = "Has Pool",
+                       `0` = "Does not have Pool"))
+```
+
+
+### Exercise: Graphical Summary
+> Construct a graphic suitable for addressing the question of interest. 
+
+```{r s5-ex-graph, exercise=TRUE, exercise.eval=FALSE}
+qplot() +
+  labs()
+```
+
+```{r s5-ex-graph-solution}
+qplot(data = RealEstate,
+      y = `Price`,
+      x = `Pool`,
+      geom = "boxplot") +
+  labs(y = "Sale Price of Home ($)",
+       x = "")
+```
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=cf99c24f-b132-4638-bcba-ac800132d3cf&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+
+### Exercise: Model for Data Generating Process
+> Construct a model for the data generating process comparing the price of a home for homes with and without a pool.  
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=5c387ba1-0a3e-4438-a3a2-ac800134c096&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Hypotheses
+> Specify the null and alternative hypothesis which captures the question of interest.  Then, specify the model for the data generating process under this null hypothesis.
+
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=17860f9a-b0f4-49e2-8126-ac800137216a&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Compute a P-Value
+> Suppose we are willing to assume the average error in the price of a home is 0 for homes with and without a pool and that the error in the price of one home is independent of the error in the price of any other home.  Compute an appropriate p-value for testing the above hypotheses.  What conclusions can you draw?
+
+```{r s5-ex-pval, exercise=TRUE, exercise.eval=FALSE}
+realestate.model.h1 = specify_mean_model()
+realestate.model.h0 = specify_mean_model()
+
+compare_models()
+```
+
+```{r s5-ex-pval-solution}
+realestate.model.h1 = specify_mean_model(Price ~ 1 + Pool, data = RealEstate)
+realestate.model.h0 = specify_mean_model(Price ~ 1, data = RealEstate)
+
+compare_models(realestate.model.h1,
+               realestate.model.h0,
+               assume.identically.distributed = FALSE,
+               assume.normality = FALSE)
+```
+   
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e7e83169-ef88-48fa-b4f5-ac8001385a3a&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Compute a Confidence Interval
+> Suppose we are willing to assume the average error in the price of a home is 0 for homes with and without a pool and that the error in the price of one home is independent of the error in the price of any other home.  Construct a 95% confidence interval for each of the parameters in the model.  What do you notice about the confidence interval for the slope?
+
+```{r s5-models, include=FALSE}
+realestate.model.h1 = specify_mean_model(Price ~ 1 + Pool, data = RealEstate)
+realestate.model.h0 = specify_mean_model(Price ~ 1, data = RealEstate)
+```
+
+
+```{r s5-ex-ci, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s5-models"}
+estimate_parameters()
+```
+
+```{r s5-ex-ci-solution}
+estimate_parameters(realestate.model.h1, confidence.level = 0.95,
+                    assume.identically.distributed = FALSE,
+                    assume.normality = FALSE)
+```
+   
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e7f7c1fb-ea93-49de-a0ed-ac8001395eca&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+
+
+### Exercise: Compute R-Squared
+> What proportion of the variability in the price of a home is explained by whether the home has a pool?
+
+```{r s5-ex-r2, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s5-models"}
+summarize_model_fit()
+```
+
+```{r s5-ex-r2-solution}
+summarize_model_fit(realestate.model.h1)
+```
+   
+<div class = "tipbox alert">
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0346c08e-39a1-4bc1-b750-ac80013a4bd8&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+

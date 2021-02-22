@@ -1,6 +1,0 @@
-"0","sampling.distn = estimate_parameters(mpg.model,"
-"0","                                     confidence.level = 0.95,"
-"0","                                     assume.identically.distributed = TRUE,"
-"0","                                     assume.normality = FALSE)"
-"0","plot_sampling_distribution(sampling.distn,"
-"0","                           show.confidence.interval = TRUE)"

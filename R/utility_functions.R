@@ -234,3 +234,13 @@ my_hccm <- function (model, type = c("hc3", "hc0", "hc1", "hc2", "hc4"),
                      h, hc3 = (1 - h)^2, hc4 = (1 - h)^pmin(4, n * h/p))
   V %*% t(X) %*% apply(X, 2, "*", (e^2)/factor) %*% V
 }
+
+
+# knitr:::split_lines
+split_lines <- function(x) {
+  if (length(grep("\n", x)) == 0L)
+    return(x)
+  x = gsub("\n$", "\n\n", x)
+  x[x == ""] = "\n"
+  unlist(strsplit(x, "\n"))
+}

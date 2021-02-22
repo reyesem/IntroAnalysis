@@ -1,6 +1,0 @@
-"0","estimate_parameters(fit_p,"
-"0","                    confidence.level = 0.95,"
-"0","                    method = ""case"")"
-"2","Error in bootCase.default(object, f., B, names(resid(object))) : 
-  25 consecutive bootstraps did not converge.  Bailing out.
-"
