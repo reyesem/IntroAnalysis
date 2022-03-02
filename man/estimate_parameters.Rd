@@ -44,7 +44,7 @@ point estimates are returned.}
 
 \item{simulation.replications}{scalar indicating the number of samples to
 draw from the model for the sampling distribution (default = 4999). This will
-either be the number of bootstrap relications or the number of samples from
+either be the number of bootstrap replications or the number of samples from
 the classical sampling distribution. This is ignored if
 \code{confidence.level} is not specified.}
 

@@ -15,7 +15,8 @@ library(tidyverse)
 # Suppress status bar in dplyr.
 # Change handling of ordered factors
 options(dplyr.show_progress = FALSE,
-        contrasts = rep("contr.treatment", 2))
+        contrasts = rep("contr.treatment", 2),
+        readr.show_col_types = FALSE)
 
 
 # Change theme for plots
@@ -29,7 +30,7 @@ knitr::opts_chunk$set(
   prompt = FALSE,
   comment = "",
   message = FALSE,
-  warning = FALSE,
+  warning = TRUE,
   out.width = ifelse(knitr::is_latex_output(), "0.8\\textwidth", "80%"),
   fig.align = "center",
   linewidth = 80)
@@ -42,7 +43,7 @@ knitr::knit_hooks$set(
   source = function(x, options){
     # this hook is used only when linewidth option is not NULL
     if (!is.null(n <- options$linewidth)){
-      x = reyes482:::split_lines(x)
+      x = IntroAnalysis:::split_lines(x)
 
       x = ifelse(nchar(x) > n, stringr::str_wrap(x, width = n, exdent = 2), x)
     }
