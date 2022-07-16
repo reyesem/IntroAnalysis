@@ -1,0 +1,26 @@
+{
+    "id": "CE2C8153",
+    "path": "C:/Users/reyesem/OneDrive - Rose-Hulman Institute of Technology/Github/IntroAnalysis/R/bootstrap_lm_null.R",
+    "project_path": "R/bootstrap_lm_null.R",
+    "type": "r_source",
+    "hash": "1043542103",
+    "contents": "",
+    "dirty": false,
+    "created": 1651061590832.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "47,35",
+        "scrollLine": "30"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1657905592,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1657905592644,
+    "read_only": false,
+    "read_only_alternatives": []
+}

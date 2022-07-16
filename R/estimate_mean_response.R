@@ -44,7 +44,7 @@ estimate_mean_response.lm <- function(mean.model,
   }
 
   # construct new data set containing predictions
-  .newdat <- expand.grid(...)
+  .newdat <- tidyr::expand_grid(...)
   if (nrow(.newdat) == 0) .newdat <- model.frame(mean.model)
 
   # if no confidence level specified, only return point estimate
@@ -102,7 +102,6 @@ estimate_mean_response.lm <- function(mean.model,
                                   construct = construct)
     }
 
-
     .boot <- predict_coef(mean.model, .newdat, beta = .boot)
 
     .newdat$.estimate <- predict(mean.model,
@@ -159,7 +158,7 @@ estimate_mean_response.glm <- function(mean.model,
   type <- match.arg(type)
 
   # construct new data set containing predictions
-  .newdat <- expand.grid(...)
+  .newdat <- tidyr::expand_grid(...)
   if (nrow(.newdat) == 0) .newdat <- model.frame(mean.model)
 
   # if no confidence level specified, only return point estimate
