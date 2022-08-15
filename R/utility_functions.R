@@ -23,6 +23,26 @@ my_update <- function(mod, formula = NULL, data = NULL, offset = NULL) {
 }
 
 
+# Determine sign of coefficient for a one-sided hypothesis test.
+determine_sign <- function(fit1, fit0) {
+  .variable <- setdiff(names(coef(fit1)), names(coef(fit0)))
+  .estimate <- coef(fit1)[.variable]
+
+  .variable <- try(model.frame(fit1)[, .variable], silent = TRUE)
+  if (isa(.variable, 'try-error')) {
+    .variable <- 1
+  }
+
+  .off1 <- fit1$offset
+  .off0 <- fit0$offset
+
+  if (is.null(.off1)) .off1 <- 0
+  if (is.null(.off0)) .off0 <- 0
+
+  sign(((.estimate * .variable) + .off1 - .off0) / .variable)[1]
+}
+
+
 # Produce confidence intervals given covariance matrix and estimates.
 #
 # Extension of \code{confint()} to allow for adjusted variance-covariance
@@ -50,7 +70,8 @@ adjconfint <- function(ests, Sigma, level, dfresid){
 my_anova <- function(object, ...){
   .table <- as.matrix(anova(object, ...))
 
-  if (class(object)[1] == "lm"){
+  if (isa(object, 'lm') ||
+      inherits(object, 'aov', which = TRUE) == 1) {
     .table <- data.frame(
       source = c("Additional Terms", "Error"),
       df = .table[2, c(3, 1)],
@@ -60,7 +81,7 @@ my_anova <- function(object, ...){
       p.value = .table[c(2, 1), 6],
       row.names = NULL
     )
-  } else if (class(object)[1] == "glm"){
+  } else if (inherits(object, 'glm', which = TRUE) == 1){
     .table <- data.frame(
       source = c("Additional Terms", "Error"),
       df = .table[2, c(3, 1)],

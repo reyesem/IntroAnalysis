@@ -56,27 +56,27 @@ interquartile range.
 }
 \section{Functions}{
 \itemize{
-\item \code{perc05}: 
+\item \code{perc05()}: 
 
-\item \code{perc10}: 
+\item \code{perc10()}: 
 
-\item \code{perc20}: 
+\item \code{perc20()}: 
 
-\item \code{perc80}: 
+\item \code{perc80()}: 
 
-\item \code{perc85}: 
+\item \code{perc85()}: 
 
-\item \code{perc90}: 
+\item \code{perc90()}: 
 
-\item \code{perc95}: 
+\item \code{perc95()}: 
 
-\item \code{perc99}: 
+\item \code{perc99()}: 
 
-\item \code{Q1}: 
+\item \code{Q1()}: 
 
-\item \code{Q3}: 
+\item \code{Q3()}: 
+
 }}
-
 \examples{
 summarize_variable(mpg ~ 1, data = mtcars, perc01)
 

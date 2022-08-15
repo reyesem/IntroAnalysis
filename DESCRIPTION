@@ -21,17 +21,16 @@ Imports: broom,
     ggplot2,
     purrr,
     rlang,
-    stringr,
     tibble,
     tidyr,
     tidyselect
 Depends: 
     stats,
     MASS,
-    R (>= 2.10)
+    R (>= 4.0)
 Suggests: knitr,
     rmarkdown,
     testthat,
     tidyverse
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1

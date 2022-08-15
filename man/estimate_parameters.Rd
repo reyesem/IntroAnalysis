@@ -10,7 +10,7 @@
   mean.model,
   confidence.level,
   simulation.replications = 4999,
-  assume.identically.distributed = TRUE,
+  assume.identically.distributed = FALSE,
   assume.constant.variance = assume.identically.distributed,
   assume.normality = FALSE,
   construct = c("normal-2", "normal-1", "two-point mass"),
@@ -48,9 +48,9 @@ either be the number of bootstrap replications or the number of samples from
 the classical sampling distribution. This is ignored if
 \code{confidence.level} is not specified.}
 
-\item{assume.identically.distributed}{boolean; if \code{TRUE} (default),
-homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
-assumed.}
+\item{assume.identically.distributed}{boolean; if \code{TRUE},
+homoskedasticity is assumed for the error term. If \code{FALSE} (default),
+this is not assumed.}
 
 \item{assume.constant.variance}{another way of specifying
 \code{assume.identically.distributed}. Both should not be specified.}
@@ -156,11 +156,11 @@ by
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{lm}: Estimates for linear models.
+\item \code{estimate_parameters(lm)}: Estimates for linear models.
 
-\item \code{glm}: Estimates for generalized linear models.
+\item \code{estimate_parameters(glm)}: Estimates for generalized linear models.
+
 }}
-
 \examples{
 fit <- lm(mpg ~ 1 + hp, data = mtcars)
 

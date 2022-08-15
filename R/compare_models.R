@@ -1,8 +1,8 @@
 #' @describeIn compare_models Computes p-value comparing nested linear models.
 #'
-#' @param assume.identically.distributed boolean; if \code{TRUE} (default),
-#' homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
-#' assumed.
+#' @param assume.identically.distributed boolean; if \code{TRUE},
+#' homoskedasticity is assumed for the error term. If \code{FALSE} (default),
+#' this is not assumed.
 #' @param assume.constant.variance another way of specifying
 #' \code{assume.identically.distributed}. Both should not be specified.
 #' @param assume.normality boolean; if \code{TRUE}, the errors are assumed to
@@ -17,8 +17,12 @@
 #' @export
 compare_models.lm <- function(full.mean.model,
                               reduced.mean.model,
+                              alternative = c('ne', 'not equal', '!=',
+                                              'lt', 'less than', '<',
+                                              'gt', 'greater than', '>',
+                                              'at least one differs'),
                               simulation.replications = 4999,
-                              assume.identically.distributed = TRUE,
+                              assume.identically.distributed = FALSE,
                               assume.constant.variance =
                                 assume.identically.distributed,
                               assume.normality = FALSE,
@@ -65,6 +69,38 @@ compare_models.lm <- function(full.mean.model,
   }
 
   attr(.anova, "Null Distribution") <- as.numeric(.boot)
+
+  alternative <- match.arg(alternative)
+  alternative <- switch(alternative,
+                        `not equal` = 'ne',
+                        `!=` = 'ne',
+                        `less than` = 'lt',
+                        `<` = 'lt',
+                        `greater than` = 'gt',
+                        `>` = 'gt',
+                        `at least one differs` = 'ne',
+                        alternative
+  )
+
+  if (.anova$df[1] > 1 && alternative != 'ne') {
+    alternative <- 'ne'
+
+    warning('One-sided hypotheses can only be performed with single ',
+            'parameter tests. Converted to two-sided test.')
+  }
+
+  if (alternative != 'ne') {
+    .sign <- determine_sign(full.mean.model, reduced.mean.model)
+
+    if ((.sign == 1 & alternative == 'gt') |
+        (.sign == -1 & alternative == 'lt')) {
+      .anova$p.value[1] <- .anova$p.value[1] * 0.5
+    } else if ((.sign == 1 & alternative == 'lt') |
+               (.sign == -1 & alternative == 'gt')) {
+      .anova$p.value[1] <- 1 - (.anova$p.value[1] * 0.5)
+    }
+  }
+
   .anova
 }
 
@@ -82,6 +118,10 @@ compare_models.lm <- function(full.mean.model,
 #' @export
 compare_models.glm <- function(full.mean.model,
                                reduced.mean.model,
+                               alternative = c('ne', 'not equal', '!=',
+                                               'lt', 'less than', '<',
+                                               'gt', 'greater than', '>',
+                                               'at least one differs'),
                                simulation.replications = 4999,
                                method = c("classical",
                                           "parametric"),
@@ -119,6 +159,38 @@ compare_models.glm <- function(full.mean.model,
   }
 
   attr(.anova, "Null Distribution") <- as.numeric(.boot)
+
+  alternative <- match.arg(alternative)
+  alternative <- switch(alternative,
+                        `not equal` = 'ne',
+                        `!=` = 'ne',
+                        `less than` = 'lt',
+                        `<` = 'lt',
+                        `greater than` = 'gt',
+                        `>` = 'gt',
+                        `at least one differs` = 'ne',
+                        alternative
+  )
+
+  if (.anova$df[1] > 1 && alternative != 'ne') {
+    alternative <- 'ne'
+
+    warning('One-sided hypotheses can only be performed with single ',
+            'parameter tests. Converted to two-sided test.')
+  }
+
+  if (alternative != 'ne') {
+    .sign <- determine_sign(full.mean.model, reduced.mean.model)
+
+    if ((.sign == 1 & alternative == 'gt') |
+        (.sign == -1 & alternative == 'lt')) {
+      .anova$p.value[1] <- .anova$p.value[1] * 0.5
+    } else if ((.sign == 1 & alternative == 'lt') |
+               (.sign == -1 & alternative == 'gt')) {
+      .anova$p.value[1] <- 1 - (.anova$p.value[1] * 0.5)
+    }
+  }
+
   .anova
 }
 
