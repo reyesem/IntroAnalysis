@@ -9,8 +9,10 @@
 \method{compare_models}{lm}(
   full.mean.model,
   reduced.mean.model,
+  alternative = c("ne", "not equal", "!=", "lt", "less than", "<", "gt", "greater than",
+    ">", "at least one differs"),
   simulation.replications = 4999,
-  assume.identically.distributed = TRUE,
+  assume.identically.distributed = FALSE,
   assume.constant.variance = assume.identically.distributed,
   assume.normality = FALSE,
   construct = c("normal-2", "normal-1", "two-point mass"),
@@ -20,6 +22,8 @@
 \method{compare_models}{glm}(
   full.mean.model,
   reduced.mean.model,
+  alternative = c("ne", "not equal", "!=", "lt", "less than", "<", "gt", "greater than",
+    ">", "at least one differs"),
   simulation.replications = 4999,
   method = c("classical", "parametric"),
   ...
@@ -28,6 +32,8 @@
 compare_models(
   full.mean.model,
   reduced.mean.model,
+  alternative = c("ne", "not equal", "!=", "lt", "less than", "<", "gt", "greater than",
+    ">", "at least one differs"),
   simulation.replications = 4999,
   ...
 )
@@ -39,14 +45,25 @@ full model.}
 \item{reduced.mean.model}{model object of the same type as
 \code{full.mean.model} defining the reduced model under the null hypothesis.}
 
+\item{alternative}{characterizes the form of the alternative hypothesis; one
+of \code{'not equal'} (\code{'ne'}, \code{'!='}), indicating a two-sided
+alternative; \code{'less than'} (\code{'lt'}, \code{'<'}), indicating a
+one-sided alternative where the parameter is less than the specified null
+value; or \code{'greater than'} (\code{'gt'}, \code{'>'}), indicating a
+one-sided alternative where the parameter is greater than the specified null
+value. This only applies when the reduced model under the null hypothesis
+differs from the full model by a single specified parameter. Otherwise,
+a two-sided test is performed (\code{'at least one differs'}, the standard
+ANOVA alternative).}
+
 \item{simulation.replications}{scalar indicating the number of samples to
 draw from the model for the null distribution (default = 4999). This will
 either be the number of bootstrap relications or the number of samples from
 the classical null distribution.}
 
-\item{assume.identically.distributed}{boolean; if \code{TRUE} (default),
-homoskedasticity is assumed for the error term. If \code{FALSE}, this is not
-assumed.}
+\item{assume.identically.distributed}{boolean; if \code{TRUE},
+homoskedasticity is assumed for the error term. If \code{FALSE} (default),
+this is not assumed.}
 
 \item{assume.constant.variance}{another way of specifying
 \code{assume.identically.distributed}. Both should not be specified.}
@@ -113,12 +130,12 @@ All methods require observations to be independent of one another.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{lm}: Computes p-value comparing nested linear models.
+\item \code{compare_models(lm)}: Computes p-value comparing nested linear models.
 
-\item \code{glm}: Computes p-value comparing nested generalized
+\item \code{compare_models(glm)}: Computes p-value comparing nested generalized
 linear models.
-}}
 
+}}
 \examples{
 fit1 <- lm(mpg ~ 1 + hp, data = mtcars)
 fit0 <- lm(mpg ~ 1, data = mtcars)

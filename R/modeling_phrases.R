@@ -17,12 +17,11 @@
 #' Otherwise, \code{glm} is used to fit the model.
 #'
 #'
-#'
+#' @param data an optional data frame containing the variables appearing in
+#' \code{formula}.
 #' @param formula an object of class "\code{\link[stats]{formula}}": a symbolic
 #' description of the form of the mean response model. Allows some notation
 #' not typical in base R.
-#' @param data an optional data frame containing the variables appearing in
-#' \code{formula}.
 #' @param family a description of the error distribution and link function to
 #' be used in the model. See \code{\link[stats]{glm}} for details. If missing
 #' (default), a linear model is used.
@@ -51,12 +50,15 @@
 #'   data = mtcars)
 #' summary(fit_logistic)
 #'
+#' # using piping
+#' mtcars |> specify_mean_model(mpg ~ 1 + hp)
+#'
 #' @aliases specify_process
 #'
 #' @import stats
 #' @export
-specify_mean_model <- function(formula,
-                               data,
+specify_mean_model <- function(data,
+                               formula,
                                family,
                                ...){
 
@@ -93,7 +95,7 @@ specify_mean_model <- function(formula,
 
 
   # ensure call is similar to use of lm or glm with correct environment
-  .call <- match.call()
+  .call <- match.call(expand.dots = TRUE)
   .call[["formula"]] <- formula
 
   if(missing(family)){
@@ -262,6 +264,16 @@ estimate_parameters <- function(mean.model,
 #' full model.
 #' @param reduced.mean.model model object of the same type as
 #' \code{full.mean.model} defining the reduced model under the null hypothesis.
+#' @param alternative characterizes the form of the alternative hypothesis; one
+#' of \code{'not equal'} (\code{'ne'}, \code{'!='}), indicating a two-sided
+#' alternative; \code{'less than'} (\code{'lt'}, \code{'<'}), indicating a
+#' one-sided alternative where the parameter is less than the specified null
+#' value; or \code{'greater than'} (\code{'gt'}, \code{'>'}), indicating a
+#' one-sided alternative where the parameter is greater than the specified null
+#' value. This only applies when the reduced model under the null hypothesis
+#' differs from the full model by a single specified parameter. Otherwise,
+#' a two-sided test is performed (\code{'at least one differs'}, the standard
+#' ANOVA alternative).
 #' @param simulation.replications scalar indicating the number of samples to
 #' draw from the model for the null distribution (default = 4999). This will
 #' either be the number of bootstrap relications or the number of samples from
@@ -295,6 +307,10 @@ estimate_parameters <- function(mean.model,
 #' @export
 compare_models <- function(full.mean.model,
                            reduced.mean.model,
+                           alternative = c('ne', 'not equal', '!=',
+                                           'lt', 'less than', '<',
+                                           'gt', 'greater than', '>',
+                                           'at least one differs'),
                            simulation.replications = 4999,
                            ...){
   UseMethod("compare_models")
@@ -437,7 +453,7 @@ obtain_diagnostics <- function(mean.model, data){
   # determine data if not available, and adjust for missing data
   if (base::missing(data)) {
     data = stats::model.frame(mean.model)
-  } else if (class(mean.model$na.action) == "omit") {
+  } else if (isa(mean.model$na.action, 'omit')) {
     data = data[-na.action(mean.model), ]
   }
 
@@ -482,7 +498,7 @@ summarize_model_fit <- function(mean.model){
   .out <- broom::glance(mean.model)
 
   # adjust linear model version
-  if (class(mean.model) == "lm"){
+  if (isa(mean.model, 'lm')){
     .out <- subset(.out, select = which(!is.element(colnames(.out),
                                                     c("adj.r.squared",
                                                       "statistic",

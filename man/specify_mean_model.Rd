@@ -5,15 +5,15 @@
 \alias{specify_process}
 \title{Specify the mean model for the data generating process.}
 \usage{
-specify_mean_model(formula, data, family, ...)
+specify_mean_model(data, formula, family, ...)
 }
 \arguments{
+\item{data}{an optional data frame containing the variables appearing in
+\code{formula}.}
+
 \item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
 description of the form of the mean response model. Allows some notation
 not typical in base R.}
-
-\item{data}{an optional data frame containing the variables appearing in
-\code{formula}.}
 
 \item{family}{a description of the error distribution and link function to
 be used in the model. See \code{\link[stats]{glm}} for details. If missing
@@ -62,5 +62,8 @@ fit_logistic <- specify_mean_model(am ~ 1 + hp,
   family = binomial,
   data = mtcars)
 summary(fit_logistic)
+
+# using piping
+mtcars |> specify_mean_model(mpg ~ 1 + hp)
 
 }
