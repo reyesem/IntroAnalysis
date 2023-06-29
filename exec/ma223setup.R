@@ -20,9 +20,11 @@ options(dplyr.show_progress = FALSE,
 
 
 # Change theme for plots
-theme_set(theme_bw(14))
+theme_set(theme_minimal(14))
 theme_update(legend.position = "bottom",
-             legend.box = "vertical")
+             legend.box = "vertical",
+             legend.direction = "horizontal",
+             legend.justification = "left")
 
 
 # Specify chunk options

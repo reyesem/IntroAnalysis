@@ -1,0 +1,8 @@
+"0","#| label: reg-resid-2"
+"0","ggplot(data = mtcars.augment) +"
+"0","  aes(y = .resid,"
+"0","      x = .fitted) +"
+"0","  labs(y = ""Residuals"","
+"0","       x = ""Fitted Values"") +"
+"0","  geom_point() +"
+"0","  geom_smooth()"

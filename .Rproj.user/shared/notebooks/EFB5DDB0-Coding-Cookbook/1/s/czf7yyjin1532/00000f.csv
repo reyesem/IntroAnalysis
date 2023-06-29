@@ -1,0 +1,8 @@
+"0","#| label: reg-time-series"
+"0","ggplot(data = mtcars.augment) +"
+"0","  aes(y = .resid,"
+"0","      x = seq_along(.resid)) +"
+"0","  labs(y = ""Residuals"","
+"0","       x = ""Order of Observations"") +"
+"0","  geom_point() +"
+"0","  geom_line()"

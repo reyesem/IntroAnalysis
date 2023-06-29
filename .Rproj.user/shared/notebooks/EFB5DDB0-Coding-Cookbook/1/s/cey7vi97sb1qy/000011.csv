@@ -1,0 +1,2 @@
+"0","#| label: reg-augment"
+"0","mtcars.augment = obtain_diagnostics(reg.model)"

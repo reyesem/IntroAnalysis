@@ -1,0 +1,1 @@
+"0","summarize_variable(mpg ~ am, data = mtcars, mean, sd)"

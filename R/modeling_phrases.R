@@ -488,6 +488,8 @@ obtain_diagnostics <- function(mean.model, data){
 #'
 #' @return A \code{data.frame} containing one row of summary metrics.
 #'
+#' @aliases summarise_model_fit
+#'
 #' @examples
 #' fit <- lm(mpg ~ hp, data = mtcars)
 #' summarize_model_fit(fit)
@@ -508,3 +510,7 @@ summarize_model_fit <- function(mean.model){
 
   .out
 }
+
+#' @rdname summarize_model_fit
+#' @export
+summarise_model_fit <- summarize_model_fit

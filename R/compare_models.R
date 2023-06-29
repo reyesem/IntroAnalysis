@@ -101,6 +101,8 @@ compare_models.lm <- function(full.mean.model,
     }
   }
 
+  colnames(.anova)[5] <- 'standardized.statistic'
+
   .anova
 }
 
@@ -135,6 +137,8 @@ compare_models.glm <- function(full.mean.model,
     stop(paste0("The reduced model has as many parameters as the full model. ",
                 "The full and reduced models were probably switched."))
   }
+
+  method = match.arg(method)
 
   if (method == "classical"){
     .knownvar <- is.element(full.mean.model$family$family,
@@ -191,6 +195,7 @@ compare_models.glm <- function(full.mean.model,
     }
   }
 
+  colnames(.anova)[4] <- 'standardized.statistic'
   .anova
 }
 

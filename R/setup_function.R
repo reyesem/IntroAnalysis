@@ -1,4 +1,4 @@
-# Function: reyes_setup
+# Function: ma223_setup
 # Description: personal function for students in the course so that all
 #              necessary functionality is incorporated.
 

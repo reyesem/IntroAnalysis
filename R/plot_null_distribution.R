@@ -49,7 +49,7 @@ plot_null_distribution <- function(statistics,
                    axis.text.y = ggplot2::element_blank())
 
   if (show.pvalue){
-    .tstat <- statistics$statistic[1]
+    .tstat <- statistics$standardized.statistic[1]
     .dens2 <- subset(.dens, .dens$x >= .tstat)
 
     .out <- .out +

@@ -160,15 +160,15 @@ For this series of exercises, suppose researchers are interested in determining 
 > Using the available data (`senic`, already available in R), construct a histogram summarizing the distribution of the infection risk within the sample.  Describe the graphic.
 
 ```{r s1-ex-histogram, exercise=TRUE, exercise.eval=FALSE}
-qplot()
+ggplot()
 ```
 
 ```{r s1-ex-histogram-solution}
-qplot(data = senic,
-      x = `Infection Risk`,
-      geom = "histogram") +
+ggplot(data = senic) +
+  aes(x = `Infection Risk`) +
   labs(y = "Number of Hospitals",
-       x = "Estimated Probability (%) of Acquiring Hospital Infection")
+       x = "Estimated Probability (%) of Acquiring Hospital Infection") +
+  geom_histogram()
 ```
 
 <div class = "tipbox alert">

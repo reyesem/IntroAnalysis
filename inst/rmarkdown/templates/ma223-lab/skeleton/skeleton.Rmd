@@ -10,6 +10,13 @@ output: IntroAnalysis::ma223_word_format
 IntroAnalysis:::ma223_setup()
 ```
 
+### Question 0: Research Objective
+
+> State the research objective you hope to address in this lab.  This objective should be defined in context (no statistical jargon) and clearly state whether you are seeking evidence for a statement, determining if a statement is reasonable, or simply estimating a quantity.
+
+Delete this line and place your response here...
+
+
 ### Question 1: Parameter(s)
 
 > Define the population parameter(s) of interest associated with the research objective.  Only define parameter(s) that are specifically associated with the research objective.  Include both the definition in the context of the problem as well as the symbol you will use to represent the parameter(s).  _Hint: look at your Model in Q3 and your Hypotheses in Q4._
@@ -47,28 +54,32 @@ Delete this line and place your response here (hopefully, you get the idea)...
 
 ### Question 6: Limitations and Sources of Error
 
-> A limitation to a study is a setting that was the same across all observations _and_ limits the population of interest in some respect.  Certainly, in order to complete your study in the allotted time, you will need to impose limitations on the scope of your study.  That is, if you were to conduct the study again with more time and resources, you might have done a few things differently.  A source of variability is something that differs from one observation to the next and contributes to why the responses differ across observations.  State one limitation of the study design _and_ describe why you believe it is a limitation.  Then, state one source of variability in your study.  Note: "sample size" is not a valid "limitation."
+> A limitation to a study is a setting that was the same across all observations _and_ limits the population of interest in some respect.  Certainly, in order to complete your study in the allotted time, you will need to impose limitations on the scope of your study.  That is, if you were to conduct the study again with more time and resources, you might have done a few things differently.  
+>   
+> A source of error is something that differs from one observation to the next and contributes to why the responses differ across observations.  
+>   
+> State one limitation of the study design _and_ describe why you believe it is a limitation.  Then, state one source of error in your study.  Note: "sample size" is not a valid "limitation."
 
 
 
 
 ### Question 7: Graphic
 
-> Construct _and_ describe a graphical summary of the data collected.
+> Construct a graphical summary of the data collected that addresses the research objective.  Then, write a short description of what you learned about the research objective from the graphic.
 
 
 
 
 ### Question 8: Conditions
 
-> State any conditions/assumptions of the statistical inference technique you are planning to use.  Also, discuss how reasonable you feel each is.  If any plots are generated to do this, they should be included here.
+> State any conditions/assumptions of the statistical inference technique you are planning to use (conditions/assumptions placed on the stochastic portion of the model for the data-generating process).  Also, discuss how reasonable you feel each is.  If any plots are generated to do this, they should be included here.
 
 
 
 
 ### Question 9: Analysis
 
-> Provide all relevant computer output here from the statistical analysis you used to address the research objective (e.g. p-values, confidence intervals, model fits, et. cetera).  If your analysis requires any conditions/assumptions that you found unreasonable, please be sure to describe those here.  
+> Provide all relevant computer output here from the statistical analysis you used to address the research objective (e.g. p-values, confidence intervals, model fits, et. cetera).  If your analysis requires any conditions/assumptions that you found unreasonable, be sure to state those here.  
 
 
 

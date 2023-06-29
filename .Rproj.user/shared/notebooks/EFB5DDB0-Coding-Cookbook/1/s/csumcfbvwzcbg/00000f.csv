@@ -1,0 +1,2 @@
+"0","#| label: specify-model"
+"0","mpg.model = specify_mean_model(mpg ~ 1, data = mtcars)"

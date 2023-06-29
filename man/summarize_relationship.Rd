@@ -5,15 +5,17 @@
 \alias{summarise_relationship}
 \title{Compute statistics summarizing a relationship between variables.}
 \usage{
-summarize_relationship(formula, data = NULL, FUN = cor, ...)
+summarize_relationship(data, formula, FUN = cor, ...)
+
+summarise_relationship(data, formula, FUN = cor, ...)
 }
 \arguments{
+\item{data}{a data frame containing the variables appearing in
+\code{formula}.}
+
 \item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
 description identifying the response and the predictor of interest and
 optionally a grouping variable.}
-
-\item{data}{an optional data frame containing the variables appearing in
-\code{formula}.}
 
 \item{FUN}{a function taking at least two arguments, in which the first
 two arguments are the two variables to be related. Should return a scalar.}

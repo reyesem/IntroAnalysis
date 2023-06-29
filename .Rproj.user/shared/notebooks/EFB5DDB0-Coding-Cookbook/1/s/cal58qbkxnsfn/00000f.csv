@@ -1,0 +1,6 @@
+"0","#| label: histogram-3"
+"0","ggplot(data = mtcars) +"
+"0","  aes(x = mpg) +"
+"0","  labs(y = ""Frequency"","
+"0","       x = ""Miles per Gallon"") +"
+"0","  geom_histogram()"

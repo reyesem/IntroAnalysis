@@ -1,0 +1,2 @@
+"0","summarize_variable(mpg ~ am, data = mtcars, quantile, "
+"0","                   .args = list(probs = c(0.25)))"

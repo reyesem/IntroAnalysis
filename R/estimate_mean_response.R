@@ -9,7 +9,7 @@
 #' follow a Normal distribution. If \code{FALSE} (default), this is not
 #' assumed.
 #' @param construct string defining the type of construct to use when generating
-#' from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+#' from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 #' \code{assume.constant.variance = TRUE}, this is ignored
 #' (default = \code{"normal-2"}).
 #' @param type string defining the type of confidence interval to construct. If
@@ -49,7 +49,7 @@ estimate_mean_response.lm <- function(mean.model,
 
   # if no confidence level specified, only return point estimate
   if (missing(confidence.level)){
-    .newdat$.estimate <- predict(mean.model,
+    .newdat$point.estimate <- predict(mean.model,
                                  newdata = .newdat,
                                  type = "response",
                                  se.fit = FALSE)
@@ -79,8 +79,8 @@ estimate_mean_response.lm <- function(mean.model,
                      level = confidence.level,
                      type = "response")
 
-    .newdat$.estimate <- .yhat$fit[, "fit"]
-    .newdat$.standard.error <- .yhat$se.fit
+    .newdat$point.estimate <- .yhat$fit[, "fit"]
+    .newdat$standard.error <- .yhat$se.fit
     .newdat$.lwr <- .yhat$fit[, "lwr"]
     .newdat$.upr <- .yhat$fit[, "upr"]
 
@@ -89,7 +89,7 @@ estimate_mean_response.lm <- function(mean.model,
                     ncol = simulation.replications,
                     byrow = TRUE)
 
-    .boot <- .boot*.newdat$.standard.error + .newdat$.estimate
+    .boot <- .boot*.newdat$standard.error + .newdat$point.estimate
 
   } else {
     if (assume.normality && !assume.constant.variance){
@@ -104,14 +104,14 @@ estimate_mean_response.lm <- function(mean.model,
 
     .boot <- predict_coef(mean.model, .newdat, beta = .boot)
 
-    .newdat$.estimate <- predict(mean.model,
+    .newdat$point.estimate <- predict(mean.model,
                                  newdata = .newdat,
                                  se.fit = FALSE,
                                  type = "response")
 
-    attr(.boot, "original.estimates") <- .newdat$.estimate
+    attr(.boot, "original.estimates") <- .newdat$point.estimate
 
-    .newdat$.standard.error <- apply(.boot, 1, sd)
+    .newdat$standard.error <- apply(.boot, 1, sd)
     .ci <- bootstrap_compute_ci(.boot,
                                 level = confidence.level,
                                 type = type)
@@ -163,7 +163,7 @@ estimate_mean_response.glm <- function(mean.model,
 
   # if no confidence level specified, only return point estimate
   if (missing(confidence.level)){
-    .newdat$.estimate <- predict(mean.model,
+    .newdat$.oint.estimate <- predict(mean.model,
                                  newdata = .newdat,
                                  type = "response",
                                  se.fit = FALSE)
@@ -191,8 +191,8 @@ estimate_mean_response.glm <- function(mean.model,
     .yhat <- predict(mean.model, newdata = .newdat, se.fit = TRUE,
                      type = "response")
 
-    .newdat$.estimate <- .yhat$fit
-    .newdat$.standard.error <- .yhat$se.fit
+    .newdat$point.estimate <- .yhat$fit
+    .newdat$standard.error <- .yhat$se.fit
     .newdat$.lwr <- .yhat$fit - qnorm((1 + confidence.level)/2)*.yhat$se.fit
     .newdat$.upr <- .yhat$fit + qnorm((1 + confidence.level)/2)*.yhat$se.fit
 
@@ -201,14 +201,14 @@ estimate_mean_response.glm <- function(mean.model,
                     ncol = simulation.replications,
                     byrow = TRUE)
 
-    .boot <- .boot*.newdat$.standard.error + .newdat$.estimate
+    .boot <- .boot*.newdat$standard.error + .newdat$point.estimate
 
   } else if (method == "parametric"){
     .boot <- bootstrap_parametric_predict(mean.model,
                                           newdata = .newdat,
                                           reps = simulation.replications)
 
-    .newdat$.standard.error <- apply(.boot, 1, sd)
+    .newdat$standard.error <- apply(.boot, 1, sd)
     .ci <- bootstrap_compute_ci(.boot,
                                 level = confidence.level,
                                 type = type)
@@ -223,7 +223,7 @@ estimate_mean_response.glm <- function(mean.model,
                                     newdata = .newdat,
                                     reps = simulation.replications)
 
-    .newdat$.standard.error <- apply(.boot, 1, sd)
+    .newdat$standard.error <- apply(.boot, 1, sd)
     .ci <- bootstrap_compute_ci(.boot,
                                 level = confidence.level,
                                 type = type)

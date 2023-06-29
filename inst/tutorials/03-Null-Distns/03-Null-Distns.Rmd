@@ -121,17 +121,18 @@ ggplot(data = summarise(senic, Mean = mean(`Number of Beds`)),
 ```
 
 ```{r s3-ex-graph, exercise=TRUE, exercise.eval=FALSE}
-qplot() +
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s3-ex-graph-solution}
-qplot(data = senic,
-      y = `Number of Beds`,
-      x = "",
-      geom = "boxplot") +
+ggplot(data = senic) +
+  aes(y = `Number of Beds`,
+      x = "") +
   labs(y = "Number of Beds in Hospital",
-       x = "")
+       x = "") +
+  geom_boxplot()
 ```
 
 <div class = "tipbox alert">
@@ -176,6 +177,7 @@ senic.model.h0 = specify_mean_model(`Number of Beds` ~ constant(280),
 
 compare_models(senic.model.h1,
                senic.model.h0,
+               alternative = "less than",
                assume.identically.distributed = TRUE)
 ```
 

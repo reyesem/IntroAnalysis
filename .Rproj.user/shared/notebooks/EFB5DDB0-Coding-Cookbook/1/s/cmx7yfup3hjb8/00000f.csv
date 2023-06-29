@@ -1,0 +1,2 @@
+"0","#| label: anova-fit"
+"0","anova.model = specify_mean_model(mpg ~ am, data = mtcars)"

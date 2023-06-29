@@ -1,0 +1,6 @@
+"0","#| label: bar-chart"
+"0","ggplot(data = mtcars) +"
+"0","  aes(x = am) +"
+"0","  labs(x = """","
+"0","       y = ""Frequency"") +"
+"0","  geom_bar()"

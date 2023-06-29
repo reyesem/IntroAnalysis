@@ -118,8 +118,6 @@ This model is fit using the following code.
 realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
 ```
 
-```{r s6-models, ref.label="s6-model"}
-```
 
 
 
@@ -127,13 +125,12 @@ realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
 ### Exercise: Compute Residuals
 > Obtain the residauls and fitted values for the above model, and store them in a dataset called `realestate.diag`.
 
-```{r s6-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-models"}
+```{r s6-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-model"}
 realestate.diag = obtain_diagnostics()
 ```
 
-```{r s6-ex-resid-solution, exercise.setup="s6-models"}
-realestate.diag = obtain_diagnostics(realestate.model, 
-                                     data = RealEstate)
+```{r s6-ex-resid-solution, exercise.setup="s6-model"}
+realestate.diag = obtain_diagnostics(realestate.model)
 ```
 
 <div class = "tipbox alert">
@@ -148,20 +145,18 @@ You must always obtain the residuals from the full model (not the one under the 
 ### Exercise: Assessing Normality
 > Is it reasonable to assume the error in the price of a home follows a Normal distribution?  Construct an appropriate graphic to justify your answer. 
 
-```{r s6-resids, include=FALSE, exercise.setup="s6-models", ref.label="s6-ex-resid-solution"}
-```
-
-```{r s6-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
-qplot() +
+```{r s6-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s6-ex-normality-solution}
-qplot(data = realestate.diag,
-      sample = .resid,
-      geom = "qq") +
+ggplot(data = realestate.diag) +
+  aes(sample = .resid) +
   labs(y = "Sample Quantiles",
-       x = "Theoretical Quantiles")
+       x = "Theoretical Quantiles") +
+  geom_qq()
 ```
 
 <div class = "tipbox alert">
@@ -172,18 +167,19 @@ qplot(data = realestate.diag,
 ### Exercise: Assessing Homoskedasticity
 > Is it reasonable to assume the variability of the error in the price of a home is constant for all size homes?  Use an appropriate graphic to justify your answer. 
 
-```{r s6-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
-qplot() +
+```{r s6-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s6-ex-homoskedasticity-solution}
-qplot(data = realestate.diag,
-      y = .resid,
-      x = .fitted,
-      geom = "point") +
+ggplot(data = realestate.diag) +
+  aes(y = .resid,
+      x = .fitted) +
   labs(y = "Residuals",
-       x = "Predicted Home Price")
+       x = "Predicted Home Price") +
+  geom_point()
 ```
 
 <div class = "tipbox alert">
@@ -194,18 +190,20 @@ qplot(data = realestate.diag,
 ### Exercise: Assessing Independence
 > Is there reason to believe the error in the home price for one home is not independent of the error in the home price for any other home?  Explain.
 
-```{r s6-ex-indep, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
-qplot() +
+```{r s6-ex-indep, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s6-ex-indep-solution}
-qplot(data = realestate.diag,
-      x = seq_along(.resid),
-      y = .resid,
-      geom = c("point", "line")) +
+ggplot(data = realestate.diag) +
+  aes(y = .resid,
+      x = seq_along(.resid)) +
   labs(y = "Residuals",
-       x = "Order in Which Data is Presented")
+       x = "Order in Which Data is Presented") +
+  geom_point() +
+  geom_line()
 ```
 
 <div class = "tipbox alert">
@@ -216,18 +214,19 @@ qplot(data = realestate.diag,
 ### Exercise: Assessing Mean 0
 > We have assumed the price of a home is linearly related to the area of a home.  Is this linear model reasonable?  Or, is there concern the deterministic portion has been misspecified?  Explain.
 
-```{r s6-ex-mean0, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-resids"}
-qplot() +
+```{r s6-ex-mean0, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s6-ex-mean0-solution}
-qplot(data = realestate.diag,
-      y = .resid,
-      x = .fitted,
-      geom = "point") +
+ggplot(data = realestate.diag) +
+  aes(y = .resid,
+      x = .fitted) +
   labs(y = "Residuals",
-       x = "Predicted Home Price")
+       x = "Predicted Home Price") +
+  geom_point()
 ```
 
 <div class = "tipbox alert">

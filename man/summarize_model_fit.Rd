@@ -2,9 +2,12 @@
 % Please edit documentation in R/modeling_phrases.R
 \name{summarize_model_fit}
 \alias{summarize_model_fit}
+\alias{summarise_model_fit}
 \title{Produce metrics for the quality of the model fit.}
 \usage{
 summarize_model_fit(mean.model)
+
+summarise_model_fit(mean.model)
 }
 \arguments{
 \item{mean.model}{\code{lm} or \code{glm} model fit defining the model for

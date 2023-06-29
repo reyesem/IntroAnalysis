@@ -122,17 +122,18 @@ Suppose a couple is considering an addition onto their home. They would like to 
 > Construct a graphic summarizing the relationship between the size of a home (its square footage) and the sale price of the home.  What does the graphic communicate (keeping in mind the objective)?
 
 ```{r s4-ex-graph, exercise=TRUE, exercise.eval=FALSE}
-qplot() +
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s4-ex-graph-solution}
-qplot(data = RealEstate,
-      y = `Price`,
-      x = `Area`,
-      geom = "point") +
+ggplot(data = RealEstate) +
+  aes(y = `Price`,
+      x = `Area`) +
   labs(y = "Sale Price of Home ($)",
-       x = "Living Area (sq-ft)")
+       x = "Living Area (sq-ft)") +
+  geom_point()
 ```
 
 <div class = "tipbox alert">

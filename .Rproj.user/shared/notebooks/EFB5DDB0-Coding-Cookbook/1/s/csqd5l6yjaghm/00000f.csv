@@ -1,0 +1,7 @@
+"0","#| label: ivp"
+"0","ggplot(data = mtcars) +"
+"0","  aes(y = mpg,"
+"0","      x = am) +"
+"0","  labs(y = ""Miles per Gallon"","
+"0","       x = """") +"
+"0","  geom_point()"

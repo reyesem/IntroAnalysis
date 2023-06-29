@@ -126,12 +126,12 @@ $$
 The data is summarized below.
 
 ```{r, echo=FALSE}
-qplot(data = Therapy,
-      y = `Recovery Time`,
-      x = `Prior Activity Level`,
-      geom = "boxplot") +
+ggplot(data = Therapy) +
+  aes(y = `Recovery Time`,
+      x = `Prior Activity Level`) +
   labs(y = "Recovery Time",
-       x = "Prior Activity Level")
+       x = "Prior Activity Level") +
+  geom_boxplot()
 ```
 
 
@@ -142,21 +142,18 @@ therapy.model = specify_mean_model(`Recovery Time` ~ `Prior Activity Level`,
                                    data = Therapy)
 ```
 
-```{r s8-models, ref.label="s8-model"}
-```
 
 
 
 ### Exercise: Compute Residuals
 > Obtain the residauls and fitted values for the above model, and store them in a dataset called `therapy.diag`.  What does the residual for each observation tell you?
 
-```{r s8-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-models"}
+```{r s8-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-model"}
 therapy.diag = obtain_diagnostics()
 ```
 
-```{r s8-ex-resid-solution, exercise.setup="s8-models"}
-therapy.diag = obtain_diagnostics(therapy.model, 
-                                  data = Therapy)
+```{r s8-ex-resid-solution, exercise.setup="s8-model"}
+therapy.diag = obtain_diagnostics(therapy.model)
 ```
 
 <div class = "tipbox alert">
@@ -171,20 +168,18 @@ You must always obtain the residuals from the full model (not the one under the 
 ### Exercise: Assessing Normality
 > Is it reasonable to assume the error in the above model comes from a Normal distribution?  Explain. 
 
-```{r s8-resids, include=FALSE, exercise.setup="s8-models", ref.label="s8-ex-resid-solution"}
-```
-
-```{r s8-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-resids"}
-qplot() +
+```{r s8-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s8-ex-normality-solution}
-qplot(data = therapy.diag,
-      sample = .resid,
-      geom = "qq") +
+ggplot(data = therapy.diag) +
+  aes(sample = .resid) +
   labs(y = "Sample Quantiles",
-       x = "Theoretical Quantiles")
+       x = "Theoretical Quantiles") +
+  geom_qq()
 ```
 
 <div class = "tipbox alert">
@@ -195,18 +190,19 @@ qplot(data = therapy.diag,
 ### Exercise: Assessing Homoskedasticity
 > Is it reasonable that the variability in the error of the recovery time is the same for each of the prior physical activity levels?  Explain. 
 
-```{r s8-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-resids"}
-qplot() +
+```{r s8-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-ex-resid-solution"}
+ggplot() +
+  aes() +
   labs()
 ```
 
 ```{r s8-ex-homoskedasticity-solution}
-qplot(data = therapy.diag,
-      y = .resid,
-      x = `Prior Activity Level`,
-      geom = "boxplot") +
+ggplot(data = therapy.diag) +
+  aes(y = .resid,
+      x = `Prior Activity Level`) +
   labs(y = "Residuals",
-       x = "Prior Activity Level")
+       x = "Prior Activity Level") +
+  geom_boxplot()
 ```
 
 <div class = "tipbox alert">
@@ -242,7 +238,7 @@ There is more than one way to assess constant variance in the ANOVA setting:
 ### Exercise: Compute a P-Value
 > Given your conclusions thus far, compute a p-value for addressing the question of interest on which we can rely.
 
-```{r s8-ex-pval, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-resids"}
+```{r s8-ex-pval, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s8-ex-resid-solution"}
 therapy.model.h0 = specify_mean_model()
 
 compare_models()

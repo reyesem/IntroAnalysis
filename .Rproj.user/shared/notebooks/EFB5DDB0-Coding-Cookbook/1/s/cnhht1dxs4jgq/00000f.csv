@@ -1,0 +1,6 @@
+"0","#| label: reg-prob-plot"
+"0","ggplot(data = mtcars.augment) +"
+"0","  aes(sample = .resid) +"
+"0","  labs(y = ""Sample Quantiles"","
+"0","       x = ""Theoretical Quantiles"") +"
+"0","  geom_qq()"

@@ -30,7 +30,7 @@ The remainder of this vignette illustrates the use of the `IntroAnalysis` packag
 - The `glm()` function in `R`
 - Conceptual understanding of bootstrapping
 
-We draw connections between these common methods and the functions provided by the `IntroAnalysis` package.  We also give some explanation of how this package is utilized to reinforce concptual understanding of inference.
+We draw connections between these common methods and the functions provided by the `IntroAnalysis` package.  We also give some explanation of how this package is utilized to reinforce conceptual understanding of inference.
 
   > Such "teaching tips" are separated from the remainder of the text in a special environment like this one.
 
@@ -70,7 +70,7 @@ Consider the goal of constructing interval estimates for a parameter of interest
 Suppose we are interested in estimating the overall fuel efficiency (miles per gallon, mpg) of cars in 1974.  The parameter of interest is then
 $$\mu = \text{mean fuel efficieny (mpg) for 1974 automobiles}.$$
 
-This parameter defines the "mean model", the deterministic portion of the following model for the data generating process:
+This parameter defines the "mean model," the deterministic portion of the following model for the data generating process:
 $$(\text{MPG})_i = \mu + \epsilon_i$$
 
 where $(\text{MPG})_i$ represents the fuel efficiency for the $i$-th vehicle and $\epsilon_i$ represents the error in the $i$-th observed fuel efficiency.  
@@ -118,8 +118,8 @@ estimate_parameters(fit_single,
   
 The function outputs the following (stored in a `data.frame`):
 
-- `estimate`: point (least squares) estimate of the parameter(s).
-- `std.error`: standard error of the estimate.
+- `point.estimate`: point (least squares) estimate of the parameter(s).
+- `standard.error`: standard error of the estimate.
 - `k% lower`: lower limit of a k% confidence interval.
 - `k% upper`: upper limit of a k% confidence interval.
 
@@ -155,9 +155,12 @@ In 1974, automatic and manual transmissions were both common.  Suppose we are in
 $$\beta_1 = \mu_m - \mu_a$$
 
 where $\mu_m$ and $\mu_a$ represent the mean fuel efficiency (mpg) for manual and automatic transmissions, respectively.  This parameter is incorporated into the following data generating process:
-$$(\text{MPG})_i = \beta_0 + \beta_1 \mathbb{I}(\text{i-th vehicle has manual transmission}) + \epsilon_i$$
+$$(\text{MPG})_i = \beta_0 + \beta_1 (\text{manual})_i + \epsilon_i$$
 
-where $\mathbb{I}(u)$ is the indicator function taking the value 1 if the event $u$ occurs.  
+where
+
+$$(\text{manual})_i = \begin{cases} 1 & \text{if i-th observation has a manual transmission} \\ 0 & \text{otherwise} \end{cases}.$$
+
 
   > We find students initially struggle with the idea of an indicator function.  However, we have had success describing them as "light switches" which turn on or off depending on whether the statement is true.
 
@@ -220,13 +223,25 @@ In order to accommodate these relaxed conditions, we use a wild bootstrap to com
   > Again, students are aware that a different bootstrapping procedure is being implemented but need not worry about the details of the algorithm.  We want them to focus on the conditions they are imposing.
   
 
-__Additional Notes:__ Notice that we avoided the common "two-sample Satterthwaite interval" for the difference in means in which normality is assumed but constant variance is not.  Our goal in the course is not to teach a multitude of tools but instead reinforce the idea that the model for the sampling distribution depends upon the conditions imposed.  If you specify that normality can be assumed (`assume.normality = TRUE`) but constant variance cannot (`assume.identically.distributed = FALSE`), then the Huber-White method (see `?car::hccm`) is used to adjust the variance-covariance matrix prior to construct the confidence interval.  We choose this form of the variance-covariance matrix instead of the Satterhwaite because it handles a broader class of problems.
+__Additional Notes:__ Notice that we avoided the common "two-sample Satterthwaite interval" for the difference in means in which normality is assumed but constant variance is not.  Our goal in the course is not to teach a multitude of tools but instead reinforce the idea that the model for the sampling distribution depends upon the conditions imposed.  If you specify that normality can be assumed (`assume.normality = TRUE`) but constant variance cannot (`assume.identically.distributed = FALSE`), then the Huber-White method (see `?car::hccm`) is used to adjust the variance-covariance matrix prior to construct the confidence interval.  We choose this form of the variance-covariance matrix instead of the Satterthwaite because it handles a broader class of problems.
 
 Suppose instead of estimating the difference in the two means, you simply wanted to place a confidence interval on each mean individually.  As our focus is on understanding the process, and not manipulating `R` output, we attack this by re-defining the model for the data generating process:
+$$(\text{MGP})_i = \mu_a (\text{automatic})_i + \mu_m (\text{manual})_i + \epsilon_i $$
+
+where
+
 $$
 \begin{aligned}
-  (\text{MGP})_i &= \mu_a \mathbb{I}(\text{i-th vehicle has automatic transmission}) \\
-    &\qquad + \mu_m \mathbb{I}(\text{i-th vehicle has manual transmission}) + \epsilon_i 
+  (\text{automatic})_i &= 
+    \begin{cases} 
+      1 & \text{if i-th observation has an automatic transmission} \\
+      0 & \text{otherwise}
+    \end{cases} \\
+  (\text{manual})_i &=
+    \begin{cases}
+      1 & \text{if i-th observation has a manual transmission} \\
+      0 & \text{otherwise}
+    \end{cases}.
 \end{aligned}
 $$
 
@@ -245,7 +260,7 @@ estimate_parameters(fit_two_alt,
 By this point, it should seem straight forward how to compute a confidence interval within a regression setting.  We believe our students also feel this way.  The process is now identical to what we have seen in other settings.  The focus is then on describing the data generating process and the conditions under which the model for the sampling distribution should be constructed.
 
 For example, suppose we are concerned (rightly so, given this is observational data) that the difference in the average fuel efficiency we estimated above could be due to confounding.  In addition to the transmission type, we would like to account for the horsepower of the vehicle.  A model for this process is
-$$(\text{MPG})_i = \beta_0 + \beta_1 \mathbb{I}(\text{i-th vehicle has manual transmission}) + \beta_2 (\text{HP})_i + \epsilon_i$$
+$$(\text{MPG})_i = \beta_0 + \beta_1 (\text{manual})_i + \beta_2 (\text{HP})_i + \epsilon_i$$
 
 This model is specified and the parameters estimated as follows.
 
@@ -287,12 +302,12 @@ $$\text{Model under } H_0: (\text{MPG})_i = \mu + \epsilon_i$$
 
 Under the alternative hypothesis, we place no restrictions on the three parameters.  Therefore, we have a model of the form
 $$
-\begin{aligned}
-  \text{Model under } H_1: (\text{MPG})_i &= \mu_4 \mathbb{I}(\text{i-th vehicle has 4 cylinders}) \\
-    &\qquad + \mu_6 \mathbb{I}(\text{i-th vehicle has 6 cylinders}) \\
-    &\qquad + \mu_8 \mathbb{I}(\text{i-th vehicle has 8 cylinders}) + \epsilon_i
-\end{aligned}
+\text{Model under } H_1: (\text{MPG})_i = \mu_4 (\text{Cyl 4})_i + \mu_6 (\text{Cyl 6})_i + \mu_8 (\text{Cyl 8})_i + \epsilon_i
 $$
+
+where
+
+$$(\text{Cyl K})_i = \begin{cases} 1 & \text{if i-th vehicle has K cylinders} \\ 0 & \text{otherwise} \end{cases}.$$
 
 Testing the above hypotheses corresponds to comparing these two models for the data generating process and asking if the simpler model is sufficient for explaining the variability in the response.  Since we are comparing models, we use the `compare_models()` function.  This function requires both the "full" model (under the alternative) and the "reduced" model (under the null).  Before specifying these models, we again do a little cleaning.
 
@@ -333,7 +348,7 @@ The `compare_models()` function produces a `data.frame` which takes the form of 
 - `df`: the degrees of freedom associated with each component (may not add to the total if not all terms are tested)
 - `ss`: the sum of squares for each component of variability (may not add to the total if not all terms are tested)
 - `ms`: the mean square associated with each component (used to determine the test statistic)
-- `statistic`: the F-statistic comparing the two models
+- `standardized.statistic`: the F-statistic comparing the two models
 - `p.value`: the p-value associated with the test
 
 We use the "Additional Terms" phrase to indicate the terms placed in the full model that are excluded in the model under the null hypothesis.  We notice the output is similar to that provided by the common `summary()` after running `aov()` from the `stats` package:
@@ -351,7 +366,7 @@ anova(fit_anova0, fit_anova1)
 
 A key limitation of the `aov()` function is that it is specific to ANOVA while `compare_models()` is not.  Both the `aov()` approach and the `anova()` approach are also limited to classical inference; `compare_models()` allows for inference via bootstrapping.
 
-__Inference via Bootstrapping:__ Many traditional curriclum do not allow for relaxing the conditions of the classical ANOVA framework.  However, if students are familiar with bootstrapping, this can be extended to comparing multiple means.  
+__Inference via Bootstrapping:__ Many traditional curriculum do not allow for relaxing the conditions of the classical ANOVA framework.  However, if students are familiar with bootstrapping, this can be extended to comparing multiple means.  
 
   > The focus is again on understanding that the model for the null distribution is determined by the conditions we are willing to impose.  Instead of the F-distribution, we can construct an empirical model via bootstrapping.
   
@@ -389,7 +404,7 @@ __Additional Notes:__ Similar to when we computed interval estimates in the two-
 We note that in the above case, the p-value is identical regardless of whether a residual bootstrap or wild bootstrap is implemented.  This is because the p-value is defined as
 $$p = \frac{\text{# test statistics} >= \text{observed test statistic}}{b + 1}$$
 
-where "# test statistics" includes the observed test statistic and $b$ is the number of bootstrap samples taken.  In this case, none of the bootstrap test statistics were greater than the observed.  That is, only the observed test statistic was at least as large as the observed test statistic; so, the numerator is 1.  The denominator is 500 since the default value of $b = 4999$.  Therefore, the p-value given by the bootstrap procedure is always a bit conservative.  See the discussion in Boos and Stefanski[^BoosStefanski] within the Bootstrap chapter for more details (and the "99" rule).
+where "# test statistics" includes the observed test statistic and $b$ is the number of bootstrap samples taken.  In this case, none of the bootstrap test statistics were greater than the observed.  That is, only the observed test statistic was at least as large as the observed test statistic; so, the numerator is 1.  The denominator is 5000 since the default value of $b = 4999$.  Therefore, the p-value given by the bootstrap procedure is always a bit conservative.  See the discussion in Boos and Stefanski[^BoosStefanski] within the Bootstrap chapter for more details (and the "99" rule).
 
 Finally, we implemented the above models within `specify_mean_model()` using a parameterization for the mean of each group directly.  The results are of course equivalent if we fit the full model as
 
@@ -403,25 +418,13 @@ Estimating the parameters differs, but comparing the models is equivalent.
 
 ### Regression
 Consider predicting the fuel efficiency as a function of both the horsepower of the vehicle as well as the number of cylinders it has.  The model could be written as
-$$
-\begin{aligned}
-  (\text{MPG})_i &= \beta_0 + \beta_1 (\text{HP})_i \\
-    &\qquad + \beta_2 \mathbb{I}(\text{i-th vehicle has 6 cylinders}) \\
-    &\qquad + \beta_3 \mathbb{I}(\text{i-th vehicle has 8 cylinders}) + \epsilon_i
-\end{aligned}
-$$
+$$(\text{MPG})_i = \beta_0 + \beta_1 (\text{HP})_i + \beta_2 (\text{Cyl 6})_i + \beta_3 (\text{Cyl 8})_i + \epsilon_i$$
 
 Suppose we are interested in testing whether the fuel efficiency is linearly related to the horsepower after accounting for the number of cylinders the vehicle has.  This would equate to the hypotheses:
 $$H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0$$
 
 Under the null hypothesis, the following model for the data generating process is assumed:
-$$
-\begin{aligned}
-  (\text{MPG})_i &= \gamma_0  \\
-    &\qquad + \gamma_2 \mathbb{I}(\text{i-th vehicle has 6 cylinders}) \\
-    &\qquad + \gamma_3 \mathbb{I}(\text{i-th vehicle has 8 cylinders}) + \epsilon_i
-\end{aligned}
-$$
+$$(\text{MPG})_i = \gamma_0 + \gamma_2 (\text{Cyl 6})_i + \gamma_3 (\text{Cyl 8})_i + \epsilon_i$$
 
 __Classical Inference:__ Suppose we are willing to impose the standard conditions on the error term, namely,
 
@@ -592,13 +595,7 @@ We note that since we always use a test statistic of the form $\frac{MSR}{MSE}$,
 
 ### Estimating the Mean Response
 Consider predicting the fuel efficiency as a function of both the horsepower of the vehicle as well as the number of cylinders it has.  The model could be written as
-$$
-\begin{aligned}
-  (\text{MPG})_i &= \beta_0 + \beta_1 (\text{HP})_i \\
-    &\qquad + \beta_2 \mathbb{I}(\text{i-th vehicle has 6 cylinders}) \\
-    &\qquad + \beta_3 \mathbb{I}(\text{i-th vehicle has 8 cylinders}) + \epsilon_i
-\end{aligned}
-$$
+$$(\text{MPG})_i = \beta_0 + \beta_1 (\text{HP})_i + \beta_2 (\text{Cyl 6})_i + \beta_3 (\text{Cyl 8})_i + \epsilon_i$$
 
 We have already discussed how the _parameters_ of this model are estimated:
 

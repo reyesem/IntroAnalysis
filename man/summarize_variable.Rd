@@ -5,14 +5,16 @@
 \alias{summarise_variable}
 \title{Compute summary statistics for a variable.}
 \usage{
-summarize_variable(formula, data = NULL, ..., .args = list())
+summarize_variable(data, formula, ..., .args = list())
+
+summarise_variable(data, formula, ..., .args = list())
 }
 \arguments{
+\item{data}{a data frame containing the variables appearing in
+\code{formula}.}
+
 \item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
 description identifying the response and the predictors of interest.}
-
-\item{data}{an optional data frame containing the variables appearing in
-\code{formula}.}
 
 \item{...}{a comma separated list of functions, each of which computes a
 statistic of interest.}

@@ -48,7 +48,7 @@ estimate_parameters.lm <- function(mean.model,
   .ests <- summary(mean.model)$coefficients
   .ests <- data.frame(
     term = rownames(.ests),
-    estimate = .ests[, "Estimate"],
+    point.estimate = .ests[, "Estimate"],
     stringsAsFactors = FALSE,
     row.names = NULL
   )
@@ -90,7 +90,7 @@ estimate_parameters.lm <- function(mean.model,
                     nrow = nrow(.ests),
                     ncol = simulation.replications,
                     byrow = TRUE)
-    .boot <- .boot*.ests$standard.error + .ests$estimate
+    .boot <- .boot*.ests$standard.error + .ests$point.estimate
   } else {
     if (assume.normality && !assume.constant.variance){
       .boot <- bootstrap_parametric_linear(mean.model,
@@ -154,7 +154,7 @@ estimate_parameters.glm <- function(mean.model,
   .ests <- summary(mean.model)$coefficients
   .ests <- data.frame(
     term = rownames(.ests),
-    estimate = .ests[, "Estimate"],
+    point.estimate = .ests[, "Estimate"],
     stringsAsFactors = FALSE,
     row.names = NULL
   )
@@ -196,7 +196,7 @@ estimate_parameters.glm <- function(mean.model,
                     nrow = nrow(.ests),
                     ncol = simulation.replications,
                     byrow = TRUE)
-    .boot <- .boot*.ests$standard.error + .ests$estimate
+    .boot <- .boot*.ests$standard.error + .ests$point.estimate
   } else if (method == "parametric"){
     # use a parametric bootstrap
     .boot <- bootstrap_parametric(mean.model,

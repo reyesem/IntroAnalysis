@@ -1,0 +1,5 @@
+"0","#| label: factors-cont"
+"0","mtcars = mtcars |>"
+"0","  mutate(am = recode(am, "
+"0","                     ""automatic"" = ""Automatic Transmission"","
+"0","                     ""manual"" = ""Manual Transmission""))"

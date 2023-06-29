@@ -60,7 +60,7 @@ follow a Normal distribution. If \code{FALSE} (default), this is not
 assumed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
