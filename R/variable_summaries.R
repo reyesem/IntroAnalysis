@@ -98,7 +98,7 @@ summarize_relationship <- function(data,
                           drop(FUN(u[, 1, drop=TRUE], u[, 2, drop=TRUE], ...))
                         }))
 
-  as.data.frame(tidyr::unnest(.out, cols = .data$statistic))
+  as.data.frame(tidyr::unnest(.out, cols = 'statistic'))
 }
 
 #' @rdname summarize_relationship

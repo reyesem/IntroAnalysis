@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "05 - Partitioning Variability in Regression"
+title: "05 Examples - Partitioning Variability"
 output: 
   learnr::tutorial:
     progressive: true
@@ -15,14 +14,73 @@ library(learnr)
 
 knitr::opts_chunk$set(echo = FALSE)
 learnr::tutorial_options(exercise.cap = "Exercise")
-
-RealEstate <- RealEstate %>%
-  mutate(Pool = recode(Pool,
-                       `1` = "Has Pool",
-                       `0` = "Does not have Pool"))
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -36,13 +94,18 @@ RealEstate <- RealEstate %>%
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -50,14 +113,8 @@ RealEstate <- RealEstate %>%
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -79,123 +136,105 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-When purchasing or selling a home, your real estate agent helps you determine if a house is priced correctly.  This involves comparing the price of the home with its "comparables" (similar homes in the area) to determine if the price is similar.  One way of doing this is to build a statistical model which predicts the sale price of a home based on various characteristics.  We have data on over 500 sales from real estate transactions across the United States.  Each record corresponds to the sale of a particular home and includes the following variables:
+According to the 2021 National Survey on Drug Use and Health (NSDUH), 49.3% of full-time college students ages 18 to 22 drank alcohol in the past month. Of those, about 27.4% engaged in binge drinking during that same time frame.  The desire to drink alcohol (a "craving") precedes consumption.  "Alcoholics Anonymous has long claimed that individuals can allay alcohol cravings by eating sweets" [(Cummings 2020)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7309582/).  This belief suggests that eating sweet foods could be an effective method for managing alcohol cravings and therefore reducing the likelihood that an individual consumes alcohol.
 
-  - `ID`: Unique identification for each sale.
-  - `Price`: Sale price of home (\$).
-  - `Area`: Finished area of residence (square feet).
-  - `BedRooms`: Number of bedrooms in the residence.
-  - `BathRooms`: Number of bathrooms in the residence.
-  - `AC`: Indicator of whether home has central air conditioning (1 = Yes, 0 = No).
-  - `Garage`: Number of cars that garage will hold.
-  - `Pool`: Indicator of whether home has a swimming pool (1 = Yes, 0 = No).
-  - `Year`: Year property was originally constructed.
-  - `Quality`: Indicator of the quality of the construction (1 = High quality, 2 = Medium, 3 = Low).
-  - `Style`: Indicator of the architectural style (mapping unknown).
-  - `Lot`: Lot size (square feet).
-  - `Highway`: Indicator of whether home is located near highway (1 = Yes, 0 = No).
+> Around 13% of full-time college students ages 18 to 22 meet the criteria for past-year alcohol use disorder (AUD), according to the 2021 NSDUH.  Alcohol abuse can lead to missed class or schoolwork, depression, attempted suicide, health problems, injuries, and unsafe sexual behavior among other consequences.  If you, or someone you know, is wrestling with alcohol abuse, reach out to a member of the [Rose Cares](https://rosehulman.sharepoint.com/sites/Rosecares/SitePages/Home.aspx) team; or, you can dial the Substance Abuse and Mental Health Services Administration's [national helpline](https://www.samhsa.gov/find-help/national-helpline).
 
-The data is available in `R` (`RealEstate`).
+[Cummings, Ray, Nooteboom, and Tomiyama (2020)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7309582/) conducted a study to investigate the ability of sweet foods to diminish alcohol cravings among "at-risk" drinkers (those who score at least an 8 on the Alcohol Use Disorder Identification Test).  Each participant received a series of cues from a researcher.  The researcher first opened a bottle of water and poured the water into a glass (neutral cue); participants were asked to spend several minutes smelling the beverage.  Following this cue, participants were asked to respond to the question "How much do you crave alcohol right now?" on a visual sliding scale ranging from 0 ("not at all") to 100 ("extremely").
+
+The researcher then opened a bottle of the participant's preferred alcoholic beverage, poured it into a glass, and instructed the participant to smell the beverage (alcohol cue).  Following the cue, the participants indicated their alcohol craving using the visual scale.  Participants were then randomly assigned to receive a type of food to eat.  After 15 minutes, the researcher repeated the alcohol cue and asked participants to indicate their alcohol craving using the visual scale.
+
+For those assigned to consume "bland" foods, participants were given corn tortillas as this was rated "least palatable and rewarding" in a pilot study.  For those assigned to consume "sweet" foods, participants were given a serving of their choice of ice cream, cookies, cupcakes, chocolate, or brownies.
+
+The researchers theorized that if the common belief that sweets can allay alcohol cravings is true, then those participants who receive sweet foods would have a lower alcohol craving at the end of the study compared to those who received bland foods.  We have a subset of this data (`drinking`).  Interest is in determining if the alcohol craving of individuals following the receipt of foods (`Craving_T2`) differs between those who received bland foods and those who received sweet foods (`Condition`).
 
 
-
-## Questions
-Is there a difference, on average, in the price of homes with a pool and those without?
-
-<div class = "tipbox alert">
-Note: While this set of examples showcases comparing the mean response for two groups, the ideas of partitioning variability and computing a p-value can be done with a quantitative predictor.
-</div>
-
-Before proceeding, notice that the variable `Pool` is coded as a numeric variable in the dataset (1 = Yes and 0 = No).  In order to ensure the computer recognizes this is a categorical variable (and for ease of reading output), we convert this to a text variable.
-
-```{r clean-data, eval=FALSE, echo=TRUE}
-RealEstate <- RealEstate %>%
-  mutate(Pool = recode(Pool,
-                       `1` = "Has Pool",
-                       `0` = "Does not have Pool"))
-```
-
-
-### Exercise: Graphical Summary
-> Construct a graphic suitable for addressing the question of interest. 
-
-```{r s5-ex-graph, exercise=TRUE, exercise.eval=FALSE}
-ggplot() +
-  aes() +
-  labs()
-```
-
-```{r s5-ex-graph-solution}
-ggplot(data = RealEstate) +
-  aes(y = `Price`,
-      x = `Pool`) +
-  labs(y = "Sale Price of Home ($)",
-       x = "") +
-  geom_boxplot()
-```
-
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=cf99c24f-b132-4638-bcba-ac800132d3cf&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
-
-
-
+## Creating the Model
 ### Exercise: Model for Data Generating Process
-> Construct a model for the data generating process comparing the price of a home for homes with and without a pool.  
+> Construct a model for the data generating process comparing the alcohol craving after eating differs between those given sweet foods and those given bland foods.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=5c387ba1-0a3e-4438-a3a2-ac800134c096&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+In order to construct a model for the data generating process, we must create an indicator variable.  Define
+
+$$(\text{Sweet})_i = \begin{cases} 1 & \text{if i-th participant assigned sweet foods} \\ 0 & \text{if i-th participant assigned bland foods} \end{cases}$$
+
+Now, we can write a model for the data generating process.
+
+$$(\text{Craving})_i = \beta_0 + \beta_1 (\text{Sweet})_i + \varepsilon_i$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=3e9a4cd9-7b9b-49ea-b95a-b05f01775391&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Hypotheses
 > Specify the null and alternative hypothesis which captures the question of interest.  Then, specify the model for the data generating process under this null hypothesis.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=17860f9a-b0f4-49e2-8126-ac800137216a&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+$$H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0$$
+
+Under the null hypothesis, this results to the following simplified model for the data generating process:
+
+$$(\text{Craving})_i = \beta_0 + \varepsilon_i$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0912400f-a4e7-4d49-aa3d-b05f01775392&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
+## Performing Inference
 ### Exercise: Compute a P-Value
-> Suppose we are willing to assume the average error in the price of a home is 0 for homes with and without a pool and that the error in the price of one home is independent of the error in the price of any other home.  Compute an appropriate p-value for testing the above hypotheses.  What conclusions can you draw?
+> Suppose we are willing to assume the data is consistent with the conditions for the classical regression model.  Compute an appropriate p-value for testing the above hypotheses.  What conclusions can you draw?
 
 ```{r s5-ex-pval, exercise=TRUE, exercise.eval=FALSE}
-realestate.model.h1 = specify_mean_model()
-realestate.model.h0 = specify_mean_model()
+drinking.model.h1 = specify_mean_model()
+drinking.model.h0 = specify_mean_model()
 
 compare_models()
 ```
 
 ```{r s5-ex-pval-solution}
-realestate.model.h1 = specify_mean_model(Price ~ 1 + Pool, data = RealEstate)
-realestate.model.h0 = specify_mean_model(Price ~ 1, data = RealEstate)
+drinking.model.h1 = specify_mean_model(Craving_T2 ~ 1 + Condition, 
+                                       data = drinking)
+drinking.model.h0 = specify_mean_model(Craving_T2 ~ 1, data = drinking)
 
-compare_models(realestate.model.h1,
-               realestate.model.h0,
-               alternative = "not equal",
-               assume.identically.distributed = FALSE,
-               assume.normality = FALSE)
+compare_models(drinking.model.h1, drinking.model.h0,
+               alternative = 'not equal',
+               assume.identically.distributed = TRUE,
+               assume.normality = TRUE)
 ```
    
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e7e83169-ef88-48fa-b4f5-ac8001385a3a&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+Given the large p-value, the study provides no evidence that individuals who consume bland foods experience a different level of alcohol craving, on average, than those who consume sweet foods.
+
+As we think about partitioning variability in this unit, we note that this implies that incorporating the food exposure group does not explain a significant amount of the variability in the alcohol craving of participants.  That is what results in a smaller standardized statistic and a larger p-value.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0f5cc724-0b63-44f8-9551-b05f0177538a&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Compute a Confidence Interval
-> Suppose we are willing to assume the average error in the price of a home is 0 for homes with and without a pool and that the error in the price of one home is independent of the error in the price of any other home.  Construct a 95% confidence interval for each of the parameters in the model.  What do you notice about the confidence interval for the slope?
+> Suppose we are willing to assume the data is consistent with the conditions for the classical regression model.  Construct a 95% confidence interval for each of the parameters in the model.  What do you notice about the confidence interval for the slope?
 
 ```{r s5-models, include=FALSE}
-realestate.model.h1 = specify_mean_model(Price ~ 1 + Pool, data = RealEstate)
-realestate.model.h0 = specify_mean_model(Price ~ 1, data = RealEstate)
+drinking.model.h1 = specify_mean_model(Craving_T2 ~ 1 + Condition, 
+                                       data = drinking)
+drinking.model.h0 = specify_mean_model(Craving_T2 ~ 1, data = drinking)
 ```
 
 
@@ -204,29 +243,18 @@ estimate_parameters()
 ```
 
 ```{r s5-ex-ci-solution}
-estimate_parameters(realestate.model.h1, 
+estimate_parameters(drinking.model.h1, 
                     confidence.level = 0.95,
-                    assume.identically.distributed = FALSE,
-                    assume.normality = FALSE)
+                    assume.identically.distributed = TRUE,
+                    assume.normality = TRUE)
 ```
    
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e7f7c1fb-ea93-49de-a0ed-ac8001395eca&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+Notice that the CI includes 0.  We are careful not to conclude that the two groups experience the same cravings, on average.  More, we should note that the study exposed participants to alcohol after consuming foods; some might interpret the AA belief to mean the use of sweets only following a craving (not prior to one).  This is not something we can study with the provided data.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=59704efa-bd87-4a22-be61-b05f01775391&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
-
-
-### Exercise: Compute R-Squared
-> What proportion of the variability in the price of a home is explained by whether the home has a pool?
-
-```{r s5-ex-r2, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s5-models"}
-summarize_model_fit()
-```
-
-```{r s5-ex-r2-solution}
-summarize_model_fit(realestate.model.h1)
-```
-   
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0346c08e-39a1-4bc1-b750-ac80013a4bd8&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
-
+</section>

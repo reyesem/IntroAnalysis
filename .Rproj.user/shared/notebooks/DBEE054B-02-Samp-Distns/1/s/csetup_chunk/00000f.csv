@@ -1,0 +1,5 @@
+"0","IntroAnalysis:::ma223_setup()"
+"0","library(learnr)"
+"0",""
+"0","knitr::opts_chunk$set(echo = FALSE)"
+"0","learnr::tutorial_options(exercise.cap = ""Exercise"")"

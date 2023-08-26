@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "01 - Statistical Process"
+title: "01 Examples - Statistical Process"
 output: 
   learnr::tutorial:
     progressive: true
@@ -18,6 +17,70 @@ learnr::tutorial_options(exercise.cap = "Exercise")
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -31,13 +94,18 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -45,14 +113,8 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -74,108 +136,127 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-Large surveys are commonly conducted to inform policy decisions. The Study on the Efficacy of Nosocomial Infection Control (SENIC Project) was to determine whether infection surveillance and control programs have reduced the rates of nosocomial (hospital-acquired) infection in the United States hospitals. This data set consists of a random sample of 113 hospitals selected from across the US.  Each record corresponds to information on the hospital's performance. The data contains the following variables:
+A key component of a healthy sexual relationship is consent.  _Any_ sexual activity that occurs without consent constitutes sexual assault ([Hickman & Muehlenhard, 1999](https://doi.org/10.1080/00224499909551996)).  
 
-  - `ID`: Unique hospital identifer.
-  - `Length of Stay`: Average length of stay of all patients in hospital (days).
-  - `Age`: Average age of patients (in years)
-  - `Infection Risk`: estimated probability of acquiring infection in hospital (percent).
-  - `Routine Culturing Ratio`: Ratio of number of cultures performed to the number of patients without
-signs or symptoms of hospital-acquired infection, times 100.
-  - `Routine Xray Ratio`: Ratio of number of X-rays performed to number of patients without signs or
-symptoms of pneumonia, times 100.
-  - `Number of Beds`: number of beds in hospital during study period.
-  - `Medical School`: Indicator of whether the hospital is associated with a medical school (1 = Yes, 2 =
-No).
-  - `Region`: Indicator of the geographic region for hospital (1 = NE, 2 = NC, 3 = S, 4 = W).
-  - `Average Census`: number of patients per day in hospital during study period.
-  - `Number Nurses`: number of full-time equivalent registered and licensed practical nurses
-during study period (number of full time plus one half the number of part time).
-  - `Available Facilities`: Percent of 35 potential facilities and services that are provided by the hospital.
+  > If you would like examples of sexual consent, please visit the resources at [Planned Parenthood](https://www.plannedparenthood.org/learn/relationships/sexual-consent).  If you have been the victim of sexual assault, reach out to a trusted authority or contact the [National Sexual Assault Hotline](https://www.rainn.org/resources).
 
-The data is available in `R` (`senic`).
+[MacDougall, Craig, Goldsmith, and Byers (2022)](https://doi.org/10.3138/cjhs.2021-0057) conducted a study to assess the sexual consent attitudes and behavior of undergraduate students in the US and Canada.  For the purposes of this study, the researchers defined sexual consent as follows:
+
+  > sexual consent: the freely given verbal or non-verbal communication of willingness to engage in a specific sexual activity.
+  
+A total of 196 undergraduate students participated in the study.  Of these, 164 indicated they had at least one previous sexual partner.  We have access to a subset of the variables for these 164 participants (`consent`).  In separate questions, participants indicated the percentage of their past sexual encounters in which they had explicitly given/received verbal or nonverbal sexual consent.  This captures the consistency of use of sexual consent.  Responses to these two questions were averaged (`Consent`).
 
 
-## Questions
-For this series of exercises, suppose researchers are interested in determining if there is evidence the average _infection risk_ for a hospital in the US exceeds 75%.
+## Basic Terminology
+For this series of exercises, suppose researchers are interested in determining if the study provides evidence that, on average, undergraduate college students consistently use verbal or non-verbal consent for more than 75% of sexual encounters.
 
 
 ### Exercise: Population
 > For the stated research objective, what is the population of interest?
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=65e68c10-8451-41b3-85fa-ac800110217b&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+The population is undergraduate college students.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=d1fda6ef-6847-49e7-b1bc-b05f01346e07&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 <div class = "tipbox tip">
-  When describing the population, be as descriptive as possible based on the context of the problem.
+When describing the population, be as descriptive as possible based on the context of the problem.
 </div>
 
 
 ### Exercise: Sample
 > For this study, what is the sample?
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a283f64f-5e44-4b52-8c55-ac8001106fa7&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+The sample is the 164 college students who answered the question on consent.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e0c9fe00-d062-424d-9236-b05f01346e09&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Variable
 > For the stated research objective, what is the (response) variable being recorded for each unit?
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bf68d5dc-4a8f-4612-9fdf-ac800110ef7e&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+The response is the percentage of sexual encounters for which the participant gave/received verbal or non-verbal consent (the `Consent` column in the dataset).
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=7afda441-e8f8-4588-8177-b05f01346e0a&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Parameter
 > For the stated research objective, what is the (population) parameter of interest?
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=1a79e134-dbe9-42e3-92b4-ac8001114156&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+The parameter is the average percentage of sexual encounters college students give/receive verbal or non-verbal consent.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a60b1c7f-7b41-4256-840d-b05f01346e12&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 <div class = "tipbox tip">
-  It is common for students to confuse a parameter and a variable (perhaps due to the use of _parameter_ in other science courses). While the variable is the measurement you record, the _parameter_ is the summary of that variable within the population.  The phrase "population parameter" is sometimes used instead of simply "parameter" to emphasize that it characterizes the variable within the population.
+It is common for students to confuse a parameter and a variable (perhaps due to the use of _parameter_ in other science courses). While the variable is the measurement you record, the _parameter_ is the summary of that variable within the population.  The phrase "population parameter" is sometimes used instead of simply "parameter" to emphasize that it characterizes the variable within the population.
 </div>
 
+
+## Forming a Set of Hypotheses
+Recall that researchers are interested in determining if the study provides evidence that, on average, undergraduate college students consistently use verbal or non-verbal consent for more than 75% of sexual encounters.
 
 ### Exercise: Hypotheses
 > State the null and alternative hypotheses that capture the research objective.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b7ea2921-5664-4369-b4fc-ac800111f136&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+Let $\theta$ represent the average percent of sexual encounters college students give/receive verbal or non-verbal consent.  We are interested in testing
+
+$$H_0: \theta \geq 75 \qquad \text{vs.} \qquad H_1: \theta > 75$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a116cf3d-8b18-49c9-8740-b05f013479b8&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
+## Constructing a Graphic
 ### Exercise: Graphic
-> Using the available data (`senic`, already available in R), construct a histogram summarizing the distribution of the infection risk within the sample.  Describe the graphic.
+> Using the available data (`consent`, already available in R), construct a histogram summarizing the distribution of the infection risk within the sample.  Describe the graphic.
 
 ```{r s1-ex-histogram, exercise=TRUE, exercise.eval=FALSE}
 ggplot()
 ```
 
 ```{r s1-ex-histogram-solution}
-ggplot(data = senic) +
-  aes(x = `Infection Risk`) +
-  labs(y = "Number of Hospitals",
-       x = "Estimated Probability (%) of Acquiring Hospital Infection") +
+ggplot(data = consent) +
+  aes(x = Consent) +
+  labs(y = "Number of Participants",
+       x = "Percentage of Sexual Encounters that Included Consent") +
   geom_histogram()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=257a13d4-da10-4ed4-af1b-ac8001138244&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
 
 <div class = "tipbox tip">
-  Choosing the binwidth is a bit of an artform.  If you are unsure of an appropriate binwidth, leave it off and the software will choose one appropriately.
+Choosing the `binwidth=` option is a bit of an art form.  If you are unsure of an appropriate bin width, leave off this option and the software will choose one appropriately.
 </div>
 

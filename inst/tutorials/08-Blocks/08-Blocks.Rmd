@@ -1,0 +1,283 @@
+---
+title: "08 Examples - Repeated Measures ANOVA"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.solution {
+  background: #ebebeb;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+```
+
+
+
+## Background
+Even with a push toward using in-class time for activities, taking notes is a regular part of college courses.  It is well accepted that actively taking notes, compared to passively listening, will improve retention of material.  As technology becomes more ubiquitous, some faculty allow students to use laptops to take notes during class; other faculty insist on students taking notes by hand.  While some faculty prohibit laptops out of a fear of distraction (shocking that students might surf the internet or work on other classes instead of taking notes on the topic), others prohibit laptops because they believe the tactile motion of taking notes by hand is superior.  Faculty falling into this group often cite a [2014 paper by Mueller and Oppenheimer](https://journals.sagepub.com/doi/10.1177/0956797614524581) as evidence supporting this position.  We have data from one of the studies these researchers conducted (`notes`).
+
+> While Meuller and Oppenheimer is widely cited, many faculty are not aware of a [follow-up study by Urry, et. al (2021).](https://journals.sagepub.com/doi/10.1177/0956797620965541?icid=int.sj-abstract.similar-articles.2)  This follow-up study replicated the work by Mueller and Oppenheimer investigated in this activity and did not find any advantages to one form of note taking over another.  Research has started to suggest the important aspect of note taking is how the information is encoded.  In particular, trying to capture content verbatim (writing down every word spoken) is not helpful.  It is important to summarize the lecture in your own thoughts/words.  This summarization is a key part of the learning process.  If you would like to learn additional skills to improve your academic performance, reach out to the office of [Student Academic Success.](https://rosehulman.sharepoint.com/sites/osas/SitePages/Home.aspx)
+
+In the first of several studies conducted by Mueller and Oppenheimer, they enrolled 67 students from Princeton University.  Each participant was assigned to view one of five TED Talks (`talk` variable).  The talks were chosen to have similar length (roughly 15 minutes) and cover a topic that was accessible but not considered common knowledge.  Participants viewed the talk and took notes over this "lecture" using either using a laptop or by hand ("longhand"); the method of note taking was left up to the participant (`condition` variable).  Approximately 30 minutes after the lecture, participants completed an exam on the material.  The exam consisted of factual-recall questions (e.g., "Approximately how many years ago did the Indus civilization exist?") and conceptual questions (e.g., "How do Japan and Sweden differ in their approaches to equality within their societies?").  The exams were graded by an individual not familiar with which methods the participants took notes.  The difficulty of the exam, and the total number of points available on the exam differed depending on the topic of the talk.
+
+Researchers were particularly interested in whether students scored higher, on average, on the conceptual portion of the exam (`conceptual` variable) when taking notes by hand compared to on the laptop.  Given the differences in the talks viewed, the researchers would like to account for this extraneous source of variability.
+
+
+
+## Exploratory Analysis
+### Exercise: Variables
+> Identify the response, the factor of interest, and the block term.
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+The response is the score on the conceptual portion of the exam.  The factor of interest is the method of note taking (laptop or longhand).  The blocking term is the topic of the talk.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=cb1cec0e-f299-4532-93f7-b06000054f4e&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+
+
+
+### Exercise: Graphical Summary
+> Construct a graphic summarizing the data to address the question of interest.  
+
+```{r s8-ex-graph, exercise=TRUE, exercise.eval=FALSE}
+ggplot() +
+  aes() +
+  labs()
+```
+
+```{r s8-ex-graph-solution}
+ggplot(data = notes) +
+  aes(y = conceptual,
+      x = condition,
+      color = talk) +
+  labs(y = "Score on Conceptual Questions",
+       x = "Note Taking Method",
+       color = "Talk Topic") +
+  geom_jitter()
+```
+
+
+
+## Creating a Model
+### Exercise: Model for Data Generating Process
+> Write a model for the data generating process which allows a participant's score on the conceptual portion of the exam depend on the type of note taking method while accounting for the variability across lecture topics.
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+$$
+\begin{aligned}
+  (\text{Conceptual})_i 
+    &= \mu_1 (\text{Laptop})_i + \mu_2 (\text{Longhand})_i \\
+    &\qquad + \beta_2 (\text{Ideas})_i + \beta_3 (\text{Indus})_i \\
+    &\qquad + \beta_4 (\text{Inequality})_ + \beta_5(\text{Islam})_i + \varepsilon_i
+\end{aligned}
+$$
+
+where we have defined suitable indicator variables.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=7fad116f-3228-4f01-9031-b06000054f4d&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+
+
+
+### Exercise: Hypotheses
+> State the null and alternative hypotheses which will be tested to address the research objective.  Then, write the model for the data generating process under the null hypothesis.
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+$$H_0: \mu_1 = \mu_2 \qquad \text{vs.} \qquad H_1: \mu_1 \neq \mu_2$$
+
+The above looks for any differences in the methods; if you want to specifically test superiority, then you would test
+
+$$H_0: \mu_1 \geq \mu_2 \qquad \text{vs.} \qquad H_1: \mu_1 < \mu_2$$
+
+Regardless, under the null hypothesis, the model for the data generating process simplifies to
+
+$$
+\begin{aligned}
+  (\text{Conceptual})_i &= \mu + \beta_2 (\text{Ideas})_i + \beta_3 (\text{Indus})_i \\
+    &\qquad + \beta_4 (\text{Inequality})_ + \beta_5(\text{Islam})_i + \varepsilon_i
+\end{aligned}
+$$
+
+where $\mu$ is the common mean response for both groups when examining the Algorithms topic.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=6a9556ab-3ac2-4567-a85e-b06000054f55&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+
+
+### Exercise: Compute the P-Value
+> Assuming the data is consistent with the conditions for the classical repeated measures ANOVA model, compute a p-value to assess the researchers' objective.  Based on this p-value, what conclusion can they reach?
+
+```{r s8-ex-pvalue, exercise=TRUE, exercise.eval=FALSE}
+notes.model.h1 = specify_mean_model()
+notes.model.h0 = specify_mean_model()
+
+compare_models()
+```
+
+```{r s8-ex-pvalue-solution}
+notes.model.h1 = specify_mean_model(conceptual ~ condition + talk, data = notes)
+notes.model.h0 = specify_mean_model(conceptual ~ 1 + talk, data = notes)
+
+compare_models(notes.model.h1, 
+               notes.model.h0,
+               alternative = 'at least one differs',
+               assume.constant.variance = TRUE,
+               assume.normality = TRUE)
+```
+
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+The study provides weak evidence that, on average, the score on the conceptual portion of the exam differs between the two styles of note taking.  To see which group is performing slightly better, we need to either examine the graphic or the parameter estimates (shown below), which confirm that taking notes by hand is trending toward higher average scores.
+
+```{r, echo=TRUE, eval=TRUE}
+notes.model.h1 = specify_mean_model(conceptual ~ condition + talk, data = notes)
+
+estimate_parameters(notes.model.h1,
+                    confidence.level = 0.95,
+                    assume.constant.variance = TRUE,
+                    assume.normality = TRUE)
+```
+</div>
+</section>

@@ -1,0 +1,322 @@
+---
+title: "09 Examples - Assessing ANOVA Conditions"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+    highlight: tango
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+IntroAnalysis:::ma223_setup()
+library(learnr)
+
+knitr::opts_chunk$set(echo = FALSE)
+learnr::tutorial_options(exercise.cap = "Exercise")
+```
+
+```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
+.tipbox {
+  padding: 1em 1em 1em 1em;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: 2px 2px #888888;
+}
+
+.keyidea {
+  border: 1px solid #54585A;
+  background: #4F758B;
+  color: white;
+}
+
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
+.tip {
+  background: lightyellow;
+}
+
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
+}
+
+.title{
+  color: #800000;
+  background: none;
+}
+
+.solution {
+  background: #ebebeb;
+}
+
+h2{
+  color: white;
+  background-color: #800000;
+}
+
+h3{
+  color: #800000;
+  border-bottom: thick solid #696969;
+}
+
+h4{
+  color: #800000;
+}
+
+blockquote {
+  font-size: inherit;
+  padding: 0px 20px;
+}
+
+```
+
+
+
+## Background
+A [recent study](https://projects.thepostathens.com/SpecialProjects/behind-the-screens-time-spent-on-phone/index.html) suggested college students spend an average of 4 hours and 25 minutes on their phone each day.  [Another study](https://psychcentral.com/news/2014/08/31/new-study-finds-cell-phone-addiction-increasingly-realistic-possibility#1) suggests approximately 6 out of 10 students believe they are addicted to their cell phone.  For faculty, cell phones in class are a constant source of distraction.  Anecdotal, faculty believe students who regularly check their cell phone in class tend to perform more poorly on assessments.  Some faculty have considered banning cell phones from class, but given the attachment we have to mobile devices, could banning cell phones have a negative impact on students?
+
+> There is no denying that mobile devices (whether cell phones or smart watches) are constantly vying for our attention.  In addition to staying in contact with loved ones, app notifications want us to engage with their product (which is what makes them profitable).  There is no such thing as multitasking; what we perceive as "doing two things at once" is really our brain switching attention between multiple tasks repeatedly.  Every time we are pulled back to our device, our brain has to reset as it switches attention from one task to another; this diminishes our focus on any task.  If you are interested in learning more tools to help you reduce the distraction of mobile devices, you should speak with the office of [Student Academic Success.](https://rosehulman.sharepoint.com/sites/osas/SitePages/Home.aspx)
+
+A sample of 144 adults recruited through a Psychology Department at Florida Gulf Coast University participated in a study designed to investigate the impact of having limited access to their mobile device.  Each participant entered a room and took an assessment of their positive and negative affect (emotional state).  Then, the participant was randomly assigned to one of three groups/conditions.  The first group was told to "keep your cell phone on but we ask that you put it away for the remainder of the experiment" ("On" group).  The second group was told to "turn your cell phone off and put it away for the remainder of the experiment" ("Off" group).  The third group was told to "turn your cell phone off, I need to remove it for the remainder of the session, I will keep it in a safe location and once the study is complete I will return it to you" ("Removed" group).
+
+After being assigned to a condition, participants repeated the assessment of their affect.  At this point, participants were asked to wait in the room alone until the researcher returned.  The researcher returned exactly 3 minutes later, at which time the participants were asked to answer the following question: "Precisely how long would you estimate the researcher was just out of the room?  Please mark your estimate and try to be exact."  Participants marked their answer on a scale ranging from 0 to 10 minutes.
+
+The Positive and Negative Affect Schedule (PANAS) was used to assess positive and negative affect (emotional state).  This assessment consists of 20-items, each marked on a 5-point scale.  The responses on ten items are combined to measure positive affect (e.g., interested, excited, alert), and the responses on ten items are combined to measure negative affect (e.g., distressed, upset, guilty). 
+
+We have the data corresponding to this study (`cellphones`).  We are primarily interested in seeing how the group to which the participants was assigned (`Condition`) impacts how long they perceived they were left alone (`Duration`).  This is addressed by the following model:
+
+$$(\text{Duration})_i = \mu_1 (\text{Off})_i + \mu_2 (\text{On})_i + \mu_3 (\text{Removed})_i + \varepsilon_i$$
+
+where 
+
+$$
+\begin{aligned}
+  (\text{Off})_i
+    &= \begin{cases} 1 & \text{if i-th participant assigned to the "Off" group} \\ 0 & \text{otherwise} \end{cases} \\
+  (\text{On})_i
+    &= \begin{cases} 1 & \text{if i-th participant assigned to the "On" group} \\ 0 & \text{otherwise} \end{cases} \\
+  (\text{Removed})_i
+    &= \begin{cases} 1 & \text{if i-th participant assigned to the "Removed" group} \\ 0 & \text{otherwise} \end{cases} \\
+\end{aligned}
+$$
+
+are indicator variables capturing group assignment.  The data is summarized below:
+
+```{r, fig.cap = "Perceived length of time participants were left alone after having access to their cell phone altered.  They were really left alone for 3 minutes.", fig.cap = "Side-by-side jitter plots of perceived time."}
+ggplot(data = cellphones) +
+  aes(y = Duration,
+      x = Condition) +
+  labs(y = 'Perceived Length of Time\nLeft Alone (minutes)',
+       x = 'Cell Phone Group Assigned') +
+  geom_boxplot() +
+  geom_jitter()
+```
+
+The above model can be fit using the following code.
+
+```{r, echo=TRUE, eval=FALSE}
+cellphone.model = specify_mean_model(Duration ~ Condition, data = cellphones)
+```
+
+```{r s9model, echo=FALSE, eval=TRUE}
+cellphone.model = specify_mean_model(Duration ~ Condition, data = cellphones)
+```
+
+
+
+## Assessing Conditions
+### Exercise: Compute Residuals
+> Obtain the residuals and fitted values for the above model, and store them in a dataset called `cellphones.diag`.  What does the residual for each observation tell you?
+
+```{r s9-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9model"}
+cellphones.diag = obtain_diagnostics()
+```
+
+```{r s9-ex-resid-solution}
+cellphones.diag = obtain_diagnostics(cellphone.model)
+```
+
+```{r s9resids}
+cellphone.model = specify_mean_model(Duration ~ Condition, data = cellphones)
+cellphones.diag = obtain_diagnostics(cellphone.model)
+```
+
+
+
+### Exercise: Assessing Normality
+> Is it reasonable to assume the error in the above model comes from a Normal distribution?  Explain. 
+
+```{r s9-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9resids"}
+ggplot() +
+  aes() +
+  labs()
+```
+
+```{r s9-ex-normality-solution}
+ggplot(data = cellphones.diag) +
+  aes(sample = .resid) +
+  labs(y = "Sample Quantiles",
+       x = "Theoretical Quantiles") +
+  geom_qq()
+```
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+When examining the probability plot of the residuals, note the gradual upward curve throughout the plot.  If the errors follows a Normal distribution, we would expect a probability plot of the residuals to exhibit a straight line.  Therefore, it is not reasonable to assume the errors follow a Normal distribution.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=565666b5-0f05-4cc6-b06d-b06000054f49&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+
+
+### Exercise: Assessing Homoskedasticity
+> Is it reasonable that the variability in the error of the perceived duration is constant across all three treatment groups?  Explain. 
+
+```{r s9-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9resids"}
+ggplot() +
+  aes() +
+  labs()
+```
+
+```{r s9-ex-homoskedasticity-solution}
+ggplot(data = cellphones.diag) +
+  aes(y = .resid,
+      x = Condition) +
+  labs(y = "Residuals",
+       x = "Cell Phone Group Assigned") +
+  geom_boxplot() +
+  geom_jitter()
+```
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+The spread of the residuals is similar across each of the three treatment groups.  This is consistent with our expectations if the variability of the error was the same for each of the three groups.  Therefore, it is reasonable to assume the errors exhibit constant variance.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=2a150f30-9934-47c5-9c0f-b06000055e78&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+
+<div class = "tipbox tip">
+There is more than one way to assess constant variance in the "one-factor" (no blocks) ANOVA setting:
+
+- We can use the residuals against the fitted values as in regression.
+- We can look at the raw data.
+- We can use the residuals against the factor levels (groups).
+</div>
+
+
+### Exercise: Assessing Independence
+> The unique participant identification code suggests the data is presented in the order in which it was collected.  Is it reasonable to assume the error in the perceived duration for one individual is independent of the error in the perceived duration for any other individual?  Explain.
+
+```{r s9-ex-independence, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s9resids"}
+ggplot() +
+  aes() +
+  labs()
+```
+
+```{r s9-ex-independence-solution}
+ggplot(data = cellphones.diag) +
+  aes(y = .resid,
+      x = seq_along(.resid)) +
+  labs(y = "Residuals",
+       x = "Order of Observations") +
+  geom_point() +
+  geom_line()
+```
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+There is some cause for concern regarding whether the errors are independent.  As we move left-to-right across the time-series plot, the variability in the residuals diminishes.  This suggests that participants later in the study were less varied in their estimates compared to those earlier in the study.  
+
+However, given the manner in which the data was collected, and that the pattern observed is minor, we feel comfortable assuming independence.
+</div>
+</section>
+
+
+### Exercise: Assessing Mean 0?
+> Explain why we do not need to assess the "mean-0" condition.
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+Since we did not incorporate blocks into the model, our model makes no simplifying assumptions about the structure of the mean response.  Each group is allowed a separate mean response.  Without a simplifying structure, we could not have made a mistake.  Therefore, there is no need to assess this condition.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a88c7497-3253-47f3-a148-b060000561d5&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+</div>
+</section>
+

@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "04 - Simple Linear Regression"
+title: "04 Examples - Simple Linear Regression"
 output: 
   learnr::tutorial:
     progressive: true
@@ -18,6 +17,70 @@ learnr::tutorial_options(exercise.cap = "Exercise")
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -31,13 +94,18 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -45,14 +113,8 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -74,52 +136,29 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-When purchasing or selling a home, your real estate agent helps you determine if a house is priced correctly.  This involves comparing the price of the home with its "comparables" (similar homes in the area) to determine if the price is similar.  One way of doing this is to build a statistical model which predicts the sale price of a home based on various characteristics.  We have data on over 500 sales from real estate transactions across the United States.  Each record corresponds to the sale of a particular home and includes the following variables:
+"Repetitive negative thinking (RNT) is a process characterized by intrusiveness, repetitiveness, and difficulties to disengage from negative cognitive and affective content...which encompasses worry (future-directed negative thought) and rumination (past-directed negative thought)" [(Schlosser 2022)](https://link.springer.com/article/10.1007/s12144-020-00839-5).  Those diagnosed with depression and anxiety often exhibit high levels of RNT.  Mindfulness is one recommended therapy to combat RNT.
 
-  - `ID`: Unique identification for each sale.
-  - `Price`: Sale price of home (\$).
-  - `Area`: Finished area of residence (square feet).
-  - `BedRooms`: Number of bedrooms in the residence.
-  - `BathRooms`: Number of bathrooms in the residence.
-  - `AC`: Indicator of whether home has central air conditioning (1 = Yes, 0 = No).
-  - `Garage`: Number of cars that garage will hold.
-  - `Pool`: Indicator of whether home has a swimming pool (1 = Yes, 0 = No).
-  - `Year`: Year property was originally constructed.
-  - `Quality`: Indicator of the quality of the construction (1 = High quality, 2 = Medium, 3 = Low).
-  - `Style`: Indicator of the architectural style (mapping unknown).
-  - `Lot`: Lot size (square feet).
-  - `Highway`: Indicator of whether home is located near highway (1 = Yes, 0 = No).
-
-The data is available in `R` (`RealEstate`).
-
-
-
-## Questions
-Suppose a couple is considering an addition onto their home. They would like to estimate how much they should invest in such an addition.
-
-### Exercise: Assessing the Question
-> There are two ways a person might approach this objective:
+> It can be difficult to distinguish between prudent forethought and worry as well as prudent reflection and rumination.  RNT includes both "instrusiveness" (unwanted, but it comes anyway) and "repetitiveness."  An example of rumination is replaying a conversation over and over again in your mind, thinking of how it could have gone differently (and often critiquing yourself in the process).  Similarly, an example of worrying is when you play a hypothetical conversation over and over again in your mind before it happens, often bringing in elements from past conversations (generally assuming the worst of another person or yourself).  
+>  
+> It is easy to dismiss RNT as simply "my personality."  But, frequently engaging in this type of thinking can lead to depression and self-harming thoughts.  If you are interested in exploring treatment options, including mindfulness, reach out to the [Student Counseling Center](https://rosehulman.sharepoint.com/sites/counseling/SitePages/Home.aspx).
 >
->  - How much can they expect the value of their home to increase given the addition will increase the square footage of their home by $x$ square feet?
-   - Given that after the addition, their home will have a square-footage of $x$, how much do they expect their home to be worth on the market?
->
-> Compare and contrast these two questions.
+> For free resources on mindfulness, consider the [Free Mindfulness Project](https://www.freemindfulness.org/).
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=d9143a01-353a-4210-a92f-ac800129d506&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
+A link to an online survey was shared via social media to international mindfulness associations, meditation centers, and Buddhist communities.  Participants had to be at least 18 years of age and regularly (at least once per week) practice meditation. We have access to this data (`meditation`).  The Perseverative Thinking Questionnaire (PTQ, `negthinking` variable) was used to quantify the participants level of RNT.  The PTQ consists of 15 questions in which participants rate each item on a 5-point scale; scores can range from 0 to 60, and higher scores indicate higher levels of RNT.  The Mindsens score (`mindfulness`) was used to measure mindfulness obtained through the participants meditation practices.  The Mindsens is a 19-item index combining elements of the Five Face Mindfulness Questionnaire and the Experience Questionnaire.  Scores represent an average of responses to these questions and range from 1 to 5, with higher values indicating higher levels of mindfulness.  These scores have been well-studied.
+
+> There is no agreed upon definition of "mindfulness."  Some associate this with specific religious practices (like Buddhism), but there are many characteristics that are shared by a wide range of people from different spiritual backgrounds.  In this study, "mindfulness" is primarily considered the result of "meditation," and is considered the participants "ability to be mindful and the capacity to observe mental objects as transient and impersonal."  Think of it as a person's ability to describe their emotions without experiencing those emotions.
+
+"[C]linical research suggests that RNT mediates the effects of mindfulness-based interventions on mental health outcomes including anxiety, stress, and depression" (Schlosser 2022).  That is, research has suggested that practicing mindfulness can result in decreased anxiety and stress, and one possible explanation is that this works through decreasing the amount of time we spend engaging in repeated negative thinking.  Researchers in this study are primarily interested in quantifying the impact of mindfulness on repeated negative thinking.
 
 
+## Data Exploration
 ### Exercise: Graphical Summary
-> Construct a graphic summarizing the relationship between the size of a home (its square footage) and the sale price of the home.  What does the graphic communicate (keeping in mind the objective)?
+> Construct a graphic summarizing the relationship between the level of RNT and mindfulness.  What does the graphic communicate (keeping in mind the research objective)?
 
 ```{r s4-ex-graph, exercise=TRUE, exercise.eval=FALSE}
 ggplot() +
@@ -128,75 +167,97 @@ ggplot() +
 ```
 
 ```{r s4-ex-graph-solution}
-ggplot(data = RealEstate) +
-  aes(y = `Price`,
-      x = `Area`) +
-  labs(y = "Sale Price of Home ($)",
-       x = "Living Area (sq-ft)") +
+ggplot(data = meditation) +
+  aes(y = negthinking,
+      x = mindfulness) +
+  labs(y = "Level of RNT (higher is worse)",
+       x = "Mindfulness (higher is better)") +
   geom_point()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=7e43222b-ac7e-46d4-b434-ac80012a9bd3&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+The relationship is somewhat complex.  Increasing the level of mindfulness is associated with increased RNT up until participants reach a mindfulness of about 3.  For mindfulness values above 3, increased mindfulness is associated with decreased RNT.
+
+_This might suggest that mindfulness practices alone are insufficient for decreasing RNT; in fact, the data suggests that an individual's ability to practice self-compassion plays a key role in an being able to capitalize on the benefits of mindfulness practices._
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=479c9c02-d107-44ea-9e24-b05f0171e209&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Correlation
-> Which of the following _most likely_ represents the correlation coefficient relating the sale price to the living area of the home?
+> Which of the following _most likely_ represents the correlation coefficient relating the level of RNT and mindfulness in this study?
 >
->  -  -159
-   -  -0.82
-   -  -0.21
-   -  0.21
-   -  0.82
-   -  159
+>  -  -4.9
+   -  -0.93
+   -  -0.34
+   -  0.34
+   -  0.93
+   -  4.9
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=96ffead2-be12-47fc-b6ec-ac80012b2c4d&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+From the graphic, we see that, overall, there is a slight decreasing trend between the two variables.  However, that trend is not extreme; this weak negative correlation suggests a negative value closer to 0 than to 1.  This can also be computed using the following code:
+
+```{r, echo=TRUE}
+summarize_relationship(negthinking ~ mindfulness, data = meditation)
+```
 </div>
+</section>
 
 
+
+## Fitting a Linear Model
 ### Exercise: Model for Data Generating Process
-> Using mathematical notation, write the model for the data generating process viewing the sale price as a linear function of the living area of the home.
+> Using mathematical notation, write the model for the data generating process viewing the level of negative thinking as a linear function of an individual's mindfulness.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=684c36e0-f374-41e2-9ef1-ac80012bd1dc&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+$$(\text{RNT})_i = \beta_0 + \beta_1 (\text{Mindfulness})_i + \varepsilon_i$$
+
+We note that while we did not necessarily feel a linear relationship was most appropriate here when examining the graphic, the prompt asked us to assume this particular structure.
 </div>
-
-
-### Exercise: Role of Error Term
-> State one source of variability in the sale price being captured by the error term in the above model.
-
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=354aa4b8-5523-457b-b198-ac80012c9492&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
+</section>
 
 
 ### Exercise: Computing Least Squares Estimates
 > Compute the least squares estimates for the parameters in the model specified in the previous part.  Assuming the deterministic portion of that model is correctly specified, interpret the slope in the context of this problem.
 
 ```{r s4-ex-ls, exercise=TRUE, exercise.eval=FALSE}
-realestate.model = specify_mean_model()
+meditation.model = specify_mean_model()
 
 estimate_parameters()
 ```
 
 ```{r s4-ex-ls-solution}
-realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
+meditation.model = specify_mean_model(negthinking ~ 1 + mindfulness, 
+                                      data = meditation)
 
-estimate_parameters(realestate.model)
+estimate_parameters(meditation.model)
 ```
    
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a34d303c-273b-4229-a1d9-ac80012d5324&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+For each 1-unit increase in an individual's mindfulness score, their RNT score tends to decrease by 4.9, on average.
 </div>
+</section>
 
 
 ### Exercise: Estimating Mean Response
-> Based on this data, and assuming the deterministic portion of the model is correctly specified, on average, how much does a home with 2600 square feet of living area sell for?  Why should we not use the model to estimate the average sale price of a home with 6000 square feet of living area?
+> Consider individuals who score a 4 on the Mindsens index.  Using this data, and assuming the deterministic portion of the model is correctly specified, what would we expect the average RNT score for these individuals to be?  
 
 ```{r s4-model, include=FALSE}
-realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
+meditation.model = specify_mean_model(negthinking ~ 1 + mindfulness, 
+                                      data = meditation)
 ```
 
 ```{r s4-ex-mean, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s4-model"}
@@ -204,36 +265,46 @@ estimate_mean_response()
 ```
 
 ```{r s4-ex-mean-solution}
-estimate_mean_response(realestate.model, Area = 2600)
+estimate_mean_response(meditation.model, mindfulness = 4)
 ```
    
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bdf95103-81b6-421d-9bb1-ac80012e41c0&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
 
 
 ### Exercise: Hypotheses
-> Using mathematical notation, specify the null and alternative hypotheses which capture the following research question: is there evidence that the sale price of a home is linearly related to its square footage?
+> Using mathematical notation, specify the null and alternative hypotheses which capture the following research question: is there evidence that an individual's RNT level is linearly related to their mindfulness?
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=ce8328d3-c93b-4628-aa28-ac80012f27f8&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution6"> 
+<h4 class="handle"><label for="solution6">Solution</label></h4>
+<div class="content">
+$$H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=21583ac8-1808-4cd6-8be1-b05f0171e201&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Performing Inference with CI
-> Assuming the data is consistent with the conditions of the classical regression model, compute the appropriate 95% confidence interval for each of the parameters.  Based on the analysis, what conclusions can we draw regarding the hypotheses specified in the previous part?
+> Assuming the data is consistent with the conditions of the classical regression model, compute the appropriate 95% confidence interval for each of the parameters.  Based on the analysis, what conclusions can we draw regarding the research objective?
 
 ```{r s4-ex-ci, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s4-model"}
 estimate_parameters()
 ```
 
 ```{r s4-ex-ci-solution}
-estimate_parameters(realestate.model, confidence.level = 0.95,
+estimate_parameters(meditation.model,
+                    confidence.level = 0.95,
                     assume.identically.distributed = TRUE,
                     assume.normality = TRUE)
 ```
    
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=f8247cab-0f90-408d-85df-ac8001301614&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution7"> 
+<h4 class="handle"><label for="solution7">Solution</label></h4>
+<div class="content">
+We note that the 95% CI for the slope (-5.7, -4.2) contains only negative values.  Therefore, we have evidence that higher levels of mindfulness are associated with lower levels of RNT.  It is plausible that those who practice mindfulness techniques tend to have lower levels of repeated negative thinking, which might improve anxiety.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=fa3ee283-2423-4396-b411-b05f0171e204&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 

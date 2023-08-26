@@ -483,7 +483,8 @@ compare_models(fit_reg1,
 
 ### Single Mean
 Hypothesis testing is typically introduced in the case of a single mean.  In the case of a single mean, we prefer inference be conducted via confidence intervals.  In the case of ANOVA, inference via a p-value is more easily motivated in our opinion.  However, for completeness, we present the code below for testing a hypothesis of the form
-$$H_0: \mu = 23 \qquad \text{vs.} \qquad H_1: \mu \neq 23$$
+
+$$H_0: \mu \geq 23 \qquad \text{vs.} \qquad H_1: \mu < 23$$
 
 where $\mu$ represents the mean fuel efficiency (mpg) for all 1974 vehicles.  From a classical perspective, this is typically done using a one-sample t-test.  This can be implemented via `compare_models()`.  Again, we focus on the data generating processes being compared.
 
@@ -516,11 +517,12 @@ Now, the two models can be compared.
 ```{r}
 compare_models(fit_single1,
                fit_single0,
+               alternative = 'less than',
                assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
-This matches the output of `t.test()`; again, the benefit is that it can be easily extended to relaxing the conditions and implementing a bootstrap procedure.  
+This matches the output of `t.test()`; again, the benefit is that it can be easily extended to relaxing the conditions and implementing a bootstrap procedure.  Note that since we are not testing a "not equal" to alternative, we should explicitly specify it to get the one-sided p-value.
 
 __Additional Notes:__ The use of the `constant()` notation can be helpful in specifying more complex hypotheses, such as testing whether the slope in a regression model takes on a particular value.  Again, the notation is meant to link directly to the model a student would write down using mathematical terms.
 
@@ -584,6 +586,7 @@ fit_single0 <- specify_mean_model(mpg ~ constant(23), data = mtcars)
 
 null_distn <- compare_models(fit_single1,
                              fit_single0,
+                             alternative = 'not equal',
                              assume.identically.distributed = TRUE,
                              assume.normality = TRUE)
 

@@ -16,7 +16,7 @@ estimated.}
 \code{FALSE} a traditional residual bootstrap is performed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 \code{wild = FALSE}, this is ignored.}
 }
 \value{

@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "03 - Null Distributions and P-Values"
+title: "03 Examples - Null Distributions"
 output: 
   learnr::tutorial:
     progressive: true
@@ -18,6 +17,70 @@ learnr::tutorial_options(exercise.cap = "Exercise")
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -31,13 +94,18 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -45,14 +113,8 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -74,50 +136,32 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
-
 ## Background
-Large surveys are commonly conducted to inform policy decisions. The Study on the Efficacy of Nosocomial Infection Control (SENIC Project) was to determine whether infection surveillance and control programs have reduced the rates of nosocomial (hospital-acquired) infection in the United States hospitals. This data set consists of a random sample of 113 hospitals selected from across the US.  Each record corresponds to information on the hospital's performance. The data contains the following variables:
+Regular exercise is an important component of a healthy lifestyle, including mental health.  Exercise has become a suggested component of treatment for depression.  It is important to note that the [CDC considers a broad definition of "exercise,"](https://www.cdc.gov/physicalactivity/basics/adults/index.htm) which includes activities we might not typically consider.  In particular, the CDC defines "physical activity" as "anything that gets your body moving."  
 
-  - `ID`: Unique hospital identifer.
-  - `Length of Stay`: Average length of stay of all patients in hospital (days).
-  - `Age`: Average age of patients (in years)
-  - `Infection Risk`: estimated probability of acquiring infection in hospital (percent).
-  - `Routine Culturing Ratio`: Ratio of number of cultures performed to the number of patients without
-signs or symptoms of hospital-acquired infection, times 100.
-  - `Routine Xray Ratio`: Ratio of number of X-rays performed to number of patients without signs or
-symptoms of pneumonia, times 100.
-  - `Number of Beds`: number of beds in hospital during study period.
-  - `Medical School`: Indicator of whether the hospital is associated with a medical school (1 = Yes, 2 =
-No).
-  - `Region`: Indicator of the geographic region for hospital (1 = NE, 2 = NC, 3 = S, 4 = W).
-  - `Average Census`: number of patients per day in hospital during study period.
-  - `Number Nurses`: number of full-time equivalent registered and licensed practical nurses
-during study period (number of full time plus one half the number of part time).
-  - `Available Facilities`: Percent of 35 potential facilities and services that are provided by the hospital.
+> If you would like ideas on how to remain active, the Sports and Recreation Center staff offer lots of activities from IM leagues to exercise classes.
 
-The data is available in `R` (`senic`).
+College students often have lofty goals at the beginning of a term, but then healthy lifestyle choices fall away as academic demands increase.  [Kroencke, Harari, and Gosling (2017)](https://osf.io/swfeg/) conducted a study with over 2000 undergraduate students enrolled in an online psychology course.  Students were asked to track their exercise over the course of the academic term.  A subset of the data is available (`exercise`).  We are particularly interested in examining the number of days students exercised during the first two weeks of the term (`exercise` variable).
 
 
 
-## Questions
-
-A large hospital network would like to lobby for more funding.  As part of their case, they would like to establish that on average, hospitals in the country have less than 280 beds available. Use the data provided to address the following questions.
+## Setting up the Hypotheses
+Suppose Student Affairs is interested in characterizing the exercise habits of students at the start of a term.  In particular, they are interested in determining if the study provides evidence that, on average, students exercise less than 7 days during the first two weeks of class.
 
 ### Exercise: Graphically Summarizing the Data
 > Below is a graphic summarizing the data collected; explain why this graphic is a poor summary, and construct a more appropriate graphic for addressing the above research objective.
 
-```{r bad-plot, echo=FALSE, fig.cap = "Summary of number of beds available in a hospital."}
-ggplot(data = summarise(senic, Mean = mean(`Number of Beds`)),
-       mapping = aes(y = Mean, x = "")) +
-  geom_bar(stat = "identity", width = 0.25) +
-  labs(y = "Average Number of Beds in Hospital",
-       x = "")
+```{r bad-plot, echo=FALSE, fig.cap = "Summary of number of days students exercise during the first two weeks of class."}
+exercise |>
+  drop_na(exercise) |>
+  summarise(x = mean(exercise)) |>
+  ggplot(mapping = aes(y = x, x = '')) +
+  geom_col(color = 'black', fill = 'grey75') +
+  labs(y = 'Average Number of Days Students\nExercise in First Two Weeks',
+       x = NULL)
 ```
 
 ```{r s3-ex-graph, exercise=TRUE, exercise.eval=FALSE}
@@ -127,61 +171,95 @@ ggplot() +
 ```
 
 ```{r s3-ex-graph-solution}
-ggplot(data = senic) +
-  aes(y = `Number of Beds`,
+ggplot(data = exercise) +
+  aes(y = `exercise`,
       x = "") +
-  labs(y = "Number of Beds in Hospital",
+  labs(y = "Number of Days of Exercise",
        x = "") +
-  geom_boxplot()
+  geom_jitter()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e8f7d6ae-b9bd-4943-8b30-ac8001225674&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+A graphic should convey more than a table; in particular, the graphic should allow us to examine the distribution of the variable.  In this case, we are missing any sense of the spread in the variable.
+
+We note that there are many potential solutions for reasonable graphics.  As there are a limited number of potential values (0 - 14), but several hundred observations, we use a jitter plot to prevent overplotting.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a2a80610-49db-4962-a08f-b05f0154f2d3&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Hypotheses
-> State the null and alternative hypotheses that capture their research objective.  Be sure to define the parameter(s) of interest.
+> State the null and alternative hypotheses that capture the research objective.  Be sure to define the parameter(s) of interest.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bd2f1387-f7ca-405f-98ae-ac80012373ff&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+Let $\mu$ represent the average number of days students exercise during the first two weeks of class.  Then, we are interested in testing
+
+$$H_0: \mu \geq 7 \qquad \text{vs.} \qquad H_1: \mu < 7$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=1589b1b6-9a00-40fa-bba6-b05f0154f2ce&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
+
+## Computing a P-Value
 ### Exercise: Model for Data Generating Process
 > Using mathematical notation, state the model for the data generating process under each hypothesis.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e9d16839-d6a2-4869-99ca-ac8001244e92&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+Under the alternative hypothesis, there is no restriction placed on the parameter; therefore, the model for the data generating process is a function of the unknown parameter:
+
+$$(\text{Number of Days})_i = \mu + \varepsilon_i$$
+
+Under the null hypothesis, we place a constraint on the parameter.  In particular, we choose the value defined by the equality component of the null hypothesis.  This results in a restricted model which is
+
+$$(\text{Number of Days})_i = 7 + \varepsilon_i$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=a3a0f382-7c82-48c5-b7b6-b05f0154f2d4&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 <div class = "tipbox keyidea">
-  Hypotheses are statements about parameters that appear in the model for the data generating process.  The null hypothesis suggests a simpler model for the data generating process.
+Hypotheses are statements about the parameters that appear in the model for the data generating process.  The null hypothesis suggests a simpler model for the data generating process by constraining the parameters.
 </div>
 
 
 ### Exercise: Computing a P-Value
-> Assuming the data is representative of all hospitals in the US and that the number of beds in one hospital does not affect the number of beds in any other hospital, what conclusions can the lobbyists reach?  Compute a p-value for addressing this question, and then use it to address the question.
+> Assuming the data is representative of all undergraduates and that the amount of time one student spends exercising is independent of the amount of time any other student spends exercising, is there evidence that undergraduates exercise less than 7 days during the first two weeks, on average?  Compute a p-value for addressing this question, and then use it to state your conclusion.
 
 ```{r s3-ex-pval, exercise=TRUE, exercise.eval=FALSE}
-senic.h1 = specify_mean_model()
-senic.h0 = specify_mean_model()
+exercise.h1 = specify_mean_model()
+exercise.h0 = specify_mean_model()
 
 compare_models()
 ```
 
 ```{r s3-ex-pval-solution}
-senic.model.h1 = specify_mean_model(`Number of Beds` ~ 1, data = senic)
-senic.model.h0 = specify_mean_model(`Number of Beds` ~ constant(280), 
-                                    data = senic)
+exercise.h1 = specify_mean_model(exercise ~ 1, data = exercise)
+exercise.h0 = specify_mean_model(exercise ~ constant(7), data = exercise)
 
-compare_models(senic.model.h1,
-               senic.model.h0,
-               alternative = "less than",
+compare_models(exercise.h1, exercise.h0,
+               alternative = 'less than',
                assume.identically.distributed = TRUE)
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=74c93d1b-c08b-4f0b-a6dd-ac800126881f&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+With such a small p-value, the study provides strong evidence the average number of days students exercise over the first two weeks of class is less than 7.  We actually estimate the mean to be less than 5 days over the first two weeks.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=157047aa-13d1-4f71-b56a-b05f0154f2d0&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 

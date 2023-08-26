@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "02 - Sampling Distributions and Confidence Intervals"
+title: "02 Examples - Sampling Distributions"
 output: 
   learnr::tutorial:
     progressive: true
@@ -15,9 +14,79 @@ library(learnr)
 
 knitr::opts_chunk$set(echo = FALSE)
 learnr::tutorial_options(exercise.cap = "Exercise")
+
+## Shared Data ----
+acadsleep2 = acadsleep |>
+  drop_na(sleepHours) |>
+  group_by(participantID) |>
+  summarise(avgsleep = mean(sleepHours))
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -31,13 +100,18 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -45,14 +119,8 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -74,124 +142,166 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-Large surveys are commonly conducted to inform policy decisions. The Study on the Efficacy of Nosocomial Infection Control (SENIC Project) was to determine whether infection surveillance and control programs have reduced the rates of nosocomial (hospital-acquired) infection in the United States hospitals. This data set consists of a random sample of 113 hospitals selected from across the US.  Each record corresponds to information on the hospital's performance. The data contains the following variables:
+It is no surprise that research continues to establish the importance of sleep in a healthy lifestyle.  It is also no surprise that college students routinely claim that getting the recommended amount of sleep each night is not possible.  The StudentLife dataset, collected by Dartmouth College, recorded several features on undergraduate students.  Among the measurements recorded were the amount and the quality of sleep of participants over several weeks (approximately 30 days).  A subset of this data, investigated by [Benard and Darod (2018)](https://osf.io/ew9k7), is available (`acadsleep`).  
 
-  - `ID`: Unique hospital identifer.
-  - `Length of Stay`: Average length of stay of all patients in hospital (days).
-  - `Age`: Average age of patients (in years)
-  - `Infection Risk`: estimated probability of acquiring infection in hospital (percent).
-  - `Routine Culturing Ratio`: Ratio of number of cultures performed to the number of patients without
-signs or symptoms of hospital-acquired infection, times 100.
-  - `Routine Xray Ratio`: Ratio of number of X-rays performed to number of patients without signs or
-symptoms of pneumonia, times 100.
-  - `Number of Beds`: number of beds in hospital during study period.
-  - `Medical School`: Indicator of whether the hospital is associated with a medical school (1 = Yes, 2 =
-No).
-  - `Region`: Indicator of the geographic region for hospital (1 = NE, 2 = NC, 3 = S, 4 = W).
-  - `Average Census`: number of patients per day in hospital during study period.
-  - `Number Nurses`: number of full-time equivalent registered and licensed practical nurses
-during study period (number of full time plus one half the number of part time).
-  - `Available Facilities`: Percent of 35 potential facilities and services that are provided by the hospital.
-
-The data is available in `R` (`senic`).
+  > According to the National Sleep Foundation, most college-aged students need 7–9 hours of sleep per night to avoid daytime drowsiness, mood changes, weight gain, poor health, and low energy.  If you are struggling to maintain this level of sleep (as you will see is common among college students in this sample), speak with the [Office of Student Academic Success](https://rosehulman.sharepoint.com/sites/osas/SitePages/Home.aspx) to learn time-management skills that can prioritize sleep or the [Student Counseling Center](https://rosehulman.sharepoint.com/sites/counseling/SitePages/Home.aspx) to learn skills to calm your mind and help you sleep; this is also a valuable resource if a lack of sleep is leading to increased feelings of depression.
 
 
-## Questions
-
+## Sampling Distributions
 ### Exercise: Interpreting Sampling Distributions
-> Suppose we are interested in the proportion of hospitals which are affiliated with a medical school.  Below is a model for the sampling distribution of the proportion of hospitals affiliated with a medical school.  The model is based on 5000 bootstrap replications.  Based on the model, is it reasonable that 25% of hospitals are affiliated with a medical school?  Explain.
+> The Patient Health Questionnaire-9 is used to screen individuals for signs of depression.  Higher scores indicate increases signs of depression.  A score of 10 or higher indicates moderate (to more severe) depressive symptoms.  
+> 
+> Suppose we are interested in the proportion of students who exhibit signs of moderate-to-severe depression.  Using the data, we constructed the following model of the sampling distribution of the proportion of students exhibiting signs of moderate-to-severe depression.  The model is based on 5000 bootstrap replications.  Based on the model, is it reasonable that 20% of students exhibit signs of moderate-to-severe depression?  Explain.
+>
+> __Note:__ The PHQ-9 is a self-screening tool, and it is not meant to be used alone for diagnosing individuals.  If you believe that you, or someone you know, is experiencing depression, seek the guidance of a medical professional, such as the [Student Counseling Center](https://rosehulman.sharepoint.com/sites/counseling/SitePages/Home.aspx).
 
-```{r fig-a, echo=FALSE, fig.cap="Model of the sampling distribution of the sample proportion for a random sample of 113 hospitals. Model is based on 5000 bootstrap replicates."}
+```{r fig-a, echo=FALSE, fig.cap="Model of the sampling distribution of the sample proportion using a sample of 45 students. Model is based on 5000 bootstrap replicates.", fig.alt="Histogram of the sample proportion."}
 set.seed(123)
-prop.distn <- data_frame(
-  props = rbinom(5000, size = nrow(senic),
-                 prob = mean(senic$`Medical School`==1)) / nrow(senic)
+acadsleep.red <- acadsleep |>
+  group_by(participantID) |>
+  slice(1) |>
+  ungroup()
+
+prop.distn <- tibble(
+  props = rbinom(5000, size = nrow(acadsleep.red),
+                 prob = mean(acadsleep.red$PHQ9 >= 10)) / nrow(acadsleep.red)
 )
 
 ggplot(data = prop.distn,
        mapping = aes(x = props)) +
-  geom_density() +
+  geom_bar(fill = 'grey75', color = 'black') +
   labs(y = "",
-       x = "Sample Proportion Hospitals\nAffiliated with Medical School") +
-  scale_x_continuous(breaks = seq(0.05, 0.30, 0.05)) +
+       x = "Sample Proportion of Students\nwith Moderate-to-Severe Depression") +
   theme(axis.ticks.y = element_blank(),
         axis.text.y = element_blank())
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b131904d-5a1b-4dca-aa4d-ac80011717fc&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution1"> 
+<h4 class="handle"><label for="solution1">Solution</label></h4>
+<div class="content">
+Yes, it is reasonable that 20% of students exhibit signs of moderate-to-severe depression based on this study.  When looking at the model for the sampling distribution of the statistic, we identify the "center" of the distribution to range between approximately 0.08 and 0.22; any values falling in this center region are reasonable values of the underlying parameter.  That is, the data is consistent with being generated from a population where the true parameter was any value in this range.  
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=cd4afe72-0781-4878-8f98-b05f0148fcab&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 <div class = "tipbox keyidea">
-  Sampling distributions are centered on the true value of the parameter while _models_ for sampling distributions are centered on the statistic from the sample.
+Sampling distributions are centered on the true value of the parameter while _models_ for sampling distributions are centered on the statistic from the sample; values toward the center of the _model_ indicate reasonable values of the parameter.
 </div>
 
 
+## Constructing a Confidence Interval
 ### Exercise: Mathematical Model
-> Suppose we are interested in estimating the average number of nurses staffed by a hospital.  Using mathematical notation, write the model for the data generating process which corresponds to this research objective.
+> Suppose we are interested in estimating the average number of hours a students gets of sleep.  Using mathematical notation, write the model for the data generating process which corresponds to this research objective. 
+>  
+> __Note:__ this is an interesting research question in that the response variable is an _average_ of repeated measurements taken over the course of the study.  We will see better ways of addressing this question in future modules.  
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=3e0eb457-d3ef-4f03-8da8-ac80011897c0&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+Let $\mu$ represent the mean average number of hours a student gets of sleep; the "mean" is not redundant because the response variable is an average.  Then, our model for the data generating process is
+
+$$(\text{Average Sleep})_i = \mu + \varepsilon_i$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=d7d8d357-26c2-42b9-af73-b05f0148fca9&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Computing a CI
-> Using the available data compute a 98% confidence interval for the average number of nurses staffed by a hospital in the US based on the available data.  You may assume the sample is representative of all hospitals in the US; you may also assume the number of nurses staffed by one hospital is independent of the number of nurses staffed by any other hospital.
+The following code computes the average number of hours of sleep (`avgsleep`) each participant received over the course of the study.  The resulting data is stored in `acadsleep2`; use this dataset moving forward.
+
+```{r s2-newdata, echo=TRUE, eval=FALSE}
+acadsleep2 = acadsleep |>
+  drop_na(sleepHours) |>
+  group_by(participantID) |>
+  summarise(avgsleep = mean(sleepHours))
+```
+
+> Using the available data compute a 98% confidence interval for the mean average hours of sleep a student receives.  You may assume the sample is representative of all college students; you may also assume the amount of sleep one student receives is independent of the amount of sleep any other student receives.
 
 ```{r s2-ex-ci, exercise=TRUE, exercise.eval=FALSE}
-senic.model = specify_mean_model()
+sleep.model = specify_mean_model()
 
 estimate_parameters()
 ```
 
 ```{r s2-ex-ci-solution}
-senic.model = specify_mean_model(`Number Nurses` ~ 1, data = senic)
+sleep.model = specify_mean_model(avgsleep ~ 1, data = acadsleep2)
 
-estimate_parameters(senic.model, confidence.level = 0.98,
+estimate_parameters(sleep.model,
+                    confidence.level = 0.98,
                     assume.identically.distributed = TRUE)
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=df4cb9e0-bf4f-47ea-b8ba-ac80011a5e02&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
-
 <div class = "tipbox tip">
-  Note that the computer _always_ assumes observations are independent of one another (and therefore, we do not need to specify this)!
+Note that the computer _always_ assumes observations are independent of one another (and therefore, we do not need to specify this).
 </div>
 
 
-### Exercise: Interpreting a CI
-> Interpret the confidence interval obtained in the previous part.
+## Interpreting a Confidence Interval
+### Exercise: Conclusions
+> Suppose the Student Affairs Office is made aware of the above results and concludes that nearly every student is receiving at least 5.5 hours of sleep, on average, each night.  Is this an appropriate conclusion?  Explain.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=27b928e7-1bf1-4ef8-a9ee-ac80011ba626&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+No, this is not an appropriate conclusion.  A confidence interval is an estimate of the _parameter_; it does not make a statement about the value of the variable at the level of individuals in the population.  Therefore, while we can make a statement about the mean average amount of sleep a student is receiving, we cannot make a statement about the average for any individual.
 
-<div class = "tipbox tip">
-  Never attach a "% statement" with the values of the CI computed.
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=c3799baf-1c18-4194-b86a-b05f0148fcad&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Hypotheses
-> A policy adviser argues that the data provides evidence that on average, hospitals staff more than 155 nurses.  Is this a valid interpretation (assuming the conditions discussed in part (c))?  Explain.
+> Does the study provide evidence that, on average, students sleep an average of more than 6 hours each night?  Explain.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=5aa2d3b8-e092-41cf-b7f4-ac80011d0936&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+No, we do not have evidence to support this statement.  Notice that 6 is within our confidence interval; therefore, 6 is a reasonable value for the mean average amount of sleep students receive.  While it is _reasonable_ that students sleep an average of more than 6 hours each night, on average, we do not have _evidence_ for this statement.  We have "evidence" for a statement when the entire confidence interval agrees with the statement.  In this case, the data is consistent with mean average sleep values of more than 6 as well as less than 6.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=1f9e1ca5-b6d1-4395-8406-b05f0148fcb3&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
-
+</section>
 
 ### Exercise: Comparing Distributions
-> In the context of estimating the number of nurses staffed by hospitals, compare and contrast the distribution of the sample and the sampling distribution of the sample mean.
+> In the context of estimating the number of hours students sleep, compare and contrast the distribution of the sample and the sampling distribution of the sample mean.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=06278703-5c43-499d-bfc4-ac80011eaf2d&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution6"> 
+<h4 class="handle"><label for="solution6">Solution</label></h4>
+<div class="content">
+The sample shows the variability in the average number of hours (the variable) from one student to another.  It has quite a lot of variability.
+
+```{r, echo=FALSE, fig.cap="Average amount of sleep for students in the study.", fig.alt="Histogram of average sleep."}
+ggplot(data = acadsleep2,
+       mapping = aes(x = avgsleep)) +
+  geom_histogram(color = 'black', fill = 'grey75', 
+                 binwidth = 0.1) +
+  labs(y = 'Number of Students',
+       x = 'Avg. Hours of Sleep Over 30 Days')
+```
+
+In contrast, the model for the sampling distribution is much narrower, and more bell-shaped.  However, because it is a _model_ for the sampling distribution, it is centered in the same place as the distribution of the sample.
+
+```{r, echo=FALSE, fig.cap="Model for the sampling distribution of the sample mean average amount of sleep for students.", fig.alt="Histogram of sample mean."}
+specify_mean_model(avgsleep ~ 1, data = acadsleep2) |>
+  estimate_parameters(confidence.level = 0.98,
+                      assume.identically.distributed = TRUE) |>
+  plot_sampling_distribution() +
+  labs(x = 'Sample Mean Avg. Hours of Sleep Over 30 Days')
+```
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=89c28876-a744-434b-921f-b05f014913e3&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
-
+</section>

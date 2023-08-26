@@ -26,7 +26,6 @@ Imports: broom,
     tidyselect
 Depends: 
     stats,
-    MASS,
     R (>= 4.0)
 Suggests: knitr,
     rmarkdown,

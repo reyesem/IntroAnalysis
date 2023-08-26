@@ -4,7 +4,7 @@
 #' Distributions suggested by Mammen for Wild Bootstrap.
 #'
 #' Generates random variates from one of three distributions suggested by
-#' Mammen (2003) for use in Wild Bootstrap.
+#' Mammen (1993) for use in Wild Bootstrap.
 #'
 #' Generates a random variable \eqn{U}.  If \code{construct = "two-point mass"},
 #' the random variable \eqn{U} is defined as
@@ -12,7 +12,7 @@
 #' \frac{\sqrt{5} + 1}{2\sqrt{5}} & u = \frac{-(\sqrt{5}-1)}{2} \\
 #' \frac{\sqrt{5} - 1}{2\sqrt{5}} & u = \frac{\sqrt{5}+1}{2} \end{cases}}
 #' If \code{construct = "normal-1"}, the random variable \eqn{U} is defined as
-#' \deqn{U = \frac{V}{\sqrt{2} + \frac{V^2 - 1}{2}}}
+#' \deqn{U = \frac{V}{\sqrt{2}} + \frac{V^2 - 1}{2}}
 #' where \eqn{V \sim N(0,1)}.
 #' If \code{construct = "normal-2"}, the random variable \eqn{U} is defined as
 #' \deqn{U = \left(\delta_1 + V_1/\sqrt{2}\right)

@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "06 - Assessing Conditions in Regression"
+title: "06 Examples - Assessing Regression Conditions"
 output: 
   learnr::tutorial:
     progressive: true
@@ -15,14 +14,73 @@ library(learnr)
 
 knitr::opts_chunk$set(echo = FALSE)
 learnr::tutorial_options(exercise.cap = "Exercise")
-
-RealEstate <- RealEstate %>%
-  mutate(Pool = recode(Pool,
-                       `1` = "Has Pool",
-                       `0` = "Does not have Pool"))
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -36,13 +94,18 @@ RealEstate <- RealEstate %>%
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -50,14 +113,8 @@ RealEstate <- RealEstate %>%
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -79,125 +136,129 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-When purchasing or selling a home, your real estate agent helps you determine if a house is priced correctly.  This involves comparing the price of the home with its "comparables" (similar homes in the area) to determine if the price is similar.  One way of doing this is to build a statistical model which predicts the sale price of a home based on various characteristics.  We have data on over 500 sales from real estate transactions across the United States.  Each record corresponds to the sale of a particular home and includes the following variables:
+The COVID-19 pandemic provided challenges to both physical and mental well-being for individuals across the globe.  It has also provided a unique opportunity to examine what strategies were helpful in maintaining mental well-being in the face of extreme challenges.  A [2021 study](https://www.frontiersin.org/articles/10.3389/fpsyg.2021.647951/full) by researchers in the UK examined the role of gratitude in protecting mental well-being.  Expressing gratitude is a common element of mindfulness, a series of practices often recommended to improve mental health.  
 
-  - `ID`: Unique identification for each sale.
-  - `Price`: Sale price of home (\$).
-  - `Area`: Finished area of residence (square feet).
-  - `BedRooms`: Number of bedrooms in the residence.
-  - `BathRooms`: Number of bathrooms in the residence.
-  - `AC`: Indicator of whether home has central air conditioning (1 = Yes, 0 = No).
-  - `Garage`: Number of cars that garage will hold.
-  - `Pool`: Indicator of whether home has a swimming pool (1 = Yes, 0 = No).
-  - `Year`: Year property was originally constructed.
-  - `Quality`: Indicator of the quality of the construction (1 = High quality, 2 = Medium, 3 = Low).
-  - `Style`: Indicator of the architectural style (mapping unknown).
-  - `Lot`: Lot size (square feet).
-  - `Highway`: Indicator of whether home is located near highway (1 = Yes, 0 = No).
+> If you are interested in practicing gratitude, a simple exercise is to maintain a gratitude journal.  A colleague of mine actually assigns this as required homework for students in her statistics course.  Each evening, her students are asked to record three things (which they have not included before) for which they are grateful for that day.
 
-The data is available in `R` (`RealEstate`).
+There have been several studies suggesting that focusing on gratitude can improve well-being.  It is believed that those who practice gratitude are faster to recognize the benefits within a situation and more apt to persist through challenges.  
+
+Researchers surveyed 138 UK residents recruited primarily through social media.  The survey took place in the early days of lockdown protocols within the UK, and it was not clear how long these protocols would be in place.  In addition to general demographics, participants completed a series of questionnaires to quantify various aspects of their well-being.  The data is available (`gratitude`).  Gratitude was measured using the Gratitude Questionnaire-Six-Item Form (GQ-6); participants responded to six questions using a 7-point scale.  Responses were collated into a score (`Gratitude`, ranging from 6 to 42); higher values indicate higher levels of gratitude.  Overall well-being was measured using the Warwick-Edinburgh Mental Well-being Scale (WEMWBS); participants responded to 14 questions using a 5-point scale.  Responses were collated into a score (`Wellbeing`, ranging from 14-70); higher values indicate better well-being.
+
+Researchers are primarily interested in determining if higher levels of gratitude are associated with improved well-being; this suggests the following model for the data generating process:
+
+$$(\text{Wellbeing})_i = \beta_0 + \beta_1 (\text{Gratitude})_i + \varepsilon_i$$
+
+This model can be fit with the following code:
+
+```{r, echo=TRUE, eval=FALSE}
+gratitude.model = specify_mean_model(Wellbeing ~ 1 + Gratitude, data = gratitude)
+```
 
 
-
-## Questions
-Previously, we have examined a model which used the living area of a home to predict its price:
-
-$$(\text{Home Price})_i = \beta_0 + \beta_1 (\text{Living Area})_i + \epsilon_i$$
-
-This model is fit using the following code.
-
-```{r s6-model, echo=TRUE}
-realestate.model = specify_mean_model(Price ~ 1 + Area, data = RealEstate)
+```{r s6model, echo=FALSE, eval=TRUE}
+gratitude.model = specify_mean_model(Wellbeing ~ 1 + Gratitude, data = gratitude)
 ```
 
 
 
 
-
+## Assessing Conditions
 ### Exercise: Compute Residuals
-> Obtain the residauls and fitted values for the above model, and store them in a dataset called `realestate.diag`.
+> Obtain the residuals and fitted values for the above model, and store them in a dataset called `gratitude.diag`.
 
-```{r s6-ex-resid, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-model"}
-realestate.diag = obtain_diagnostics()
+```{r s6-ex-resids, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6model"}
+gratitude.diag = obtain_diagnostics()
 ```
 
-```{r s6-ex-resid-solution, exercise.setup="s6-model"}
-realestate.diag = obtain_diagnostics(realestate.model)
+```{r s6-ex-resids-solution}
+gratitude.diag = obtain_diagnostics(gratitude.model)
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0b8788df-b22b-44ba-b396-ac80013c89ab&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
+```{r s6resids}
+gratitude.model = specify_mean_model(Wellbeing ~ 1 + Gratitude, data = gratitude)
+gratitude.diag = obtain_diagnostics(gratitude.model)
+```
+
+
 
 <div class = "tipbox tip">
-You must always obtain the residuals from the full model (not the one under the null hypothesis) before trying to assess conditions.
+You must always obtain the residuals from the full unconstrained model for the data generating process (not the one under the null hypothesis).  This must be done before trying to assess conditions.
 </div>
 
 
 ### Exercise: Assessing Normality
-> Is it reasonable to assume the error in the price of a home follows a Normal distribution?  Construct an appropriate graphic to justify your answer. 
+> Is it reasonable to assume the error in the well-being score follows a Normal distribution?  Construct an appropriate graphic to justify your answer. 
 
-```{r s6-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+```{r s6-ex-normality, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6resids"}
 ggplot() +
   aes() +
   labs()
 ```
 
 ```{r s6-ex-normality-solution}
-ggplot(data = realestate.diag) +
+ggplot(data = gratitude.diag) +
   aes(sample = .resid) +
   labs(y = "Sample Quantiles",
        x = "Theoretical Quantiles") +
   geom_qq()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bb2b2170-3457-4e0d-b647-ac80013e35ea&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+If the errors follow a Normal distribution, we would expect a probability plot of the residuals to exhibit a linear trend.  Examining the above probability plot of the residuals, we do see a linear trend.  Therefore, it is reasonable to assume the errors follow a Normal distribution.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=82f6b258-eb7e-482d-b129-b05f0181b8b9&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Assessing Homoskedasticity
-> Is it reasonable to assume the variability of the error in the price of a home is constant for all size homes?  Use an appropriate graphic to justify your answer. 
+> Is it reasonable to assume the variability of the error in the well-being score is constant, regardless of the gratitude score?  Use an appropriate graphic to justify your answer. 
 
-```{r s6-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+```{r s6-ex-homoskedasticity, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6resids"}
 ggplot() +
   aes() +
   labs()
 ```
 
 ```{r s6-ex-homoskedasticity-solution}
-ggplot(data = realestate.diag) +
+ggplot(data = gratitude.diag) +
   aes(y = .resid,
       x = .fitted) +
   labs(y = "Residuals",
-       x = "Predicted Home Price") +
+       x = "Predicted Well-being Score") +
   geom_point()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=571d10b2-01e1-4fc0-bd55-ac80013f5068&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+If the errors are consistent with the constant-variance condition, then we would expect that a plot of the residuals against fitted values would not exhibit any trends in the spread of the residuals as we move left-to-right across the graphic.  Examining the plot above, the spread of the residuals remains fairly constant for all predicted well-being scores.  Therefore, it is reasonable to assume the errors are consistent with this condition.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=4e7808bd-5feb-43d0-9647-b05f0181b8b1&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Assessing Independence
-> Is there reason to believe the error in the home price for one home is not independent of the error in the home price for any other home?  Explain.
+> As this survey was conducted online over a period of time, we do have a sense of ordering; we will assume the data is presented in the order it was obtained.  Under this assumption, is there reason to believe the error in the well-being score for one individual is not independent of the error in the well-being score for any other individual?  Explain.
 
-```{r s6-ex-indep, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+```{r s6-ex-indep, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6resids"}
 ggplot() +
   aes() +
   labs()
 ```
 
 ```{r s6-ex-indep-solution}
-ggplot(data = realestate.diag) +
+ggplot(data = gratitude.diag) +
   aes(y = .resid,
       x = seq_along(.resid)) +
   labs(y = "Residuals",
@@ -206,42 +267,67 @@ ggplot(data = realestate.diag) +
   geom_line()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=d987a1a7-6e18-4ff3-8924-ac80014023b1&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution4"> 
+<h4 class="handle"><label for="solution4">Solution</label></h4>
+<div class="content">
+Since we know the order in which the data was collected, constructing a time-series plot is reasonable.  The time-series plot of the residuals shows no trend in the location or spread of the residuals over time.  This is consistent with what we would expect if the errors in the response are independent of one another.  Thinking through the context, since lockdown measures were in place, there is no reason that one person's responses would be influenced by another individual's responses.  Therefore, there does not appear to be any reason why the error in the well-being for one individual would be associated with the error in the well-being of any other individual.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=0209f991-039b-440f-badd-b05f0181b8ae&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Assessing Mean 0
-> We have assumed the price of a home is linearly related to the area of a home.  Is this linear model reasonable?  Or, is there concern the deterministic portion has been misspecified?  Explain.
+> We have assumed that if there is a relationship between well-being and gratitude, it can be described linearly.  Is this structural form reasonable; or, is there concern the deterministic portion of the model for the data generating process has been misspecified?  Explain.
 
-```{r s6-ex-mean0, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6-ex-resid-solution"}
+```{r s6-ex-mean0, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6resids"}
 ggplot() +
   aes() +
   labs()
 ```
 
 ```{r s6-ex-mean0-solution}
-ggplot(data = realestate.diag) +
+ggplot(data = gratitude.diag) +
   aes(y = .resid,
       x = .fitted) +
   labs(y = "Residuals",
-       x = "Predicted Home Price") +
+       x = "Predicted Well-being Score") +
   geom_point()
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=de6c61a4-89e5-4847-8005-ac800141b78e&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+As there are no trends in the location of the residuals when plotted against the predictors, the data is consistent with the errors having a mean of 0 for all values of the predictor.  That is, it is reasonable to assume the deterministic portion of the model for the data generating process was correctly specified.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=6d215181-4512-4da2-a99e-b05f0181b8ab&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
-<div class = "tipbox keyidea">
-We are __never__ able to say that a condition is met/true/etc.
+
+### Exercise: Modeling the Sampling Distribution
+> Based upon your above conclusions, construct an appropriate 95% confidence interval for the parameters in the model.  What conclusions can be drawn regarding the research question.
+
+```{r s6-ex-ci, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s6model"}
+estimate_parameters()
+```
+
+```{r s6-ex-ci-solution}
+estimate_parameters(gratitude.model,
+                    confidence.level = 0.95,
+                    assume.constant.variance = TRUE,
+                    assume.normality = TRUE)
+```
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution6"> 
+<h4 class="handle"><label for="solution6">Solution</label></h4>
+<div class="content">
+We note that the confidence interval contains only positive values.  For each 1-unit increase in the gratitude score, the well-being score increases between 0.67 and 1.05 units, on average.  This suggests that individuals who are more grateful tend to have higher levels of well-being, on average.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=e1e57d5f-10fd-44d6-ae80-b05f0181beb5&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
-
-
-### Exercise: Modeling the Null Distribution
-> Based upon your above conclusions, how would you model the null distribution of the standardized statistic?  Explain.
-
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b3d9d265-c193-4c95-924b-ac800142fdbb&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
+</section>
 

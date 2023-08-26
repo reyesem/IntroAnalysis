@@ -134,7 +134,6 @@ estimate_parameters.lm <- function(mean.model,
 #' performed.
 #'
 #' @import stats
-#' @import MASS
 #' @export
 estimate_parameters.glm <- function(mean.model,
                                     confidence.level,
@@ -183,7 +182,8 @@ estimate_parameters.glm <- function(mean.model,
   # classical theory
   if (method == "classical"){
     .ests$standard.error <- summary(mean.model)$coefficients[, "Std. Error"]
-    .ci <- confint(profile(mean.model), level = confidence.level)
+    .ci <- asNamespace("MASS")$profile.glm(mean.model) |>
+      confint(level = confidence.level)
 
     if (is.null(dim(.ci))) .ci <- t(.ci)
 

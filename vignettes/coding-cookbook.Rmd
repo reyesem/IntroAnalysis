@@ -4,7 +4,7 @@ author: "Eric Reyes"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Coding Cookbook}
+  %\VignetteIndexEntry{Coding Cookbook for Introductory Statistics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -51,23 +51,7 @@ Before proceeding to the specific aspects of the course; let's first talk about 
 Throughout the course we will be using a standard suite of packages (additional functions which provide additional analytical capabilities).  In order to ensure that you have all required functionality for the course, be sure that each RMarkdown file you write has the following block at the top, which should not be altered:
 
 ```{r packages, eval=FALSE, echo=TRUE}
-## ---- Load Packages ----
-pkgs <- c("tidyverse",
-          "knitr",
-          "IntroAnalysis")
-
-for(pkg in pkgs) library(pkg, character.only = TRUE)
-
-
-## ---- Change Options ----
-# Suppress status bar in dplyr.
-# Change handling of ordered factors
-options(dplyr.show_progress = FALSE,
-        contrasts = rep("contr.treatment", 2))
-
-# Change theme for plots
-theme_set(theme_bw(12))
-theme_update(legend.position = "bottom")
+IntroAnalysis:::ma223_setup()
 ```
 
 ## Anatomy of RMarkdown File
@@ -106,6 +90,7 @@ Data is rarely perfect when we first obtain it.  Often times, we will need to ma
 
   - `mutate()`: manipulate variables or make transformations.
   - `filter()`: subset the data based on some criteria.
+  - `case_match()`: recode the levels of a variable.
   
 ## mutate(): creating or changing variables
 As an example, while the US measures fuel efficiency in miles per gallon, other countries often report the gallons required for a single mile.  This new variable `Gallons_per_Mile` can be created using `mutate()`:
@@ -141,17 +126,17 @@ automatic.only |>
   knitr::kable(digits = 3)
 ```
 
-## recode(): Changing the values of a variable
-When we work with categorical variables, we often want the values (or group labels) to be something readable.  In order to do this, we may need to recode the data.  Consider the variable `am` (transmission type).  It is currently a 0/1 variable, and it is not obvious that 1 represents manual transmission and 0 automatic transmission.  We can make this clearer by mutating the dataset and recoding that variable.
+## case_match(): Changing the values of a variable
+When we work with categorical variables, we often want the values (or group labels) to be something readable.  In order to do this, we may need to recode the data.  Consider the variable `am` (transmission type).  It is currently a 0/1 variable, and it is not obvious that 1 represents manual transmission and 0 automatic transmission.  We can make this clearer by mutating the dataset and match each level of a variable with a new value, thereby recoding that variable.
 
 ```{r factors}
 mtcars = mtcars |>
-  mutate(am = recode(am, 
-                     `0` = "automatic",
-                     `1` = "manual"))
+  mutate(am = case_match(am,
+                         0 ~ "automatic",
+                         1 ~ "manual"))
 ```
 
-There is a difference between backticks `\`` and single quotes `'`.  In the above, the backticks are used because we are converting a number into a phrase.  The first few records of the updated dataset are shown below:
+The first few records of the updated dataset are shown below:
 
 ```{r, echo=FALSE}
 mtcars |>
@@ -163,9 +148,9 @@ If we now wanted to go further and change "automatic" to "Automatic Transmission
 
 ```{r factors-cont}
 mtcars = mtcars |>
-  mutate(am = recode(am, 
-                     "automatic" = "Automatic Transmission",
-                     "manual" = "Manual Transmission"))
+  mutate(am = case_match(am,
+                         "automatic" ~ "Automatic Transmission",
+                         "manual" ~ "Manual Transmission"))
 ```
 
   > If your dataset has groups coded as numbers (like above when 0 = automatic and 1 = manual), it is best to recode in order for graphics and models to work appropriately.
@@ -1100,10 +1085,10 @@ Note: you could also recode the variable manually if you wanted to:
 
 ```{r, echo=TRUE, eval=FALSE}
 mtcars = mtcars |>
-  mutate(cyl = recode(cyl,
-                      `4` = "4 Cylinder",
-                      `6` = "6 Cylinder",
-                      `8` = "8 Cylinder"))
+  mutate(cyl = case_match(cyl,
+                          4 ~ "4 Cylinder",
+                          6 ~ "6 Cylinder",
+                          8 ~ "8 Cylinder"))
 ```
 
 The choice is yours.

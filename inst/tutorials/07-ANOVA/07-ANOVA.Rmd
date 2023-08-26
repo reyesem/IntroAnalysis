@@ -1,6 +1,5 @@
 ---
-title: "Introductory Statistics Examples"
-subtitle: "07 - ANOVA"
+title: "07 Examples - ANOVA"
 output: 
   learnr::tutorial:
     progressive: true
@@ -18,6 +17,70 @@ learnr::tutorial_options(exercise.cap = "Exercise")
 ```
 
 ```{css, echo=FALSE}
+/* Solution Functionality */
+.accordion > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.accordion .content {
+  overflow-y: hidden;
+  height: 0;
+  transition: height 0.3s ease;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  height: auto;
+  overflow: visible;
+}
+
+.accordion label {
+  display: block;
+}
+
+/* Styling */
+
+.accordion {
+  margin-bottom: 1em;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .content {
+  padding: 15px;
+  border: 1px solid #e8e8e8;
+  border-top: 0;
+}
+
+.accordion .handle {
+  margin: 0;
+}
+
+.accordion label {
+  cursor: pointer;
+  font-weight: normal;
+  padding: 15px;
+}
+
+.accordion label:hover,
+.accordion label:focus {
+  background: #d8d8d8;
+}
+
+/* Turning arrow */
+.accordion .handle label:before {
+  font-family: 'fontawesome';
+  content: "\f054";
+  display: inline-block;
+  margin-right: 10px;
+  font-size: .58em;
+  line-height: 1.556em;
+  vertical-align: middle;
+}
+
+.accordion > input[type="checkbox"]:checked ~ .handle label:before {
+  content: "\f078";
+}
+
+
 .tipbox {
   padding: 1em 1em 1em 1em;
   border: 1px solid black;
@@ -31,13 +94,18 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   color: white;
 }
 
+.keyidea:before {
+  content: "Key Idea: ";
+  font-weight: bold;
+}
+
 .tip {
   background: lightyellow;
 }
 
-.alert {
-  background: #E87722;
-  color: white;
+.tip:before {
+  content: "Tip: ";
+  font-weight: bold;
 }
 
 .title{
@@ -45,14 +113,8 @@ learnr::tutorial_options(exercise.cap = "Exercise")
   background: none;
 }
 
-.subtitle{
-  color: #696969;
-  font-style: normal;
-}
-
-.author{
-  font-weight: normal;
-  font-style: italic;
+.solution {
+  background: #ebebeb;
 }
 
 h2{
@@ -74,33 +136,25 @@ blockquote {
   padding: 0px 20px;
 }
 
-div.alert p a {
-  color: #DFD1A7;
-}
 ```
 
 
 
 ## Background
-Physical therapy is a vital part of the recovery process for any surgery, particularly surgery which corrects motor function, such as knee or hip surgery.  A rehabilitation center researcher was interested in examining the relationship between physical fitness prior to surgery of persons undergoing corrective knee surgery and time required in physical therapy until successful rehabilitation.  Patient records in the rehabilitation center were examined, and 24 male subjects ranging in age from 18 to 30 years who had undergone similar corrective knee surgery during the past year were selected for the study.  The number of days required for successful completion of physical therapy and the prior physical fitness status (below average, average, above average) for each patient was obtained. 
+Women have been historically underrepresented in STEM.  In addition to the social pressures felt by women when they enter historically male-dominated professions, women in STEM must also battle negative stereotypes of women in these disciplines.  These stereotypes and biases can exist both explicitly (e.g., addressing statements such as "men have more STEM ability than women" or females being expected to assume the role of "secretary" within a team setting) and implicitly (e.g., a women being met with surprise when they state that they are studying engineering).
 
-The data contains the following variables:
+In order to combat negative stereotypes and encourage young women interested in pursuing STEM, women who have created successful careers in STEM are held up as role models.  [Van Camp, Gilbert, and O'Brien (2019)](https://link.springer.com/article/10.1007/s11218-019-09498-2) were interested in examining the importance of young women _identifying_ with these role models.  They hypothesized that encouraging women to reflect on the ways in which they identify with female role models in STEM would reduce stereotypes about women in STEM and improve retention within these disciplines.  They enrolled 72 first-year female students from a small, private university who expressed an interest in a STEM major.  Each of the participants was randomly assigned to one of three groups: standard role model, reflective role model, control group.
 
-  - `Subject`: unique patient identifer.
-  - `Prior Activity Level`: indicator of the activity level of the subject prior to surgery.
-  - `Recovery Time`: time (days) required to complete physical therapy successfully.
-  - `Age`: age (years, rounded to nearest tenth) of patient.
+The women assigned to the either the "standard role model" or the "reflective role model" group were sent a biography about a successful woman in a STEM career who is an alumni of their university; the biography included information about the woman's career.  After receiving the biography, participants in the "standard role model" group were asked to write a paragraph summarizing the details of the portfolio they read.  Women assigned to the "reflective role model" group were asked to write a paragraph describing how they identified with the woman in the biography; here "identification" encompassed "the extent to which they [felt] similar to the role model, [could] relate to the role model, and/or [wanted] to achieve a similar level of success as the role model."  Women assigned to the "control group" were given a biography about a woman who is an alumni of their university; the biography included information about the woman's hobbies.  These participants were then asked to write a paragraph summarizing the biography.  
 
-The data is available in `R` (`Therapy`).
+Participants were given a 28-item questionnaire to assess the extent to which they felt a sense of belonging within the STEM community.  Participants responded to each question using a 7-point scale.  Responses were collated into a single score (ranging from 1-7) with higher scores indicating a stronger sense of belonging.  Nearly all (69 of the 72) participants provided their GPA at the end of the semester (remember, these were students in their first semester of college); 65 of these women were taking STEM courses, and the GPA for these courses was computed separately.  We have access to the data from this study (`rolemodel`), including the treatment assigned (`condition`), their sense of belonging at the end of the study (`stembelong2`) and their GPA within stem courses at the end of the semester (`stemgpa`).
 
+> Despite efforts to recruit more women, women continue to be underrepresented at Rose-Hulman in a number of disciplines.  And, women are not the only group underrepresented on campus.  If you are a member of an underrepresented group and would like to identify a mentor or role model who can help you navigate the unique experiences you face on campus, do not hesitate to advocate for yourself.  Nearly every female faculty member on campus could attest to the challenges they faced throughout their career.  We would be happy to connect you with someone.
 
 
-## Questions
-Researchers are primarily interested in determining if, on average, the recovery time (in days) following surgery differs for subjects classified with different activity levels prior to their surgery.
-
-
+## Framing the Question
 ### Exercise: Graphical Summary
-> Construct a graphic summarizing the recovery time for each prior activity level.  Using the graphic, what does this data suggest about the activity level of patients prior to surgery and the recovery time following surgery?
+> Construct a graphic comparing the distribution of the participants' GPA within STEM courses across each of the three treatment conditions.
 
 ```{r s7-ex-graph, exercise=TRUE, exercise.eval=FALSE}
 ggplot() +
@@ -109,112 +163,144 @@ ggplot() +
 ```
 
 ```{r s7-ex-graph-solution}
-ggplot(data = Therapy) +
-  aes(y = `Recovery Time`,
-      x = `Prior Activity Level`) +
-  labs(y = "Recovery Time of Patients (Days)",
-       x = "Activity Level Prior to Surgery") +
+ggplot(data = rolemodel) +
+  aes(y = stemgpa,
+      x = condition) +
+  labs(y = 'GPA within STEM Courses',
+       x = '') +
   geom_boxplot() +
-  geom_jitter(height = 0, width = 0.25)
+  geom_jitter()
 ```
-
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=ff7b0e16-c3d4-4367-921d-ac80014402d4&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
 
 
 
 ### Exercise: Parameters
-> Define population parameter(s) that we should estimate with the data in order to address their research objective.
+Suppose researchers are interested in comparing the average sense of belonging within STEM across the three treatment groups.  That is, researchers are interested in determining if, on average, the sense of belonging within STEM differs for at least one of the role model groups ("standard", "reflective", or "control").
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=49348322-852d-4f33-8d9a-ac80014558ba&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+> State the null and alternative hypotheses that capture this research objective.
+
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution2"> 
+<h4 class="handle"><label for="solution2">Solution</label></h4>
+<div class="content">
+Let $\mu_1$, $\mu_2$, and $\mu_3$ represent the average sense of belonging within STEM of women assigned to the control, reflective, and standard role model groups, respectively.  Then, we are interested in testing
+
+$$H_0: \mu_1 = \mu_2 = \mu_3 \quad \text{vs.} \quad H_1: \text{at least one } \mu_j \text{ differs}$$
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=bd59f70f-a5ac-4abf-a651-b05f01887a53&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Model for Data Generating Process
-> Write a model for the data generating process which is a function of the parameters defined above.
+> Write a model for the data generating process which is a function of the parameters defined in the hypotheses above.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=22ef2948-21c8-4aef-ae8d-ac800146ebd4&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution3"> 
+<h4 class="handle"><label for="solution3">Solution</label></h4>
+<div class="content">
+$$(\text{Belonging})_i = \mu_1 (\text{Control})_i + \mu_2 (\text{Reflective})_i + \mu_3 (\text{Standard})_i + \varepsilon_i$$
+
+where
+
+$$
+\begin{aligned}
+  (\text{Control})_i 
+    &= \begin{cases} 1 & \text{if i-th participant in the control group} \\ 0 & \text{otherwise} \end{cases} \\
+  (\text{Reflective})_i 
+    &= \begin{cases} 1 & \text{if i-th participant in the reflective role model group} \\ 0 & \text{otherwise} \end{cases} \\
+  (\text{Standard})_i 
+    &= \begin{cases} 1 & \text{if i-th participant in the standard role model group} \\ 0 & \text{otherwise} \end{cases} \\
+\end{aligned}
+$$
+
+are indicator variables.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=b983ce88-b47f-47bd-bfb0-b05f01887a50&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
+## Fitting the Model
 ### Exercise: Estimating Parameters
-> We are interested in estimating the parameters in the above model.  Assuming the data is consistent with all conditions for the classical ANOVA model, compute a 95% CI for each of the parameters.
+> We are interested in estimating the parameters in the model previously described.  Assuming the data is consistent with all conditions for the classical ANOVA model, compute a 95% CI for each of the parameters.
 
 ```{r s7-ex-ci, exercise=TRUE, exercise.eval=FALSE}
-therapy.model.h1 = specify_mean_model()
+rolemodel.model.h1 = specify_mean_model()
 
 estimate_parameters()
 ```
 
 ```{r s7-ex-ci-solution}
-therapy.model.h1 = specify_mean_model(`Recovery Time` ~ `Prior Activity Level`,
-                                      data = Therapy)
+rolemodel.model.h1 = specify_mean_model(stembelong2 ~ condition, 
+                                        data = rolemodel)
 
-estimate_parameters(therapy.model.h1, 
+estimate_parameters(rolemodel.model.h1, 
                     confidence.level = 0.95,
                     assume.constant.variance = TRUE,
                     assume.normality = TRUE)
 ```
 
 ```{r s7-models, include=FALSE}
-therapy.model.h1 = specify_mean_model(`Recovery Time` ~ `Prior Activity Level`,
-                                      data = Therapy)
+rolemodel.model.h1 = specify_mean_model(stembelong2 ~ condition, 
+                                        data = rolemodel)
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=68fdd95b-eaf3-4cfd-8a59-ac80014783f2&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
-
-
-### Exercise: Hypotheses
-> State the null and alternative hypotheses which will be tested to address the research objective.
-
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=fcc5126b-4ce0-4168-bec1-ac8001485040&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<div class = "tipbox tip">
+You cannot use confidence intervals to address our hypothesis about whether any of the groups differ, on average.  That is, while the CI's are helpful for examining how each group performs, whether they overlap (or do not) cannot be used to compare groups.
 </div>
 
 
 ### Exercise: Impact of Hypotheses
 > Specify the model for the data generating process under the null hypothesis.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=698a2f8b-22f4-4e77-908e-ac80014921fd&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution5"> 
+<h4 class="handle"><label for="solution5">Solution</label></h4>
+<div class="content">
+$$(\text{Belonging})_i = \mu + \varepsilon_i$$
+
+where $\mu$ is the common mean sense of belonging across all groups.
+
+<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=c01de332-7fb6-497e-8707-b05f01887a52&autoplay=false&offerviewer=true&showtitle=true&showbrand=true&captions=false&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
 </div>
+</section>
 
 
 ### Exercise: Partition the Variability
-> Compute the ANOVA table which partitions the variability in the response in order to allow us to test the hypotheses specified above assuming the data is representative of the underlying population of surgical patients, the error in the recovery time for one patient is independent of the error in the recovery time for all other patients, and the error in the recovery time follows a Normal distribution.  Using the output, estimate the variability in the recovery time for someone with below typical activity level.
+> Compute the ANOVA table which partitions the variability in the response in order to allow us to test the hypotheses specified above assuming the data is consistent with the conditions for the classical ANOVA model.
 
 ```{r s7-ex-pvalue, exercise=TRUE, exercise.eval=FALSE, exercise.setup="s7-models"}
-therapy.model.h0 = specify_mean_model()
+rolemodel.model.h0 = specify_mean_model()
 
 compare_models()
 ```
 
 ```{r s7-ex-pvalue-solution}
-therapy.model.h0 = specify_mean_model(`Recovery Time` ~ 1, data = Therapy)
+rolemodel.model.h0 = specify_mean_model(stembelong2 ~ 1, data = rolemodel)
 
-compare_models(therapy.model.h1,
-               therapy.model.h0,
+compare_models(rolemodel.model.h1,
+               rolemodel.model.h0,
+               alternative = 'at least one differs',
                assume.identically.distributed = TRUE,
                assume.normality = TRUE)
 ```
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=f4012a53-1cf2-4dda-b87b-ac800149fd4b&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
-</div>
 
 
 ### Exercise: Interpret the P-Value
-> Given the analysis conducted, the lead therapist at the center would like to be able to make the following statement to potential patients: "research has shown that increasing your activity level prior to surgery causes a reduction in your physical recovery time following surgery."  Explain why this statement is not justified.
+> Given the analysis conducted, one student concludes that "the research shows that having young women identify with role models is not helpful in promoting a sense of belonging."  Explain why this statement is not justified.
 
-<div class = "tipbox alert">
-<iframe src="https://rose-hulman.hosted.panopto.com/Panopto/Pages/Embed.aspx?id=13834c80-fc49-44f7-a787-ac80014af810&autoplay=false&offerviewer=true&showtitle=true&showbrand=false&start=0&interactivity=all" height="405" width="720" style="border: 1px solid #464646;" allowfullscreen allow="autoplay"></iframe>
+<section class="accordion tipbox solution">
+<input type="checkbox" id="solution7"> 
+<h4 class="handle"><label for="solution7">Solution</label></h4>
+<div class="content">
+A large p-value does not provide evidence for the null hypothesis.  This analysis did not provide evidence that the average sense of belonging at the end of the semester differed across the three treatment groups, but the data is trending in that direction.  A more appropriate analysis (though beyond the scope of the course) did show that participants who identified with their role models had an incrased sense of belonging.
+
+https://rose-hulman.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=77148cc2-5bb3-45e3-b97f-b05f01887a4b
 </div>
+</section>
 
 <div class = "tipbox keyidea">
-We cannot separate a p-value from everything else we know about the data, including the visualization of the data and how it was collected.
+Lack of evidence for a signal is not evidence for lack of a signal.
 </div>

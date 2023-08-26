@@ -12,7 +12,7 @@
 #' @param wild boolean; if \code{TRUE}, a wild bootstrap is performed. If
 #' \code{FALSE} a traditional residual bootstrap is performed.
 #' @param construct string defining the type of construct to use when generating
-#' from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+#' from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 #' \code{wild = FALSE}, this is ignored.
 #'
 #' @return matrix with the same number of rows as coefficients in \code{fit} and

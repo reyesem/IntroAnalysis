@@ -7,8 +7,10 @@
 rm(list = ls(sorted=FALSE)[ls(sorted=FALSE) != "params"])
 gc()
 
-library(IntroAnalysis)
 library(tidyverse)
+library(IntroAnalysis)
+
+
 
 
 ## ---- Change Options ----
