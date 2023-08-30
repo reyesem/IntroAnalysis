@@ -2,7 +2,7 @@
 # Description: personal function for students in the course so that all
 #              necessary functionality is incorporated.
 
-ma223_setup <- function(){
+ma223_setup <- ma382_setup <- function(){
   pkgs <- utils::installed.packages()
   dir <- pkgs[which(pkgs[, "Package"]=="IntroAnalysis"), "LibPath"]
 

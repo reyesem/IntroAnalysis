@@ -1,0 +1,18 @@
+---
+title: "Insert Assignment Title"
+subtitle: "Introductory Statistics with Probability (MA382)"
+author: "Author-1, Author-2, etc."
+date: "Updated: `r Sys.Date()`"
+output: IntroAnalysis::ma382_word_format
+---
+
+```{r setup, include=FALSE}
+# Note to Students:
+#  Do not alter this block of code.
+IntroAnalysis:::ma382_setup()
+```
+
+## Problem 1 
+
+### Part (a) 
+Start typing here...
