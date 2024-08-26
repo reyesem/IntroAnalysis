@@ -10,8 +10,7 @@
   mean.model,
   confidence.level,
   simulation.replications = 4999,
-  assume.identically.distributed = FALSE,
-  assume.constant.variance = assume.identically.distributed,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE,
   construct = c("normal-2", "normal-1", "two-point mass"),
   type = c("percentile", "BC"),
@@ -48,12 +47,9 @@ either be the number of bootstrap replications or the number of samples from
 the classical sampling distribution. This is ignored if
 \code{confidence.level} is not specified.}
 
-\item{assume.identically.distributed}{boolean; if \code{TRUE},
-homoskedasticity is assumed for the error term. If \code{FALSE} (default),
-this is not assumed.}
-
-\item{assume.constant.variance}{another way of specifying
-\code{assume.identically.distributed}. Both should not be specified.}
+\item{assume.constant.variance}{boolean; if \code{TRUE} (default), errors are
+assumed to have the same variance.  If \code{FALSE}, each error term is
+allowed to have a different variance.}
 
 \item{assume.normality}{boolean; if \code{TRUE}, the errors are assumed to
 follow a Normal distribution. If \code{FALSE} (default), this is not
@@ -167,7 +163,7 @@ fit <- lm(mpg ~ 1 + hp, data = mtcars)
 # estimate the mean response for vehicle with 120 and 130 horse power.
 estimate_mean_response(fit,
   confidence.level = 0.95,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = TRUE,
   hp = c(120, 130))
 

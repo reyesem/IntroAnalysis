@@ -1,15 +1,13 @@
 #' @describeIn compare_models Computes p-value comparing nested linear models.
 #'
-#' @param assume.identically.distributed boolean; if \code{TRUE},
-#' homoskedasticity is assumed for the error term. If \code{FALSE} (default),
-#' this is not assumed.
-#' @param assume.constant.variance another way of specifying
-#' \code{assume.identically.distributed}. Both should not be specified.
+#' @param assume.constant.variance boolean; if \code{TRUE} (default), all errors
+#' are assumed to have the same variance. If \code{FALSE}, each error is
+#' allowed to have a different variance.
 #' @param assume.normality boolean; if \code{TRUE}, the errors are assumed to
 #' follow a Normal distribution. If \code{FALSE} (default), this is not
 #' assumed.
 #' @param construct string defining the type of construct to use when generating
-#' from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+#' from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 #' \code{assume.constant.variance = TRUE}, this is ignored
 #' (default = \code{"normal-2"}).
 #'
@@ -22,21 +20,12 @@ compare_models.lm <- function(full.mean.model,
                                               'gt', 'greater than', '>',
                                               'at least one differs'),
                               simulation.replications = 4999,
-                              assume.identically.distributed = FALSE,
-                              assume.constant.variance =
-                                assume.identically.distributed,
+                              assume.constant.variance = TRUE,
                               assume.normality = FALSE,
                               construct = c("normal-2",
                                             "normal-1",
                                             "two-point mass"),
                               ...){
-
-  if (!missing(assume.identically.distributed) &&
-      !missing(assume.constant.variance) &&
-      assume.identically.distributed != assume.constant.variance){
-    stop(paste0("specify 'assume.identically.distributed' ",
-                "or 'assume.constant.variance' but not both."))
-  }
 
   if (any(class(full.mean.model) != class(reduced.mean.model))){
     stop("Both the full and reduced models must be linear models.")

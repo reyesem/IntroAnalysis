@@ -27,7 +27,7 @@
 #'
 #' samp_distn <- estimate_parameters(fit,
 #'   confidence.level = 0.95,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = FALSE)
 #'
 #' plot_sampling_distribution(samp_distn,

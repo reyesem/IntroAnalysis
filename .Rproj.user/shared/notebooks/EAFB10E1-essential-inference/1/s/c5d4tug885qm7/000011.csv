@@ -1,0 +1,5 @@
+"0","estimate_parameters(fit_p,"
+"0","                    confidence.level = 0.95)"
+"2","Error in asNamespace(""MASS"")$profile.glm(mean.model) : 
+  attempt to apply non-function
+"

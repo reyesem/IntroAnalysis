@@ -282,7 +282,7 @@ rolemodel.model.h0 = specify_mean_model(stembelong2 ~ 1, data = rolemodel)
 compare_models(rolemodel.model.h1,
                rolemodel.model.h0,
                alternative = 'at least one differs',
-               assume.identically.distributed = TRUE,
+               assume.constant.variance = TRUE,
                assume.normality = TRUE)
 ```
 

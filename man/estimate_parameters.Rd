@@ -10,8 +10,7 @@
   mean.model,
   confidence.level,
   simulation.replications = 4999,
-  assume.identically.distributed = FALSE,
-  assume.constant.variance = assume.identically.distributed,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE,
   construct = c("normal-2", "normal-1", "two-point mass"),
   type = c("percentile", "BC", "bootstrap-t"),
@@ -48,19 +47,16 @@ either be the number of bootstrap replications or the number of samples from
 the classical sampling distribution. This is ignored if
 \code{confidence.level} is not specified.}
 
-\item{assume.identically.distributed}{boolean; if \code{TRUE},
-homoskedasticity is assumed for the error term. If \code{FALSE} (default),
-this is not assumed.}
-
-\item{assume.constant.variance}{another way of specifying
-\code{assume.identically.distributed}. Both should not be specified.}
+\item{assume.constant.variance}{if \code{TRUE} (default), assume the errors
+have the same variability for every observation. If \code{FALSE}, the
+variability in the errors is allowed to differ across observations.}
 
 \item{assume.normality}{boolean; if \code{TRUE}, the errors are assumed to
 follow a Normal distribution. If \code{FALSE} (default), this is not
 assumed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
@@ -167,13 +163,13 @@ fit <- lm(mpg ~ 1 + hp, data = mtcars)
 # confidence intervals for linear model via a residual bootstrap
 estimate_parameters(fit,
   confidence.level = 0.95,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE)
 
 # classical inference
 estimate_parameters(fit,
   confidence.level = 0.95,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = TRUE)
 
 }

@@ -237,12 +237,11 @@ estimate_parameters()
 sleep.model = specify_mean_model(avgsleep ~ 1, data = acadsleep2)
 
 estimate_parameters(sleep.model,
-                    confidence.level = 0.98,
-                    assume.identically.distributed = TRUE)
+                    confidence.level = 0.98)
 ```
 
 <div class = "tipbox tip">
-Note that the computer _always_ assumes observations are independent of one another (and therefore, we do not need to specify this).
+Note that the computer _always_ assumes observations are independent of one another (and therefore, we do not need to specify this).  The computer also _always_ assumes the errors are identically distributed.
 </div>
 
 
@@ -296,8 +295,7 @@ In contrast, the model for the sampling distribution is much narrower, and more 
 
 ```{r, echo=FALSE, fig.cap="Model for the sampling distribution of the sample mean average amount of sleep for students.", fig.alt="Histogram of sample mean."}
 specify_mean_model(avgsleep ~ 1, data = acadsleep2) |>
-  estimate_parameters(confidence.level = 0.98,
-                      assume.identically.distributed = TRUE) |>
+  estimate_parameters(confidence.level = 0.98) |>
   plot_sampling_distribution() +
   labs(x = 'Sample Mean Avg. Hours of Sleep Over 30 Days')
 ```

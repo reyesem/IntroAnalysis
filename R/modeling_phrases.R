@@ -203,13 +203,13 @@ specify_mean_model <- function(data,
 #' # confidence intervals for linear model via a residual bootstrap
 #' estimate_parameters(fit,
 #'   confidence.level = 0.95,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = FALSE)
 #'
 #' # classical inference
 #' estimate_parameters(fit,
 #'   confidence.level = 0.95,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = TRUE)
 #'
 #' @import stats
@@ -294,12 +294,12 @@ estimate_parameters <- function(mean.model,
 #'
 #' # p-value computed via residual bootstrap
 #' compare_models(fit1, fit0,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = FALSE)
 #'
 #' # classical inference
 #' compare_models(fit1, fit0,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = TRUE)
 #'
 #'
@@ -411,7 +411,7 @@ compare_models <- function(full.mean.model,
 #' # estimate the mean response for vehicle with 120 and 130 horse power.
 #' estimate_mean_response(fit,
 #'   confidence.level = 0.95,
-#'   assume.identically.distributed = TRUE,
+#'   assume.constant.variance = TRUE,
 #'   assume.normality = TRUE,
 #'   hp = c(120, 130))
 #'

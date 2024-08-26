@@ -249,8 +249,7 @@ exercise.h1 = specify_mean_model(exercise ~ 1, data = exercise)
 exercise.h0 = specify_mean_model(exercise ~ constant(7), data = exercise)
 
 compare_models(exercise.h1, exercise.h0,
-               alternative = 'less than',
-               assume.identically.distributed = TRUE)
+               alternative = 'less than')
 ```
 
 <section class="accordion tipbox solution">

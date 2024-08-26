@@ -12,8 +12,7 @@
   alternative = c("ne", "not equal", "!=", "lt", "less than", "<", "gt", "greater than",
     ">", "at least one differs"),
   simulation.replications = 4999,
-  assume.identically.distributed = FALSE,
-  assume.constant.variance = assume.identically.distributed,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE,
   construct = c("normal-2", "normal-1", "two-point mass"),
   ...
@@ -61,19 +60,16 @@ draw from the model for the null distribution (default = 4999). This will
 either be the number of bootstrap relications or the number of samples from
 the classical null distribution.}
 
-\item{assume.identically.distributed}{boolean; if \code{TRUE},
-homoskedasticity is assumed for the error term. If \code{FALSE} (default),
-this is not assumed.}
-
-\item{assume.constant.variance}{another way of specifying
-\code{assume.identically.distributed}. Both should not be specified.}
+\item{assume.constant.variance}{boolean; if \code{TRUE} (default), all errors
+are assumed to have the same variance. If \code{FALSE}, each error is
+allowed to have a different variance.}
 
 \item{assume.normality}{boolean; if \code{TRUE}, the errors are assumed to
 follow a Normal distribution. If \code{FALSE} (default), this is not
 assumed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
@@ -142,12 +138,12 @@ fit0 <- lm(mpg ~ 1, data = mtcars)
 
 # p-value computed via residual bootstrap
 compare_models(fit1, fit0,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE)
 
 # classical inference
 compare_models(fit1, fit0,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = TRUE)
 
 

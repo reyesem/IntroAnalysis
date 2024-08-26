@@ -592,9 +592,7 @@ In order to construct a confidence interval, we use the `estimate_parameters()` 
 
 ```{r}
 estimate_parameters(mpg.model,
-                    confidence.level = 0.95,
-                    assume.identically.distributed = TRUE,
-                    assume.normality = TRUE)
+                    confidence.level = 0.95)
 ```
 
 This function has a few requirements:
@@ -603,25 +601,22 @@ This function has a few requirements:
   2. You must specify the confidence level for confidence intervals computed; failing to do this will result in only point estimates provided.
   3. Specify whether certain conditions should be assumed.
   
-Note that the computer will _always_ assume the data is independent of one another and that the mean model is correctly specified.
+Note that the computer will _always_ assume the data is independent of one another, that the errors are identically distributed, and that the mean model is correctly specified.
 
-Classical theory will be employed if both the normality and identically distributed conditions are assumed true.  Otherwise, bootstrapping will be used to compute the confidence intervals.  For example, to compute a 95\% confidence interval using bootstrapping while assuming the fuel efficiency of each car comes from the same underlying distribution, use the following code:
+Classical theory will be employed if we additionally assume the normality condition holds.  Otherwise, bootstrapping will be used to compute the confidence intervals.  For example, to compute a 95\% confidence interval using classical theory ("t-interval"), use the following code:
 
 ```{r single-boot}
 estimate_parameters(mpg.model,
                     confidence.level = 0.95,
-                    assume.identically.distributed = TRUE,
-                    assume.normality = FALSE)
+                    assume.normality = TRUE)
 ```
 
-Remember that each time you use a bootstrap procedure, the model for the sampling distribution will change slightly due to randomness.  Therefore, the endpoints of the interval may very slightly.  In order to prevent this, you can "set a seed" for random number generation.  Think of this as specifying how the random number generator should begin.  Running the same block of code multiple times will produce the same ouptut.
+Remember that each time you use a bootstrap procedure, the model for the sampling distribution will change slightly due to randomness.  Therefore, the endpoints of the interval may very slightly.  In order to prevent this, you can "set a seed" for random number generation.  Think of this as specifying how the random number generator should begin.  Running the same block of code multiple times will produce the same output.
 
 ```{r}
 set.seed(123)
 estimate_parameters(mpg.model,
-                    confidence.level = 0.95,
-                    assume.identically.distributed = TRUE,
-                    assume.normality = FALSE)
+                    confidence.level = 0.95)
 ```
 
 The seed value can be any integer.
@@ -632,9 +627,7 @@ If you want to examine the entire model for the sampling distribution graphicall
 
 ```{r}
 sampling.distn = estimate_parameters(mpg.model,
-                                     confidence.level = 0.95,
-                                     assume.identically.distributed = TRUE,
-                                     assume.normality = FALSE)
+                                     confidence.level = 0.95)
 
 plot_sampling_distribution(sampling.distn,
                            show.confidence.interval = TRUE)
@@ -676,9 +669,7 @@ Now, the two models can be compared:
 ```{r mean-compare}
 compare_models(mpg.model.h1,
                mpg.model.h0,
-               alternative = "not equal",
-               assume.identically.distributed = TRUE,
-               assume.normality = TRUE)
+               alternative = "not equal")
 ```
 
 In particular, pay attention to specifying the direction of the alternative hypothesis.  The default is to perform a two-sided test ($H_1: \mu \neq \mu_0$); if you want to perform a one-sided test, specify the direction of the alternative by saying `alternative = "greater than"` or `alternative = "less than"` as appropriate.
@@ -689,9 +680,7 @@ If you want to examine the entire model for the null distribution graphically (i
 ```{r}
 null.distn = compare_models(mpg.model.h1,
                mpg.model.h0,
-               alternative = "not equal",
-               assume.identically.distributed = TRUE,
-               assume.normality = FALSE)
+               alternative = "not equal")
 
 plot_null_distribution(null.distn,
                        show.pvalue = TRUE)
@@ -702,6 +691,8 @@ We can optionally choose to illustrate the region which will make up the p-value
 ```{r}
 null.distn
 ```
+
+Again, the classical theory can be obtained by additionally imposing the normality condition with `assume.normality=TRUE`.
 
 
 
@@ -736,11 +727,11 @@ In order to obtain confidence intervals, we need to specify the conditions we ar
 ```{r}
 estimate_parameters(reg.model, 
                     confidence.level = 0.99,
-                    assume.identically.distributed = TRUE,
+                    assume.constant.variance = TRUE,
                     assume.normality = TRUE)
 ```
 
-If both normality and identically distributed are assumed, classical method are used to compute the confidence intervals.  Otherwise, bootstrapping is used.
+If both normality and constant variance are assumed, classical method are used to compute the confidence intervals.  Otherwise, bootstrapping is used.
 
 ## P-values Comparing Two Models
 Hypothesis testing at its core is about comparing two models: a full (unrestricted) model (alternative hypothesis) and a restricted model (null hypothesis).  Referring to our model for the fuel efficiency described above, suppose we wanted to test the hypothesis that
@@ -766,13 +757,13 @@ These two models are then compared (to generate a p-value) using the `compare_mo
 compare_models(reg.model.h1,
                reg.model.h0,
                alternative = "not equal",
-               assume.identically.distributed = TRUE,
+               assume.constant.variance = TRUE,
                assume.normality = TRUE)
 ```
 
 What results is an ANOVA table summarizing the comparison between the two models.  The line "Additional Terms" refers to the additional variability in the response captured by the lack of restrictions in the alternative hypothesis.  The p-value is the last component of this output.
 
-Similar to estimating parameters, bootstrapping is performed if either the normality or identically distributed conditions are not assumed.
+Similar to estimating parameters, bootstrapping is performed if either the normality or constant variance conditions are not assumed.
 
 
 ## Computing R-Squared
@@ -876,7 +867,7 @@ Suppose we are interested in estimating the average fuel efficiency for a vehicl
 ```{r mean-response}
 estimate_mean_response(reg.model,
                        confidence.level = 0.95,
-                       assume.identically.distributed = TRUE,
+                       assume.constant.variance = TRUE,
                        assume.normality = TRUE,
                        wt = c(2, 3))
 ```
@@ -938,7 +929,7 @@ anova.model.h0 = specify_mean_model(mpg ~ 1, data = mtcars)
 
 compare_models(anova.model.h1,
                anova.model.h0,
-               assume.identically.distributed = TRUE,
+               assume.constant.variance = TRUE,
                assume.normality = TRUE)
 ```
 
@@ -1043,7 +1034,7 @@ block.model.h0 = specify_mean_model(mpg ~ 1 + Country, data = mtcars)
 
 compare_models(block.model.h1,
                block.model.h0,
-               assume.identically.distributed = TRUE,
+               assume.constant.variance = TRUE,
                assume.normality = TRUE)
 ```
 

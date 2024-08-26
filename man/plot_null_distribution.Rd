@@ -31,7 +31,7 @@ fit1 <- lm(mpg ~ hp, data = mtcars)
 fit0 <- lm(mpg ~ 1, data = mtcars)
 
 null_distn <- compare_models(fit1, fit0,
-  assume.identically.distributed = TRUE,
+  assume.constant.variance = TRUE,
   assume.normality = FALSE)
 
 plot_null_distribution(null_distn,
