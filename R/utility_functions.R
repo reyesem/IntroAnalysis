@@ -28,7 +28,7 @@ determine_sign <- function(fit1, fit0) {
   .variable <- setdiff(names(coef(fit1)), names(coef(fit0)))
   .estimate <- coef(fit1)[.variable]
 
-  .variable <- try(model.frame(fit1)[, .variable], silent = TRUE)
+  .variable <- try(model.matrix(fit1)[, .variable], silent = TRUE)
   if (isa(.variable, 'try-error')) {
     .variable <- 1
   }
@@ -39,7 +39,8 @@ determine_sign <- function(fit1, fit0) {
   if (is.null(.off1)) .off1 <- 0
   if (is.null(.off0)) .off0 <- 0
 
-  sign(((.estimate * .variable) + .off1 - .off0) / .variable)[1]
+  sign(((.estimate * .variable) + .off1 - .off0) / .variable) |>
+    max(na.rm = TRUE)
 }
 
 
