@@ -1,6 +1,6 @@
 #' Perform parametric bootstrap for generalized linear model.
 #'
-#' This is the workhorse for the \code{estimate_parameters()} function when a
+#' This is the workhorse for the [estimate_parameters()] function when a
 #' generalized linear model is specified and parametric bootstrap is required.
 #' This is not meant to be called by the user directly.
 #'
@@ -57,7 +57,7 @@ bootstrap_parametric <- function(fit, reps){
 
 #' Perform nonparametric bootstrap for generalized linear model.
 #'
-#' This is the workhorse for the \code{estimate_parameters()} function when a
+#' This is the workhorse for the [estimate_parameters()] function when a
 #' generalized linear model is specified and case resampling bootstrap is
 #' required.  This is not meant to be called by the user directly.
 #'
@@ -116,7 +116,7 @@ bootstrap_case <- function(fit, reps){
 
 #' Perform parametric bootstrap for predictions of generalized linear model.
 #'
-#' This is the workhorse for the \code{estimate_mean_response()} function when a
+#' This is the workhorse for the [estimate_mean_response()] function when a
 #' generalized linear model is specified and parametric bootstrap is required.
 #' This is not meant to be called by the user directly.
 #'
@@ -179,7 +179,7 @@ bootstrap_parametric_predict <- function(fit, newdata, reps){
 
 #' Perform nonparametric bootstrap for predictions of generalized linear model.
 #'
-#' This is the workhorse for the \code{estimate_mean_response()} function when a
+#' This is the workhorse for the [estimate_mean_response()] function when a
 #' generalized linear model is specified and case resampling bootstrap is
 #' required.  This is not meant to be called by the user directly.
 #'

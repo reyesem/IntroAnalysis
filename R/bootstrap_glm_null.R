@@ -1,6 +1,6 @@
 #' Compare nested generalized linear models via parametric bootstrapping.
 #'
-#' This is the workhorse for the \code{compare_models()} function when a
+#' This is the workhorse for the [compare_models()] function when a
 #' generalized linear model is specified and parametric bootstrap is required.
 #' This is not meant to be called by the user directly.
 #'

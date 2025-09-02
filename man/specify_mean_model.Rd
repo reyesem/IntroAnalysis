@@ -11,34 +11,34 @@ specify_mean_model(data, formula, family, ...)
 \item{data}{an optional data frame containing the variables appearing in
 \code{formula}.}
 
-\item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
+\item{formula}{an object of class "[stats::formula()]": a symbolic
 description of the form of the mean response model. Allows some notation
 not typical in base R.}
 
 \item{family}{a description of the error distribution and link function to
-be used in the model. See \code{\link[stats]{glm}} for details. If missing
+be used in the model. See [stats::glm()] for details. If missing
 (default), a linear model is used.}
 
-\item{...}{additional arguments to pass to \code{\link[stats]{lm}} or
-\code{\link[stats]{glm}}.}
+\item{...}{additional arguments to pass to [stats::lm()] or
+[stats::glm()].}
 }
 \value{
 an objet of type \code{lm} or \code{glm} depending on whether
 \code{family} is specified.
 }
 \description{
-A wrapper for \code{\link[stats]{lm}} and \code{\link[stats]{glm}} which
+A wrapper for [stats::lm()] and [stat::glm()] which
 allows the user to specify the form of the model for the mean response of
 the data generating process.
 }
 \details{
-\code{specify_mean_model} provides a single interface to both \code{lm} and
-\code{glm} with two noticable differences:
+[specify_mean_model()] provides a single interface to both \code{lm} and
+\code{glm} with two noticeable differences:
 \enumerate{
   \item The intercept is \emph{not} specified by default.
   \item The notation "constant" can be used in the formula statement in
   order to specify terms which do not require parameters, which are typically
-  specified by \code{offset()} in base R. The difference is that "constant"
+  specified by [stats::offset()] in base R. The difference is that "constant"
   allows scalar terms.}
 
 If \code{family} is not specified, then \code{lm} is used to fit the model.

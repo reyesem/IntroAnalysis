@@ -17,7 +17,7 @@ which the goodness of fit should be summarized.}
 A \code{data.frame} containing one row of summary metrics.
 }
 \description{
-A wrapper for \code{\link[generics]{glance}} which obtains metrics on the
+A wrapper for [generics::glance()] which obtains metrics on the
 goodness of fit of the model. For the linear model in particular, some
 metrics are suppressed.
 }

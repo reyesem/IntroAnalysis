@@ -7,7 +7,7 @@
 plot_null_distribution(statistics, show.pvalue = FALSE)
 }
 \arguments{
-\item{statistics}{result of a call to \code{\link{compare_models}}.}
+\item{statistics}{result of a call to [compare_models()].}
 
 \item{show.pvalue}{boolean indicating whether the p-value region should
 be drawn on the graphic.  If \code{TRUE}, the region is drawn; if
@@ -21,7 +21,7 @@ Provides a wrapper for plotting a model for the null distribution of a test
 statistic comparing two linear models.
 }
 \details{
-The \code{\link{compare_models}} function returns an attribute that
+The [compare_models() function returns an attribute that
 contains a random sample from the null distribution of the test statistic.
 This is extracted and used to construct a graphic summarizing this
 distribution.
@@ -39,5 +39,5 @@ plot_null_distribution(null_distn,
 
 }
 \seealso{
-\code{\link{compare_models}}
+[compare_models()]
 }

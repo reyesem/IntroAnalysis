@@ -19,7 +19,7 @@ bootstrap replication. It also has an attribute containing an ANOVA table
 comparing the two models.
 }
 \description{
-This is the workhorse for the \code{compare_models()} function when a
+This is the workhorse for the [compare_models()] function when a
 generalized linear model is specified and parametric bootstrap is required.
 This is not meant to be called by the user directly.
 }

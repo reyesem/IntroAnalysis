@@ -57,7 +57,7 @@ ANOVA alternative).}
 
 \item{simulation.replications}{scalar indicating the number of samples to
 draw from the model for the null distribution (default = 4999). This will
-either be the number of bootstrap relications or the number of samples from
+either be the number of bootstrap replications or the number of samples from
 the classical null distribution.}
 
 \item{assume.constant.variance}{boolean; if \code{TRUE} (default), all errors
@@ -69,7 +69,7 @@ follow a Normal distribution. If \code{FALSE} (default), this is not
 assumed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see [rmammen()]). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
@@ -93,8 +93,8 @@ variability in the response compared to a more complex model.
 }
 \details{
 This wrapper provides a single interface for commparing models under various
-conditions imposed on the model. Similar to \code{\link[stats]{anova}}.
-Howevever, the p-value provided can be computed using classical methods or
+conditions imposed on the model. Similar to [stats::anova()].
+However, the p-value provided can be computed using classical methods or
 bootstrapping.
 
 For linear models, the following approaches are implemented:
@@ -149,5 +149,5 @@ compare_models(fit1, fit0,
 
 }
 \seealso{
-\code{\link[stats]{anova}}
+[stats::anova()]
 }

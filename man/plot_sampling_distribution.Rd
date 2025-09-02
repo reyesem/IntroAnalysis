@@ -11,11 +11,11 @@ plot_sampling_distribution(
 )
 }
 \arguments{
-\item{estimates}{result of a call to \code{\link{estimate_parameters}}.}
+\item{estimates}{result of a call to [estimate_parameters()].}
 
 \item{parameter}{character string indicating for which parameter the modeled
 sampling distribution should be plotted. This should match the output of the
-"term" column in \code{\link{estimate_parameters}} output. If missing
+"term" column in [estimate_parameters()] output. If missing
 (default), the model for the sampling distribution of the first term is
 plotted.}
 
@@ -31,7 +31,7 @@ Provides a wrapper for plotting a model for the sampling distribution of a
 parameter estimate in a linear model.
 }
 \details{
-The \code{\link{estimate_parameters}} function returns an attribute that
+The [estimate_parameters()] function returns an attribute that
 contains a random sample from the sampling distribution of the parameter
 estimate.  This is extracted and used to construct a graphic summarizing
 this distribution.
@@ -49,5 +49,5 @@ plot_sampling_distribution(samp_distn,
 
 }
 \seealso{
-\code{\link{estimate_parameters}}
+[estimate_parameters()]
 }

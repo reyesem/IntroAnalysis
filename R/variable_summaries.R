@@ -5,7 +5,7 @@
 #'
 #' @param data a data frame containing the variables appearing in
 #' \code{formula}.
-#' @param formula an object of class "\code{\link[stats]{formula}}": a symbolic
+#' @param formula an object of class "[stats::formula()]": a symbolic
 #' description identifying the response and the predictors of interest.
 #' @param ... a comma separated list of functions, each of which computes a
 #' statistic of interest.
@@ -52,7 +52,7 @@ summarise_variable <- summarize_variable
 #'
 #' @param data a data frame containing the variables appearing in
 #' \code{formula}.
-#' @param formula an object of class "\code{\link[stats]{formula}}": a symbolic
+#' @param formula an object of class "[stats::formula()]": a symbolic
 #' description identifying the response and the predictor of interest and
 #' optionally a grouping variable.
 #' @param FUN a function taking at least two arguments, in which the first
@@ -108,7 +108,7 @@ summarise_relationship <- summarize_relationship
 
 #' Compute specific percentiles of a numeric variable.
 #'
-#' These are wrappers for the more common \code{\link[stats]{quantile}} function
+#' These are wrappers for the more common [stats::quantile()] function
 #' which computes the most commonly used percentiles. Functions beginning with
 #' \code{perc} compute the corresponding percentile; functions beginning with
 #' \code{Q} compute the corresponding quartile, and \code{IQR} computes the
@@ -120,7 +120,7 @@ summarise_relationship <- summarize_relationship
 #' @param na.rm logical; if \code{TRUE}, any \code{NA} or \code{NaN}'s are
 #' removed from \code{x} before the quantiles are computed.
 #' @param type an integer between 1 and 9 selecting one of the nine quantile
-#' algorithms detailed in \code{\link[stats]{quantile}}.
+#' algorithms detailed in [stats::quantile()].
 #'
 #' @examples
 #' summarize_variable(mpg ~ 1, data = mtcars, perc01)

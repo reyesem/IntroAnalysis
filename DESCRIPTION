@@ -26,7 +26,7 @@ Imports: broom,
     tidyselect
 Depends: 
     stats,
-    R (>= 4.0)
+    R (>= 4.1)
 Suggests: knitr,
     rmarkdown,
     testthat,

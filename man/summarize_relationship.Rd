@@ -13,7 +13,7 @@ summarise_relationship(data, formula, FUN = cor, ...)
 \item{data}{a data frame containing the variables appearing in
 \code{formula}.}
 
-\item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
+\item{formula}{an object of class "[stats::formula()]": a symbolic
 description identifying the response and the predictor of interest and
 optionally a grouping variable.}
 

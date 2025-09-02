@@ -3,19 +3,19 @@
 #' Provides a wrapper for plotting a model for the null distribution of a test
 #' statistic comparing two linear models.
 #'
-#' The \code{\link{compare_models}} function returns an attribute that
+#' The [compare_models() function returns an attribute that
 #' contains a random sample from the null distribution of the test statistic.
 #' This is extracted and used to construct a graphic summarizing this
 #' distribution.
 #'
-#' @param statistics result of a call to \code{\link{compare_models}}.
+#' @param statistics result of a call to [compare_models()].
 #' @param show.pvalue boolean indicating whether the p-value region should
 #' be drawn on the graphic.  If \code{TRUE}, the region is drawn; if
 #' \code{FALSE} (default), the region is not drawn.
 #'
 #' @return \code{ggplot2} object.
 #'
-#' @seealso \code{\link{compare_models}}
+#' @seealso [compare_models()]
 #'
 #' @examples
 #' fit1 <- lm(mpg ~ hp, data = mtcars)

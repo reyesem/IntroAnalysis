@@ -7,7 +7,7 @@
 #' follow a Normal distribution. If \code{FALSE} (default), this is not
 #' assumed.
 #' @param construct string defining the type of construct to use when generating
-#' from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+#' from the distribution for the wild bootstrap (see [rmammen()]). If
 #' \code{assume.constant.variance = TRUE}, this is ignored
 #' (default = \code{"normal-2"}).
 #' @param type string defining the type of confidence interval to construct. If
@@ -171,7 +171,7 @@ estimate_parameters.glm <- function(mean.model,
   # classical theory
   if (method == "classical"){
     .ests$standard.error <- summary(mean.model)$coefficients[, "Std. Error"]
-    .ci <- stats:::profile.glm(mean.model) |>
+    .ci <- stats::profile(mean.model) |>
       confint(level = confidence.level)
 
     if (is.null(dim(.ci))) .ci <- t(.ci)

@@ -16,7 +16,7 @@ estimated.}
 \code{FALSE} a traditional residual bootstrap is performed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see [rmammen()]). If
 \code{wild = FALSE}, this is ignored.}
 }
 \value{
@@ -25,7 +25,7 @@ matrix with the same number of rows as coefficients in \code{fit} and
 corresponding parameters.
 }
 \description{
-This is the workhorse for the \code{estimate_parameters()} function when a
+This is the workhorse for the [estimate_parameters()] function when a
 linear model is specified. Given a linear model fit, performs a residual
 bootstrap (or optionally wild bootstrap) to estimate the standard error of
 and compute confidence intervals for each of the parameters in the model.

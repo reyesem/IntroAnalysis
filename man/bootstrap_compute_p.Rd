@@ -26,5 +26,5 @@ Given bootstrap estimates of a test statistic, compute a p-value (always the
 "two-sided" p-value).
 }
 \seealso{
-\code{\link[stats]{anova}}
+[stats::anova()]
 }

@@ -45,10 +45,10 @@ Q3(x, na.rm = FALSE, type = 7)
 removed from \code{x} before the quantiles are computed.}
 
 \item{type}{an integer between 1 and 9 selecting one of the nine quantile
-algorithms detailed in \code{\link[stats]{quantile}}.}
+algorithms detailed in [stats::quantile()].}
 }
 \description{
-These are wrappers for the more common \code{\link[stats]{quantile}} function
+These are wrappers for the more common [stats::quantile()] function
 which computes the most commonly used percentiles. Functions beginning with
 \code{perc} compute the corresponding percentile; functions beginning with
 \code{Q} compute the corresponding quartile, and \code{IQR} computes the

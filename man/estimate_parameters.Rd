@@ -56,7 +56,7 @@ follow a Normal distribution. If \code{FALSE} (default), this is not
 assumed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see [rmammen()]). If
 \code{assume.constant.variance = TRUE}, this is ignored
 (default = \code{"normal-2"}).}
 
@@ -88,7 +88,7 @@ linear or generalized linear model via bootstrapping or classical theory.
 \details{
 This wrapper provides a single interface for estimating parameters under
 various conditions imposed on the model. Similar to
-\code{\link[base]{summary}}, point and interval estimates of the parameters
+[base::summary()], point and interval estimates of the parameters
 are available. However, interval estimates can be constructed via
 bootstrapping or classical theory.
 

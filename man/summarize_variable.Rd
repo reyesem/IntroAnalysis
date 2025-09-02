@@ -13,7 +13,7 @@ summarise_variable(data, formula, ..., .args = list())
 \item{data}{a data frame containing the variables appearing in
 \code{formula}.}
 
-\item{formula}{an object of class "\code{\link[stats]{formula}}": a symbolic
+\item{formula}{an object of class "[stats::formula()]": a symbolic
 description identifying the response and the predictors of interest.}
 
 \item{...}{a comma separated list of functions, each of which computes a

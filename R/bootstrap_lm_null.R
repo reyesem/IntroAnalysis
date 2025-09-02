@@ -1,6 +1,6 @@
 #' Compare nested linear models via (optionally wild) residual bootstrap.
 #'
-#' This is the workhorse for the \code{compare_models()} function when a linear
+#' This is the workhorse for the [compare_models()] function when a linear
 #' model is specified. Given two linear models, one nested within the other, the
 #' null distribution of the test statistic comparing the two models is estimated
 #' via a residual bootstrap (or wild bootstrap). This is not meant to be called
@@ -12,7 +12,7 @@
 #' @param wild boolean; if \code{TRUE}, a wild bootstrap is performed. If
 #' \code{FALSE} a traditional residual bootstrap is performed.
 #' @param construct string defining the type of construct to use when generating
-#' from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+#' from the distribution for the wild bootstrap (see [rmammen()]). If
 #' \code{wild = FALSE}, this is ignored.
 #'
 #' @return vector of length \code{reps} containing the test statistic from each
@@ -71,7 +71,7 @@ bootstrap_residual_null <- function(fit1,
 
 #' Compare nested linear models via parametric bootstrap.
 #'
-#' This is the workhorse for the \code{compare_models()} function when a linear
+#' This is the workhorse for the [compare_models()] function when a linear
 #' model is specified without constant variance. Given two linear models, one
 #' nested within the other, the null distribution of the test statistic
 #' comparing the two models is estimated via a parametric bootstrap.

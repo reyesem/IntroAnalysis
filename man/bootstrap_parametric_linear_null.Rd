@@ -19,7 +19,7 @@ matrix with the same number of rows as coefficients in \code{fit} and
 corresponding parameters.
 }
 \description{
-This is the workhorse for the \code{compare_models()} function when a linear
+This is the workhorse for the [compare_models()] function when a linear
 model is specified without constant variance. Given two linear models, one
 nested within the other, the null distribution of the test statistic
 comparing the two models is estimated via a parametric bootstrap.

@@ -18,7 +18,7 @@ matrix with the same number of rows as coefficients in \code{fit} and
 corresponding parameters.
 }
 \description{
-This is the workhorse for the \code{estimate_parameters()} function when a
+This is the workhorse for the [estimate_parameters()] function when a
 generalized linear model is specified and parametric bootstrap is required.
 This is not meant to be called by the user directly.
 }

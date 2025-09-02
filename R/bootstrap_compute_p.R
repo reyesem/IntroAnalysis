@@ -16,7 +16,7 @@
 #' @return data.frame containing an ANOVA table comparing the two models. The
 #' p-value is determined from the bootstrap test statistics.
 #'
-#' @seealso \code{\link[stats]{anova}}
+#' @seealso [stats::anova()]
 #'
 #' @import stats
 bootstrap_compute_p <- function(bootobj){

@@ -3,15 +3,15 @@
 #' Provides a wrapper for plotting a model for the sampling distribution of a
 #' parameter estimate in a linear model.
 #'
-#' The \code{\link{estimate_parameters}} function returns an attribute that
+#' The [estimate_parameters()] function returns an attribute that
 #' contains a random sample from the sampling distribution of the parameter
 #' estimate.  This is extracted and used to construct a graphic summarizing
 #' this distribution.
 #'
-#' @param estimates result of a call to \code{\link{estimate_parameters}}.
+#' @param estimates result of a call to [estimate_parameters()].
 #' @param parameter character string indicating for which parameter the modeled
 #' sampling distribution should be plotted. This should match the output of the
-#' "term" column in \code{\link{estimate_parameters}} output. If missing
+#' "term" column in [estimate_parameters()] output. If missing
 #' (default), the model for the sampling distribution of the first term is
 #' plotted.
 #' @param show.confidence.interval boolean indicating whether the confidence
@@ -20,7 +20,7 @@
 #'
 #' @return \code{ggplot2} object.
 #'
-#' @seealso \code{\link{estimate_parameters}}
+#' @seealso [estimate_parameters()]
 #'
 #' @examples
 #' fit <- lm(mpg ~ hp, data = mtcars)

@@ -21,7 +21,7 @@ two columns added to the original data:
   \item \code{.resid}: the residuals for the model.}
 }
 \description{
-A wrapper for \code{\link[generics]{augment}} which obtains residuals and
+A wrapper for [generics::augment()] which obtains residuals and
 fitted values only for a specified data generating process.
 }
 \examples{

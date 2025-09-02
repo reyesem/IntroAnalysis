@@ -7,7 +7,7 @@
 ma223_word_format(...)
 }
 \arguments{
-\item{...}{additional arguments provided to \@code{word_document}.}
+\item{...}{additional arguments provided to [rmarkdown::word_document()].}
 }
 \description{
 Loads additional style file for Word for MA223 and MA382.

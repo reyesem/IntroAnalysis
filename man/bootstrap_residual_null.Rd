@@ -17,7 +17,7 @@ bootstrap_residual_null(fit1, fit0, reps, wild, construct)
 \code{FALSE} a traditional residual bootstrap is performed.}
 
 \item{construct}{string defining the type of construct to use when generating
-from the distribution for the wild bootstrap (see \code{\link{rmammen}}). If
+from the distribution for the wild bootstrap (see [rmammen()]). If
 \code{wild = FALSE}, this is ignored.}
 }
 \value{
@@ -26,7 +26,7 @@ bootstrap replication. It also has an attribute containing an ANOVA table
 comparing the two models.
 }
 \description{
-This is the workhorse for the \code{compare_models()} function when a linear
+This is the workhorse for the [compare_models()] function when a linear
 model is specified. Given two linear models, one nested within the other, the
 null distribution of the test statistic comparing the two models is estimated
 via a residual bootstrap (or wild bootstrap). This is not meant to be called

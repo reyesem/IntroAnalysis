@@ -12,7 +12,7 @@ output: IntroAnalysis::ma223_word_format
 IntroAnalysis:::ma223_setup()
 ```
 
-## Problem 1 
+# Problem 1 
 
-### Part (a) 
+## Part (a) 
 Start typing here...

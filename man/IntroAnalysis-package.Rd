@@ -13,8 +13,7 @@ potentially generalized linear models.
 }
 \details{
 The three primary functions you will utilize from \pkg{IntroAnalysis} are
-\code{\link{specify_mean_model}}, \code{\link{estimate_parameters}} and
-\code{\link{compare_models}}.
+[specify_mean_model()], [estimate_parameters()], and [compare_models()].
 }
 \author{
 \strong{Maintainer}: Reyes Eric \email{reyesem@rose-hulman.edu}

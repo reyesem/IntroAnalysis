@@ -2,7 +2,7 @@
 #'
 #' Loads additional style file for Word for MA223 and MA382.
 #'
-#' @param ... additional arguments provided to \@code{word_document}.
+#' @param ... additional arguments provided to [rmarkdown::word_document()].
 #'
 #' @export
 ma223_word_format <- function(...) {
@@ -25,7 +25,7 @@ ma223_word_format <- function(...) {
 #'
 #' Loads additional style file for Word for MA223 and MA382.
 #'
-#' @param ... additional arguments provided to \@code{word_document}.
+#' @param ... additional arguments provided to [rmarkdown::word_document()].
 #'
 #' @export
 ma382_word_format <- function(...) {

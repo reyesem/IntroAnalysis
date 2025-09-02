@@ -20,7 +20,7 @@ matrix with the same number of rows as rows of \code{newdat} and
 corresponding prediction.
 }
 \description{
-This is the workhorse for the \code{estimate_mean_response()} function when a
+This is the workhorse for the [estimate_mean_response()] function when a
 generalized linear model is specified and case resampling bootstrap is
 required.  This is not meant to be called by the user directly.
 }

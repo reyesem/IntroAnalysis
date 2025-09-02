@@ -1,16 +1,16 @@
 #' Specify the mean model for the data generating process.
 #'
-#' A wrapper for \code{\link[stats]{lm}} and \code{\link[stats]{glm}} which
+#' A wrapper for [stats::lm()] and [stat::glm()] which
 #' allows the user to specify the form of the model for the mean response of
 #' the data generating process.
 #'
-#' \code{specify_mean_model} provides a single interface to both \code{lm} and
-#' \code{glm} with two noticable differences:
+#' [specify_mean_model()] provides a single interface to both \code{lm} and
+#' \code{glm} with two noticeable differences:
 #' \enumerate{
 #'   \item The intercept is \emph{not} specified by default.
 #'   \item The notation "constant" can be used in the formula statement in
 #'   order to specify terms which do not require parameters, which are typically
-#'   specified by \code{offset()} in base R. The difference is that "constant"
+#'   specified by [stats::offset()] in base R. The difference is that "constant"
 #'   allows scalar terms.}
 #'
 #' If \code{family} is not specified, then \code{lm} is used to fit the model.
@@ -19,14 +19,14 @@
 #'
 #' @param data an optional data frame containing the variables appearing in
 #' \code{formula}.
-#' @param formula an object of class "\code{\link[stats]{formula}}": a symbolic
+#' @param formula an object of class "[stats::formula()]": a symbolic
 #' description of the form of the mean response model. Allows some notation
 #' not typical in base R.
 #' @param family a description of the error distribution and link function to
-#' be used in the model. See \code{\link[stats]{glm}} for details. If missing
+#' be used in the model. See [stats::glm()] for details. If missing
 #' (default), a linear model is used.
-#' @param ... additional arguments to pass to \code{\link[stats]{lm}} or
-#' \code{\link[stats]{glm}}.
+#' @param ... additional arguments to pass to [stats::lm()] or
+#' [stats::glm()].
 #'
 #' @return an objet of type \code{lm} or \code{glm} depending on whether
 #' \code{family} is specified.
@@ -116,7 +116,7 @@ specify_mean_model <- function(data,
 #'
 #' This wrapper provides a single interface for estimating parameters under
 #' various conditions imposed on the model. Similar to
-#' \code{\link[base]{summary}}, point and interval estimates of the parameters
+#' [base::summary()], point and interval estimates of the parameters
 #' are available. However, interval estimates can be constructed via
 #' bootstrapping or classical theory.
 #'
@@ -229,8 +229,8 @@ estimate_parameters <- function(mean.model,
 #' variability in the response compared to a more complex model.
 #'
 #' This wrapper provides a single interface for commparing models under various
-#' conditions imposed on the model. Similar to \code{\link[stats]{anova}}.
-#' Howevever, the p-value provided can be computed using classical methods or
+#' conditions imposed on the model. Similar to [stats::anova()].
+#' However, the p-value provided can be computed using classical methods or
 #' bootstrapping.
 #'
 #' For linear models, the following approaches are implemented:
@@ -276,7 +276,7 @@ estimate_parameters <- function(mean.model,
 #' ANOVA alternative).
 #' @param simulation.replications scalar indicating the number of samples to
 #' draw from the model for the null distribution (default = 4999). This will
-#' either be the number of bootstrap relications or the number of samples from
+#' either be the number of bootstrap replications or the number of samples from
 #' the classical null distribution.
 #' @param ... additional arguments to be passed to other methods.
 #'
@@ -286,7 +286,7 @@ estimate_parameters <- function(mean.model,
 #' contains a sample from the model of the null distribution of the test
 #' statistic. This is useful for plotting the null distribution.
 #'
-#' @seealso \code{\link[stats]{anova}}
+#' @seealso [stats::anova()]
 #'
 #' @examples
 #' fit1 <- lm(mpg ~ 1 + hp, data = mtcars)
@@ -325,7 +325,7 @@ compare_models <- function(full.mean.model,
 #'
 #' This wrapper provides a single interface for estimating the mean response
 #' under various various conditions imposed on the model. Similar to
-#' \code{\link[stats]{predict}}, point and interval estimates of the mean
+#' [stats::predict()], point and interval estimates of the mean
 #' response are available. However, interval estimates can be constructed via
 #' bootstrapping or classical theory.
 #'
@@ -428,7 +428,7 @@ estimate_mean_response <- function(mean.model,
 
 #' Obtain residuals and fitted values for diagnostics.
 #'
-#' A wrapper for \code{\link[generics]{augment}} which obtains residuals and
+#' A wrapper for [generics::augment()] which obtains residuals and
 #' fitted values only for a specified data generating process.
 #'
 #' @param mean.model \code{lm} or \code{glm} model fit defining the model from
@@ -479,7 +479,7 @@ obtain_diagnostics <- function(mean.model, data){
 
 #' Produce metrics for the quality of the model fit.
 #'
-#' A wrapper for \code{\link[generics]{glance}} which obtains metrics on the
+#' A wrapper for [generics::glance()] which obtains metrics on the
 #' goodness of fit of the model. For the linear model in particular, some
 #' metrics are suppressed.
 #'
